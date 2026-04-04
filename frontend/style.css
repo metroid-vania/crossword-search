@@ -207,6 +207,56 @@ main {
   color: var(--clr-muted);
 }
 
+.results-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+#view-toggle {
+  font-size: .84rem;
+  font-family: inherit;
+  font-weight: 600;
+  padding: 0 14px;
+  height: 34px;
+  border: 1.5px solid var(--clr-primary);
+  border-radius: 6px;
+  cursor: pointer;
+  background: transparent;
+  color: var(--clr-primary);
+  transition: background .15s, color .15s;
+  white-space: nowrap;
+}
+
+#view-toggle:hover {
+  background: var(--clr-primary);
+  color: #fff;
+}
+
+#view-toggle[hidden] {
+  display: none;
+}
+
+/* 簡易表示モード */
+#results-list.simple {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+#results-list.simple .variants {
+  display: none;
+}
+
+#results-list.simple .word-item {
+  padding: 0;
+}
+
+#results-list.simple .reading-copy {
+  width: 100%;
+  padding: 10px 14px;
+}
+
 #copy-btn {
   font-size: .84rem;
   font-family: inherit;

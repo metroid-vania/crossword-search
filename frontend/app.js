@@ -10,7 +10,8 @@ const PAGE_SIZE   = 100;
 const inputEl    = document.getElementById('search-input');
 const countEl    = document.getElementById('hit-count');
 const resultsList = document.getElementById('results-list');
-const copyBtn    = document.getElementById('copy-btn');
+const copyBtn      = document.getElementById('copy-btn');
+const viewToggleBtn = document.getElementById('view-toggle');
 const loadingEl  = document.getElementById('loading-indicator');
 const backToTopBtn = document.getElementById('back-to-top');
 const clearBtn   = document.getElementById('clear-btn');
@@ -23,6 +24,10 @@ let currentQuery  = '';
 let currentOffset = 0;
 let hasMore       = false;
 let isLoading     = false;
+let simpleMode    = localStorage.getItem('simpleMode') !== '0';
+
+// 初期状態を反映
+applySimpleMode();
 
 // ─── ユーティリティ ───────────────────────────────────────────────────────────
 
@@ -55,6 +60,19 @@ function toFullWidthPattern(str) {
   };
   return toKatakana(str).replace(/[?*1-9]/g, c => half2full[c] ?? c);
 }
+
+// ─── 簡易表示トグル ───────────────────────────────────────────────────────────
+
+function applySimpleMode() {
+  resultsList.classList.toggle('simple', simpleMode);
+  viewToggleBtn.textContent = simpleMode ? '詳細表示' : '簡易表示';
+}
+
+viewToggleBtn.addEventListener('click', () => {
+  simpleMode = !simpleMode;
+  localStorage.setItem('simpleMode', simpleMode ? '1' : '0');
+  applySimpleMode();
+});
 
 // ─── 検索 ─────────────────────────────────────────────────────────────────────
 
@@ -138,11 +156,13 @@ function renderResults(data) {
     countEl.className   = '';
     resultsList.innerHTML = '';
     copyBtn.hidden = true;
+    viewToggleBtn.hidden = true;
     setCopyEnabled(false);
     setLoading(false);
     return;
   }
   copyBtn.hidden = false;
+  viewToggleBtn.hidden = false;
 
   const { count, total, words } = data;
   const { hasMore: more } = data;
