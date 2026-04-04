@@ -1,0 +1,4 @@
+# SQLite データベースへの直接アクセスを禁止
+<FilesMatch "\.db$">
+    Require all denied
+</FilesMatch>

@@ -27,20 +27,30 @@
   <section class="search-area">
     <label for="search-input">検索パターンを入力</label>
     <div class="input-row">
-      <input
-        type="text"
-        id="search-input"
-        lang="ja"
-        autocomplete="off"
-        autocorrect="off"
-        autocapitalize="off"
-        spellcheck="false"
-        placeholder="例：アイ？ン　/　＊いあん　/　１２１２３"
-      >
+      <div class="input-wrapper">
+        <svg class="input-icon-search" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          type="text"
+          id="search-input"
+          lang="ja"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          placeholder="例: ？？カ？, ＊イロ, １２３３"
+        >
+        <button type="button" id="clear-btn" aria-label="入力をクリア" hidden>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
     </div>
     <p class="hint">
       <code>？</code> … 任意の1文字 &nbsp;
-      <code>＊</code> … 任意の0文字以上 &nbsp;
+      <code>＊</code> … 任意の0文字以上 &nbsp;<br class="sp-br">
       <code>１〜９</code> … 数字ワイルドカード
     </p>
   </section>
@@ -60,9 +70,9 @@
 
 <footer>
   辞書データは <a href="https://github.com/skk-dev/dict" target="_blank" rel="noopener">SKK-JISYO.L</a> に基づいています
-  （<a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" rel="noopener">GPL</a>）／
+  （<a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" rel="noopener">GPL</a>）<br>
   このアプリもGPLで公開しています（<a href="https://github.com/metroid-vania/crossword-search" target="_blank" rel="noopener">GitHub</a>）<br>
-  <a href="https://crossword-builder.com" target="_blank" rel="noopener">crossword-builder.com</a>
+  2026 <a href="https://crossword-builder.com" target="_blank" rel="noopener">CROSSWORD-BUILDER.com</a>
 </footer>
 
 <button id="back-to-top" aria-label="TOPへ戻る">

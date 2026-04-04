@@ -13,6 +13,7 @@ const resultsList = document.getElementById('results-list');
 const copyBtn    = document.getElementById('copy-btn');
 const loadingEl  = document.getElementById('loading-indicator');
 const backToTopBtn = document.getElementById('back-to-top');
+const clearBtn   = document.getElementById('clear-btn');
 const toastEl    = createToastElement();
 
 // ─── 状態 ─────────────────────────────────────────────────────────────────────
@@ -58,8 +59,17 @@ function toFullWidthPattern(str) {
 // ─── 検索 ─────────────────────────────────────────────────────────────────────
 
 inputEl.addEventListener('input', () => {
+  clearBtn.hidden = inputEl.value === '';
   clearTimeout(debounceTimer);
   debounceTimer = setTimeout(() => doSearch(true), DEBOUNCE_MS);
+});
+
+clearBtn.addEventListener('click', () => {
+  inputEl.value = '';
+  clearBtn.hidden = true;
+  inputEl.focus();
+  clearTimeout(debounceTimer);
+  doSearch(true);
 });
 
 window.addEventListener('scroll', () => {
@@ -242,7 +252,7 @@ function showToast(triggerEl) {
   const mainRect = document.querySelector('main').getBoundingClientRect();
   const rowRect  = triggerEl.closest('.word-item').getBoundingClientRect();
   toastEl.textContent = 'Copied!';
-  toastEl.style.left = mainRect.left + 'px';
+  toastEl.style.left = rowRect.left + 'px';
   toastEl.style.top  = (rowRect.top - 6) + 'px';
   toastEl.hidden = false;
   toastEl.classList.add('show');
