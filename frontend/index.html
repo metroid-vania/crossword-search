@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>クロスワード辞典</title>
+  <meta name="description" content="クロスワード作成支援用の単語検索Webアプリ。ワイルドカード（？・＊）と数字ワイルドカード（１〜９）に対応し、効率よく候補を探せます。">
+  <meta name="robots" content="index,follow">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="クロスワード辞典">
+  <meta property="og:description" content="クロスワード作成支援用の単語検索Webアプリ。ワイルドカード・数字ワイルドカードに対応。">
+  <meta property="og:locale" content="ja_JP">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="クロスワード辞典">
+  <meta name="twitter:description" content="クロスワード作成支援用の単語検索Webアプリ。">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>クロスワード辞典</h1>
+  <p>クロスワードパズル作成支援ツール</p>
+</header>
+
+<main>
+  <!-- 検索エリア -->
+  <section class="search-area">
+    <label for="search-input">検索パターンを入力</label>
+    <div class="input-row">
+      <input
+        type="text"
+        id="search-input"
+        lang="ja"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        placeholder="例：アイ？ン　/　＊いあん　/　１２１２３"
+      >
+    </div>
+    <p class="hint">
+      <code>？</code> … 任意の1文字 &nbsp;
+      <code>＊</code> … 任意の0文字以上 &nbsp;
+      <code>１〜９</code> … 数字ワイルドカード
+    </p>
+  </section>
+
+  <!-- 結果ヘッダー -->
+  <div class="results-header">
+    <span id="hit-count"></span>
+    <button id="copy-btn" disabled class="disabled" hidden>まとめてコピー</button>
+  </div>
+
+  <!-- 結果リスト -->
+  <ul id="results-list"></ul>
+  <div id="loading-indicator" class="loading-indicator" aria-live="polite" hidden>
+    読み込み中...
+  </div>
+</main>
+
+<footer>
+  辞書データは <a href="https://github.com/skk-dev/dict" target="_blank" rel="noopener">SKK-JISYO.L</a> に基づいています
+  （<a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" rel="noopener">GPL</a>）／
+  このアプリもGPLで公開しています（<a href="https://github.com/metroid-vania/crossword-search" target="_blank" rel="noopener">GitHub</a>）<br>
+  <a href="https://crossword-builder.com" target="_blank" rel="noopener">crossword-builder.com</a>
+</footer>
+
+<button id="back-to-top" aria-label="TOPへ戻る">
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <polyline points="18 15 12 9 6 15"/>
+  </svg>
+</button>
+<script src="app.js"></script>
+</body>
+</html>

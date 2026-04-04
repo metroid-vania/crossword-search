@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "PHP Dev Server (全体)",
+      "runtimeExecutable": "php",
+      "runtimeArgs": ["-S", "localhost:8000", "-t", "."],
+      "port": 8000
+    }
+  ]
+}
