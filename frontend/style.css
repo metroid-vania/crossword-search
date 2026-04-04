@@ -245,7 +245,7 @@ main {
 
 .word-item {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 12px;
   background: var(--clr-surface);
   border: 1px solid var(--clr-border);
@@ -289,9 +289,11 @@ main {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  align-self: stretch;
   gap: 6px;
   border-left: 1px solid #d8dee6;
   padding-left: 12px;
+  min-height: calc(0.82rem * 1.45 + 4px); /* ピルと同じ高さを確保 */
 }
 
 .variant-link {

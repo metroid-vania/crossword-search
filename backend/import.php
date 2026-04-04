@@ -104,14 +104,9 @@ function normalizeReading(string $str): string {
     return strtr($str, $map);
 }
 
-$wordsFile = __DIR__ . '/../words.txt';
-if (!file_exists($wordsFile)) {
-    die("ERROR: words.txt が見つかりません: {$wordsFile}\n");
-}
-
-$fp = fopen($wordsFile, 'r');
-if (!$fp) {
-    die("ERROR: words.txt を開けません\n");
+$inputFiles = [__DIR__ . '/../words.txt'];
+foreach (glob(__DIR__ . '/../words_*.txt') as $f) {
+    $inputFiles[] = $f;
 }
 
 $db->exec('BEGIN');
@@ -122,53 +117,69 @@ $stmt = $db->prepare(
 $count   = 0;
 $skipped = 0;
 
-while (($line = fgets($fp)) !== false) {
-    $line = rtrim($line, "\r\n");
-    if ($line === '' || ($line[0] ?? '') === ';') {
-        continue; // 空行・コメント行をスキップ
-    }
-
-    // フォーマット: カタカナ /variant1/variant2/.../
-    if (!preg_match('/^(\S+)\s+\/(.+)\/$/', $line, $m)) {
-        $skipped++;
+foreach ($inputFiles as $wordsFile) {
+    if (!file_exists($wordsFile)) {
+        echo "スキップ（見つかりません）: {$wordsFile}\n";
         continue;
     }
 
-    $reading = $m[1];
-
-    // 2文字以上のみ取り込む
-    if (u_strlen($reading) < 2) {
-        $skipped++;
+    $fp = fopen($wordsFile, 'r');
+    if (!$fp) {
+        fwrite(STDERR, "ERROR: ファイルを開けません: {$wordsFile}\n");
         continue;
     }
 
-    // バリエーション（最大10件）
-    $parts    = explode('/', $m[2]);
-    $variants = array_values(array_filter(
-        array_slice($parts, 0, 10),
-        fn($v) => $v !== ''
-    ));
+    echo "読み込み中: {$wordsFile}\n";
 
-    $normalized = normalizeReading($reading);
-    $len        = u_strlen($normalized);
+    while (($line = fgets($fp)) !== false) {
+        $line = rtrim($line, "\r\n");
+        if ($line === '' || ($line[0] ?? '') === ';') {
+            continue; // 空行・コメント行をスキップ
+        }
 
-    $stmt->bindValue(':r', $reading,                                    SQLITE3_TEXT);
-    $stmt->bindValue(':n', $normalized,                                 SQLITE3_TEXT);
-    $stmt->bindValue(':l', $len,                                        SQLITE3_INTEGER);
-    $stmt->bindValue(':v', json_encode($variants, JSON_UNESCAPED_UNICODE), SQLITE3_TEXT);
-    $stmt->execute();
-    $stmt->reset();
+        // フォーマット: カタカナ /variant1/variant2/.../  （バリアントなし // も許容）
+        if (!preg_match('/^(\S+)\s+\/(.*)\//', $line, $m)) {
+            $skipped++;
+            continue;
+        }
 
-    $count++;
-    if ($count % 10000 === 0) {
-        $db->exec('COMMIT');
-        $db->exec('BEGIN');
-        echo "インポート中: {$count} 件...\n";
+        $reading = $m[1];
+
+        // 2文字以上のみ取り込む
+        if (u_strlen($reading) < 2) {
+            $skipped++;
+            continue;
+        }
+
+        // バリエーション（最大10件）
+        $parts    = explode('/', $m[2]);
+        $variants = array_values(array_filter(
+            array_slice($parts, 0, 10),
+            fn($v) => $v !== ''
+        ));
+
+        $normalized = normalizeReading($reading);
+        $len        = u_strlen($normalized);
+
+        $stmt->bindValue(':r', $reading,                                    SQLITE3_TEXT);
+        $stmt->bindValue(':n', $normalized,                                 SQLITE3_TEXT);
+        $stmt->bindValue(':l', $len,                                        SQLITE3_INTEGER);
+        $stmt->bindValue(':v', json_encode($variants, JSON_UNESCAPED_UNICODE), SQLITE3_TEXT);
+        $stmt->execute();
+        $stmt->reset();
+
+        $count++;
+        if ($count % 10000 === 0) {
+            $db->exec('COMMIT');
+            $db->exec('BEGIN');
+            echo "インポート中: {$count} 件...\n";
+        }
     }
+
+    fclose($fp);
 }
 
 $db->exec('COMMIT');
-fclose($fp);
 
 // インデックス作成
 echo "インデックスを作成中...\n";

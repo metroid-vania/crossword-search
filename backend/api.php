@@ -176,6 +176,7 @@ function searchWords(SQLite3 $db, string $query, int $total, int $offset, int $l
             'SELECT reading, variants
                FROM words
               WHERE normalized = :n
+              ORDER BY normalized
               LIMIT :lim OFFSET :off'
         );
         $stmt->bindValue(':n',   $normalized, SQLITE3_TEXT);
@@ -206,6 +207,7 @@ function searchWords(SQLite3 $db, string $query, int $total, int $offset, int $l
                 "SELECT reading, variants
                    FROM words
                   WHERE len = :l AND normalized LIKE :p ESCAPE '\\'
+                  ORDER BY normalized
                   LIMIT :lim OFFSET :off"
             );
             $stmt->bindValue(':l',   $fixedLen,    SQLITE3_INTEGER);
@@ -217,6 +219,7 @@ function searchWords(SQLite3 $db, string $query, int $total, int $offset, int $l
                 "SELECT reading, variants
                    FROM words
                   WHERE normalized LIKE :p ESCAPE '\\'
+                  ORDER BY normalized
                   LIMIT :lim OFFSET :off"
             );
             $stmt->bindValue(':p',   $likePattern, SQLITE3_TEXT);
@@ -257,6 +260,7 @@ function searchWords(SQLite3 $db, string $query, int $total, int $offset, int $l
                 "SELECT reading, normalized, variants
                    FROM words
                   WHERE len = :l AND normalized LIKE :p ESCAPE '\\'
+                  ORDER BY normalized
                   LIMIT :lim OFFSET :off"
             );
             $stmt->bindValue(':l',   $fixedLen,       SQLITE3_INTEGER);
@@ -268,6 +272,7 @@ function searchWords(SQLite3 $db, string $query, int $total, int $offset, int $l
                 "SELECT reading, normalized, variants
                    FROM words
                   WHERE normalized LIKE :p ESCAPE '\\'
+                  ORDER BY normalized
                   LIMIT :lim OFFSET :off"
             );
             $stmt->bindValue(':p',   $likePattern,    SQLITE3_TEXT);
