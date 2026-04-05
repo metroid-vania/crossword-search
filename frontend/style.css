@@ -198,7 +198,7 @@ main {
 }
 
 #hit-count {
-  font-size: .92rem;
+  font-size: 1.05rem;
   font-weight: 600;
   color: var(--clr-text);
 }
@@ -231,6 +231,15 @@ main {
 #view-toggle:hover {
   background: var(--clr-primary);
   color: #fff;
+}
+
+#view-toggle:focus {
+  outline: none;
+}
+
+#view-toggle:focus-visible {
+  outline: 2px solid var(--clr-primary);
+  outline-offset: 2px;
 }
 
 #view-toggle[hidden] {
@@ -414,8 +423,8 @@ main {
   position: fixed;
   bottom: 28px;
   right: max(48px, calc(50% - 360px + 48px));
-  width: 44px;
-  height: 44px;
+  width: 56px;
+  height: 56px;
   border: none;
   border-radius: 50%;
   background: var(--clr-primary);

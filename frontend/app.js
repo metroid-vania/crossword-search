@@ -31,6 +31,11 @@ applySimpleMode();
 
 // ─── ユーティリティ ───────────────────────────────────────────────────────────
 
+/** 半角・全角スペースを除去 */
+function removeSpaces(str) {
+  return str.replace(/[ \u3000]/g, '');
+}
+
 /** ひらがな → カタカナ */
 function toKatakana(str) {
   return str.replace(/[\u3041-\u3096]/g, c =>
@@ -72,6 +77,7 @@ viewToggleBtn.addEventListener('click', () => {
   simpleMode = !simpleMode;
   localStorage.setItem('simpleMode', simpleMode ? '1' : '0');
   applySimpleMode();
+  viewToggleBtn.blur();
 });
 
 // ─── 検索 ─────────────────────────────────────────────────────────────────────
@@ -102,7 +108,7 @@ window.addEventListener('scroll', () => {
 });
 
 async function doSearch(reset) {
-  const query = inputEl.value.trim();
+  const query = removeSpaces(inputEl.value.trim());
 
   if (reset) {
     currentQuery = query;
@@ -166,7 +172,7 @@ function renderResults(data) {
 
   const { count, total, words } = data;
   const { hasMore: more } = data;
-  const fullPattern = toFullWidthPattern(inputEl.value.trim());
+  const fullPattern = toFullWidthPattern(removeSpaces(inputEl.value.trim()));
 
   // 件数表示
   if (count === 0) {
