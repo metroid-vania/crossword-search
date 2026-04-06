@@ -24,6 +24,7 @@ let currentQuery  = '';
 let currentOffset = 0;
 let hasMore       = false;
 let isLoading     = false;
+let abortController = null; // 進行中の fetch をキャンセルするコントローラー
 let simpleMode    = localStorage.getItem('simpleMode') !== '0';
 
 // 初期状態を反映
@@ -124,11 +125,16 @@ async function doSearch(reset) {
     return;
   }
 
+  // 前のリクエストをキャンセル
+  if (abortController) abortController.abort();
+  abortController = new AbortController();
+
   try {
     isLoading = true;
     setLoading(true);
     const res  = await fetch(
-      `${API_URL}?q=${encodeURIComponent(query)}&offset=${currentOffset}&limit=${PAGE_SIZE}`
+      `${API_URL}?q=${encodeURIComponent(query)}&offset=${currentOffset}&limit=${PAGE_SIZE}`,
+      { signal: abortController.signal }
     );
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
@@ -144,6 +150,7 @@ async function doSearch(reset) {
     }
     renderResults(currentData);
   } catch (e) {
+    if (e.name === 'AbortError') return; // キャンセルされたリクエストは無視
     console.error(e);
     renderError(e.message);
   } finally {
