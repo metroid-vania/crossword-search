@@ -250,9 +250,19 @@ function setCopyEnabled(enabled) {
   copyBtn.classList.toggle('disabled', !enabled);
 }
 
+let loadingTimer = null;
+
 function setLoading(loading) {
   if (!loadingEl) return;
-  loadingEl.hidden = !loading;
+  if (loading) {
+    if (!loadingTimer) {
+      loadingTimer = setTimeout(() => { loadingEl.hidden = false; }, 100);
+    }
+  } else {
+    clearTimeout(loadingTimer);
+    loadingTimer = null;
+    loadingEl.hidden = true;
+  }
 }
 
 function escHtml(s) {

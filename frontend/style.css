@@ -399,9 +399,21 @@ main {
 
 .loading-indicator {
   text-align: center;
-  color: var(--clr-muted);
-  font-size: .9rem;
   padding: 14px 0 4px;
+}
+
+.spinner {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 3px solid var(--clr-muted);
+  border-top-color: var(--clr-accent, #4f8ef7);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .toast {
