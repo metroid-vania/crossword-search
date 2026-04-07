@@ -297,7 +297,7 @@ function setCopyEnabled(enabled) {
 // ─── バックグラウンドプリフェッチ ─────────────────────────────────────────────
 
 /** アイドル時に次ページをバックグラウンド取得するスケジューラー */
-const PREFETCH_LIMIT = 5000; // バックグラウンド取得の上限件数
+const PREFETCH_LIMIT = 1000; // バックグラウンド取得の上限件数
 
 function schedulePrefetch() {
   if (idlePrefetchId !== null || !hasMore || isLoading || !currentQuery) return;
