@@ -86,6 +86,8 @@ viewToggleBtn.addEventListener('click', () => {
 inputEl.addEventListener('input', () => {
   clearBtn.hidden = inputEl.value === '';
   clearTimeout(debounceTimer);
+  // 入力直後に旧リクエストをキャンセル（デバウンス中に古い結果が返るのを防ぐ）
+  if (abortController) { abortController.abort(); abortController = null; }
   debounceTimer = setTimeout(() => doSearch(true), DEBOUNCE_MS);
 });
 
@@ -138,6 +140,8 @@ async function doSearch(reset) {
     );
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
+    // レスポンス到着時点でクエリが変わっていたら破棄
+    if (query !== currentQuery) return;
     hasMore = !!data.hasMore;
     currentOffset += data.words.length;
 
