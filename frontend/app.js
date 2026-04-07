@@ -27,6 +27,7 @@ let isLoading       = false;
 let abortController = null; // 進行中の fetch をキャンセルするコントローラー
 let idlePrefetchId  = null; // バックグラウンドプリフェッチ用
 let simpleMode      = localStorage.getItem('simpleMode') !== '0';
+let isComposing     = false; // IME 変換中フラグ
 
 // 初期状態を反映
 applySimpleMode();
@@ -84,8 +85,17 @@ viewToggleBtn.addEventListener('click', () => {
 
 // ─── 検索 ─────────────────────────────────────────────────────────────────────
 
+// IME 変換中は input イベントを無視し、確定後に1回だけ検索する
+inputEl.addEventListener('compositionstart', () => { isComposing = true; });
+inputEl.addEventListener('compositionend',   () => {
+  isComposing = false;
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => doSearch(true), DEBOUNCE_MS);
+});
+
 inputEl.addEventListener('input', () => {
   clearBtn.hidden = inputEl.value === '';
+  if (isComposing) return; // IME 変換中はスキップ
   clearTimeout(debounceTimer);
   // 入力直後に旧リクエスト・プリフェッチをキャンセル
   if (abortController) { abortController.abort(); abortController = null; }
@@ -102,6 +112,14 @@ clearBtn.addEventListener('click', () => {
   clearTimeout(debounceTimer);
   cancelPrefetch();
   doSearch(true);
+});
+
+// Enter キーで debounce をスキップして即時検索
+inputEl.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !isComposing) {
+    clearTimeout(debounceTimer);
+    doSearch(true);
+  }
 });
 
 window.addEventListener('scroll', () => {
@@ -130,7 +148,20 @@ async function doSearch(reset) {
   if (query === '') {
     setLoading(false);
     renderResults(null);
+    history.replaceState(null, '', location.pathname); // URL からクエリを除去
     return;
+  }
+
+  // URL を現在のクエリで更新（ブックマーク・リロード対応）
+  history.replaceState(null, '', '?q=' + encodeURIComponent(query));
+
+  // セッションキャッシュがあれば即座に表示（ネットワーク待ち不要）
+  if (reset) {
+    const cached = cacheRead(query);
+    if (cached) {
+      renderResults(cached);
+      // currentOffset は 0 のまま→ネットワーク取得は常に先頭から
+    }
   }
 
   // 前のリクエストをキャンセル
@@ -139,7 +170,7 @@ async function doSearch(reset) {
 
   try {
     isLoading = true;
-    if (reset) setLoading(true); // スピナーは初回のみ
+    setLoading(true);
     const res = await fetch(
       `${API_URL}?q=${encodeURIComponent(query)}&offset=${currentOffset}&limit=${PAGE_SIZE}`,
       { signal: abortController.signal }
@@ -155,6 +186,7 @@ async function doSearch(reset) {
     if (reset || !currentData) {
       currentData = { ...data };
       renderResults(currentData);
+      cacheWrite(query, currentData); // 1ページ目をキャッシュ保存
     } else {
       // ページネーション：差分のみ追記（全再描画なし）
       currentData.words = currentData.words.concat(newWords);
@@ -169,7 +201,7 @@ async function doSearch(reset) {
     renderError(e.message);
   } finally {
     isLoading = false;
-    if (reset) setLoading(false);
+    setLoading(false);
     // isLoading=false の後にスケジュール（前だとチェックで弾かれる）
     schedulePrefetch();
   }
@@ -211,13 +243,13 @@ function updateCountDisplay(data) {
   const { count, total, hasMore: more } = data;
   const fullPattern = toFullWidthPattern(removeSpaces(inputEl.value.trim()));
   if (count === 0) {
-    countEl.textContent = `【${fullPattern}】の検索結果（0件ヒット）`;
+    countEl.textContent = `【${fullPattern}】の検索結果（0 件ヒット）`;
     countEl.className   = 'zero';
   } else if (more) {
-    countEl.textContent = `【${fullPattern}】の検索結果（${count}件以上ヒット）`;
+    countEl.textContent = `【${fullPattern}】の検索結果（${count} 件以上ヒット）`;
     countEl.className   = '';
   } else {
-    countEl.textContent = `【${fullPattern}】の検索結果（${count}件ヒット）`;
+    countEl.textContent = `【${fullPattern}】の検索結果（${count} 件ヒット）`;
     countEl.className   = '';
   }
   const isAllWords = !more && count === total;
@@ -253,8 +285,7 @@ function renderResults(data) {
   for (const word of data.words) {
     fragment.appendChild(buildWordItem(word));
   }
-  resultsList.innerHTML = '';
-  resultsList.appendChild(fragment);
+  resultsList.replaceChildren(fragment); // innerHTML='' + appendChild を1操作でアトミックに
 }
 
 /** ページネーション時の差分追記（リスト全再描画なし） */
@@ -355,6 +386,33 @@ function escHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
+// ─── sessionStorage キャッシュ ─────────────────────────────────────────────────
+// リロード後も同じクエリを即座に表示するための 1 ページ目キャッシュ
+
+const CACHE_TTL_MS = 10 * 60 * 1000; // 10 分（辞書は変わらないので長めでも安全）
+
+function cacheWrite(query, data) {
+  try {
+    sessionStorage.setItem(
+      'cw_' + query,
+      JSON.stringify({ ts: Date.now(), data })
+    );
+  } catch (_) {} // quota 超過は無視
+}
+
+function cacheRead(query) {
+  try {
+    const raw = sessionStorage.getItem('cw_' + query);
+    if (!raw) return null;
+    const { ts, data } = JSON.parse(raw);
+    if (Date.now() - ts > CACHE_TTL_MS) {
+      sessionStorage.removeItem('cw_' + query);
+      return null;
+    }
+    return data;
+  } catch (_) { return null; }
+}
+
 async function copyText(text) {
   await navigator.clipboard.writeText(text);
 }
@@ -441,3 +499,12 @@ copyBtn.addEventListener('click', async (e) => {
     alert('クリップボードへのコピーに失敗しました。\n' + e.message);
   }
 });
+
+// ─── URL からの初期クエリ復元 ─────────────────────────────────────────────────
+// ?q=... でページを開いた場合（ブックマーク・シェア・リロード）に自動検索
+const _initQuery = new URLSearchParams(location.search).get('q') ?? '';
+if (_initQuery) {
+  inputEl.value = _initQuery;
+  clearBtn.hidden = false;
+  doSearch(true);
+}

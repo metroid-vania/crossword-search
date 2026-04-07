@@ -1,0 +1,7 @@
+# 静的アセット（JS/CSS/PNG）を1年間キャッシュ
+# ※ index.html には ?v=... バージョン文字列でキャッシュバスティングを行う
+<IfModule mod_headers.c>
+    <FilesMatch "\.(js|css|png)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+</IfModule>

@@ -10,6 +10,7 @@ ignore_user_abort(false);      // クライアント切断時に処理を中断
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET');
+header('Vary: Accept-Encoding');
 
 $query = trim($_GET['q'] ?? '');
 $offset = max(0, (int)($_GET['offset'] ?? 0));
