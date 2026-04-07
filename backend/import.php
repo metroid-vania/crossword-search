@@ -145,8 +145,9 @@ foreach ($inputFiles as $wordsFile) {
 
         $reading = $m[1];
 
-        // 2文字以上のみ取り込む
-        if (u_strlen($reading) < 2) {
+        // 2〜13文字のみ取り込む（1文字以下・14文字以上は除外）
+        $readingLen = u_strlen($reading);
+        if ($readingLen < 2 || $readingLen >= 14) {
             $skipped++;
             continue;
         }
