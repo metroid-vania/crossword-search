@@ -213,7 +213,7 @@ function updateCountDisplay(data) {
   if (count === 0) {
     countEl.textContent = `【${fullPattern}】の検索結果（0件ヒット）`;
     countEl.className   = 'zero';
-  } else if (more || count >= PREFETCH_LIMIT) {
+  } else if (more) {
     countEl.textContent = `【${fullPattern}】の検索結果（${count}件以上ヒット）`;
     countEl.className   = '';
   } else {
@@ -221,8 +221,7 @@ function updateCountDisplay(data) {
     countEl.className   = '';
   }
   const isAllWords = !more && count === total;
-  const hitPrefetchLimit = count >= PREFETCH_LIMIT;
-  setCopyEnabled(count > 0 && !more && !isAllWords && !hitPrefetchLimit);
+  setCopyEnabled(count > 0 && !more && !isAllWords);
 }
 
 /** 初回・リセット時のフル描画 */
@@ -297,7 +296,7 @@ function setCopyEnabled(enabled) {
 // ─── バックグラウンドプリフェッチ ─────────────────────────────────────────────
 
 /** アイドル時に次ページをバックグラウンド取得するスケジューラー */
-const PREFETCH_LIMIT = 1000; // バックグラウンド取得の上限件数
+const PREFETCH_LIMIT = 2000; // バックグラウンド取得の上限件数
 
 function schedulePrefetch() {
   if (idlePrefetchId !== null || !hasMore || isLoading || !currentQuery) return;
