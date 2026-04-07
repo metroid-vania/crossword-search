@@ -155,6 +155,18 @@ async function doSearch(reset) {
   // URL を現在のクエリで更新（ブックマーク・リロード対応）
   history.replaceState(null, '', '?q=' + encodeURIComponent(query));
 
+  // 辞書の語長制約（2〜13文字）に基づく即時 0 件判定（API 不要）
+  // ・＊を除いた文字数 ≥ 14 → 14文字以上の語は存在しない
+  // ・＊なしで文字数 = 1  → 1文字の語は存在しない
+  if (reset) {
+    const nonStarLen = query.replace(/[*＊]/g, '').length;
+    const hasStar    = nonStarLen < query.length;
+    if (nonStarLen >= 14 || (!hasStar && nonStarLen < 2)) {
+      renderResults({ count: 0, total: 0, words: [], hasMore: false });
+      return;
+    }
+  }
+
   // セッションキャッシュがあれば即座に表示（ネットワーク待ち不要）
   if (reset) {
     const cached = cacheRead(query);
