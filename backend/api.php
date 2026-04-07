@@ -6,6 +6,7 @@
  */
 
 mb_internal_encoding('UTF-8');
+ignore_user_abort(false);      // クライアント切断時に処理を中断
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET');
@@ -254,6 +255,7 @@ function searchWords(SQLite3 $db, string $query, int $total, int $offset, int $l
     $hasMore        = false;
 
     while (true) {
+        if (connection_aborted()) break;  // クライアント切断なら即終了
         if (!$hasStar) {
             $fixedLen = mb_strlen($normalized);
             $stmt = $db->prepare(

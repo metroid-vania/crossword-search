@@ -309,6 +309,12 @@ main {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  transition: opacity .1s;
+}
+
+#results-list.stale {
+  opacity: .4;
+  pointer-events: none;
 }
 
 .word-item {

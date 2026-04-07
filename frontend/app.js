@@ -88,6 +88,8 @@ inputEl.addEventListener('input', () => {
   clearTimeout(debounceTimer);
   // 入力直後に旧リクエストをキャンセル（デバウンス中に古い結果が返るのを防ぐ）
   if (abortController) { abortController.abort(); abortController = null; }
+  // 結果を即フェードして「更新中」を視覚的に示す
+  resultsList.classList.add('stale');
   debounceTimer = setTimeout(() => doSearch(true), DEBOUNCE_MS);
 });
 
@@ -167,6 +169,7 @@ async function doSearch(reset) {
 
 function renderResults(data) {
   currentData = data;
+  resultsList.classList.remove('stale');
 
   if (!data) {
     countEl.textContent = '';
@@ -216,16 +219,8 @@ function renderResults(data) {
     readingBtn.type = 'button';
     readingBtn.className = 'reading reading-copy';
     readingBtn.textContent = word.reading;
+    readingBtn.dataset.reading = word.reading;
     readingBtn.title = `クリックでコピー（${expandSmallKana(word.reading)}）`;
-    readingBtn.addEventListener('click', async (e) => {
-      try {
-        const copyReading = expandSmallKana(word.reading);
-        await copyText(copyReading);
-        showToast(readingBtn);
-      } catch (e) {
-        alert('クリップボードへのコピーに失敗しました。\n' + e.message);
-      }
-    });
 
     const variantsWrap = document.createElement('span');
     variantsWrap.className = 'variants';
@@ -247,6 +242,19 @@ function renderResults(data) {
   resultsList.innerHTML = '';
   resultsList.appendChild(fragment);
 }
+
+// イベント委譲: 結果リスト全体で読みボタンのクリックを一括処理
+resultsList.addEventListener('click', async (e) => {
+  const btn = e.target.closest('.reading-copy');
+  if (!btn) return;
+  try {
+    const copyReading = expandSmallKana(btn.dataset.reading);
+    await copyText(copyReading);
+    showToast(btn);
+  } catch (err) {
+    alert('クリップボードへのコピーに失敗しました。\n' + err.message);
+  }
+});
 
 function renderError(msg) {
   countEl.textContent   = '';
