@@ -18,14 +18,15 @@ const clearBtn   = document.getElementById('clear-btn');
 const toastEl    = createToastElement();
 
 // ─── 状態 ─────────────────────────────────────────────────────────────────────
-let debounceTimer = null;
-let currentData   = null; // 最新の API レスポンス
-let currentQuery  = '';
-let currentOffset = 0;
-let hasMore       = false;
-let isLoading     = false;
+let debounceTimer   = null;
+let currentData     = null; // 最新の API レスポンス
+let currentQuery    = '';
+let currentOffset   = 0;
+let hasMore         = false;
+let isLoading       = false;
 let abortController = null; // 進行中の fetch をキャンセルするコントローラー
-let simpleMode    = localStorage.getItem('simpleMode') !== '0';
+let idlePrefetchId  = null; // バックグラウンドプリフェッチ用
+let simpleMode      = localStorage.getItem('simpleMode') !== '0';
 
 // 初期状態を反映
 applySimpleMode();
@@ -86,8 +87,9 @@ viewToggleBtn.addEventListener('click', () => {
 inputEl.addEventListener('input', () => {
   clearBtn.hidden = inputEl.value === '';
   clearTimeout(debounceTimer);
-  // 入力直後に旧リクエストをキャンセル（デバウンス中に古い結果が返るのを防ぐ）
+  // 入力直後に旧リクエスト・プリフェッチをキャンセル
   if (abortController) { abortController.abort(); abortController = null; }
+  cancelPrefetch();
   // 結果を即フェードして「更新中」を視覚的に示す
   resultsList.classList.add('stale');
   debounceTimer = setTimeout(() => doSearch(true), DEBOUNCE_MS);
@@ -98,6 +100,7 @@ clearBtn.addEventListener('click', () => {
   clearBtn.hidden = true;
   inputEl.focus();
   clearTimeout(debounceTimer);
+  cancelPrefetch();
   doSearch(true);
 });
 
@@ -116,9 +119,10 @@ async function doSearch(reset) {
   const query = removeSpaces(inputEl.value.trim());
 
   if (reset) {
-    currentQuery = query;
+    cancelPrefetch();
+    currentQuery  = query;
     currentOffset = 0;
-    hasMore = false;
+    hasMore       = false;
   } else if (query !== currentQuery) {
     return;
   }
@@ -135,8 +139,8 @@ async function doSearch(reset) {
 
   try {
     isLoading = true;
-    setLoading(true);
-    const res  = await fetch(
+    if (reset) setLoading(true); // スピナーは初回のみ
+    const res = await fetch(
       `${API_URL}?q=${encodeURIComponent(query)}&offset=${currentOffset}&limit=${PAGE_SIZE}`,
       { signal: abortController.signal }
     );
@@ -145,28 +149,83 @@ async function doSearch(reset) {
     // レスポンス到着時点でクエリが変わっていたら破棄
     if (query !== currentQuery) return;
     hasMore = !!data.hasMore;
-    currentOffset += data.words.length;
+    const newWords = data.words;
+    currentOffset += newWords.length;
 
     if (reset || !currentData) {
       currentData = { ...data };
+      renderResults(currentData);
     } else {
-      currentData.words = currentData.words.concat(data.words);
+      // ページネーション：差分のみ追記（全再描画なし）
+      currentData.words = currentData.words.concat(newWords);
       currentData.count = currentData.words.length;
       currentData.hasMore = hasMore;
+      appendResults(newWords, currentData);
     }
-    renderResults(currentData);
+
   } catch (e) {
     if (e.name === 'AbortError') return; // キャンセルされたリクエストは無視
     console.error(e);
     renderError(e.message);
   } finally {
     isLoading = false;
-    setLoading(false);
+    if (reset) setLoading(false);
+    // isLoading=false の後にスケジュール（前だとチェックで弾かれる）
+    schedulePrefetch();
   }
 }
 
 // ─── 描画 ─────────────────────────────────────────────────────────────────────
 
+/** 単語1件分の <li> 要素を生成 */
+function buildWordItem(word) {
+  const li = document.createElement('li');
+  li.className = 'word-item';
+
+  const readingBtn = document.createElement('button');
+  readingBtn.type = 'button';
+  readingBtn.className = 'reading reading-copy';
+  readingBtn.textContent = word.reading;
+  readingBtn.dataset.reading = word.reading;
+  readingBtn.title = 'クリックでコピー';
+
+  const variantsWrap = document.createElement('span');
+  variantsWrap.className = 'variants';
+  for (const v of word.variants) {
+    const a = document.createElement('a');
+    a.className = 'variant-link';
+    a.href = `https://www.google.com/search?q=${encodeURIComponent(v)}`;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.textContent = v;
+    a.title = 'Googleで検索';
+    variantsWrap.appendChild(a);
+  }
+
+  li.append(readingBtn, variantsWrap);
+  return li;
+}
+
+/** 件数表示・コピーボタン状態を更新する共通処理 */
+function updateCountDisplay(data) {
+  const { count, total, hasMore: more } = data;
+  const fullPattern = toFullWidthPattern(removeSpaces(inputEl.value.trim()));
+  if (count === 0) {
+    countEl.textContent = `【${fullPattern}】の検索結果（0件ヒット）`;
+    countEl.className   = 'zero';
+  } else if (more || count >= PREFETCH_LIMIT) {
+    countEl.textContent = `【${fullPattern}】の検索結果（${count}件以上ヒット）`;
+    countEl.className   = '';
+  } else {
+    countEl.textContent = `【${fullPattern}】の検索結果（${count}件ヒット）`;
+    countEl.className   = '';
+  }
+  const isAllWords = !more && count === total;
+  const hitPrefetchLimit = count >= PREFETCH_LIMIT;
+  setCopyEnabled(count > 0 && !more && !isAllWords && !hitPrefetchLimit);
+}
+
+/** 初回・リセット時のフル描画 */
 function renderResults(data) {
   currentData = data;
   resultsList.classList.remove('stale');
@@ -184,62 +243,28 @@ function renderResults(data) {
   copyBtn.hidden = false;
   viewToggleBtn.hidden = false;
 
-  const { count, total, words } = data;
-  const { hasMore: more } = data;
-  const fullPattern = toFullWidthPattern(removeSpaces(inputEl.value.trim()));
+  updateCountDisplay(data);
 
-  // 件数表示
-  if (count === 0) {
-    countEl.textContent = `【${fullPattern}】の検索結果（0件ヒット）`;
-    countEl.className   = 'zero';
-  } else if (more) {
-    countEl.textContent = `【${fullPattern}】の検索結果（${count}件以上ヒット）`;
-    countEl.className   = '';
-  } else {
-    countEl.textContent = `【${fullPattern}】の検索結果（${count}件ヒット）`;
-    countEl.className   = '';
-  }
-
-  // コピーボタン：0件 or 全件（件数が多すぎる）はグレーアウト
-  const isAllWords = !more && count === total;
-  setCopyEnabled(count > 0 && !more && !isAllWords);
-
-  // 結果リスト描画
-  if (count === 0) {
+  if (data.count === 0) {
     resultsList.innerHTML = '<li class="message">該当する単語が見つかりませんでした。</li>';
     return;
   }
 
   const fragment = document.createDocumentFragment();
-  for (const word of words) {
-    const li = document.createElement('li');
-    li.className = 'word-item';
-
-    const readingBtn = document.createElement('button');
-    readingBtn.type = 'button';
-    readingBtn.className = 'reading reading-copy';
-    readingBtn.textContent = word.reading;
-    readingBtn.dataset.reading = word.reading;
-    readingBtn.title = 'クリックでコピー';
-
-    const variantsWrap = document.createElement('span');
-    variantsWrap.className = 'variants';
-    for (let i = 0; i < word.variants.length; i++) {
-      const v = word.variants[i];
-      const a = document.createElement('a');
-      a.className = 'variant-link';
-      a.href = `https://www.google.com/search?q=${encodeURIComponent(v)}`;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.textContent = v;
-      a.title = 'Googleで検索';
-      variantsWrap.appendChild(a);
-    }
-
-    li.append(readingBtn, variantsWrap);
-    fragment.appendChild(li);
+  for (const word of data.words) {
+    fragment.appendChild(buildWordItem(word));
   }
   resultsList.innerHTML = '';
+  resultsList.appendChild(fragment);
+}
+
+/** ページネーション時の差分追記（リスト全再描画なし） */
+function appendResults(newWords, data) {
+  updateCountDisplay(data);
+  const fragment = document.createDocumentFragment();
+  for (const word of newWords) {
+    fragment.appendChild(buildWordItem(word));
+  }
   resultsList.appendChild(fragment);
 }
 
@@ -267,6 +292,49 @@ function renderError(msg) {
 function setCopyEnabled(enabled) {
   copyBtn.disabled = !enabled;
   copyBtn.classList.toggle('disabled', !enabled);
+}
+
+// ─── バックグラウンドプリフェッチ ─────────────────────────────────────────────
+
+/** アイドル時に次ページをバックグラウンド取得するスケジューラー */
+const PREFETCH_LIMIT = 5000; // バックグラウンド取得の上限件数
+
+function schedulePrefetch() {
+  if (idlePrefetchId !== null || !hasMore || isLoading || !currentQuery) return;
+  if (currentOffset >= PREFETCH_LIMIT) return; // 上限到達で停止
+
+  let fired = false;
+  let ricId, timerId;
+
+  const run = () => {
+    if (fired) return;   // RIC・setTimeout どちらか一方だけ実行
+    fired = true;
+    if (typeof requestIdleCallback === 'function') cancelIdleCallback(ricId);
+    clearTimeout(timerId);
+    idlePrefetchId = null;
+    if (hasMore && !isLoading && currentQuery) doSearch(false);
+  };
+
+  if (typeof requestIdleCallback === 'function') {
+    // RIC が発火しない環境でも 500ms 後の setTimeout が保証する
+    ricId   = requestIdleCallback(run, { timeout: 500 });
+    timerId = setTimeout(run, 500);
+    idlePrefetchId = { ricId, timerId };
+  } else {
+    idlePrefetchId = setTimeout(run, 150);
+  }
+}
+
+/** スケジュール済みのプリフェッチをキャンセル */
+function cancelPrefetch() {
+  if (idlePrefetchId === null) return;
+  if (typeof idlePrefetchId === 'object') {
+    cancelIdleCallback(idlePrefetchId.ricId);
+    clearTimeout(idlePrefetchId.timerId);
+  } else {
+    clearTimeout(idlePrefetchId);
+  }
+  idlePrefetchId = null;
 }
 
 let loadingTimer = null;
