@@ -220,7 +220,7 @@ function renderResults(data) {
     readingBtn.className = 'reading reading-copy';
     readingBtn.textContent = word.reading;
     readingBtn.dataset.reading = word.reading;
-    readingBtn.title = `クリックでコピー（${expandSmallKana(word.reading)}）`;
+    readingBtn.title = 'クリックでコピー';
 
     const variantsWrap = document.createElement('span');
     variantsWrap.className = 'variants';
@@ -250,7 +250,7 @@ resultsList.addEventListener('click', async (e) => {
   try {
     const copyReading = expandSmallKana(btn.dataset.reading);
     await copyText(copyReading);
-    showToast(btn);
+    showToast(btn, copyReading);
   } catch (err) {
     alert('クリップボードへのコピーに失敗しました。\n' + err.message);
   }
@@ -292,7 +292,8 @@ async function copyText(text) {
   await navigator.clipboard.writeText(text);
 }
 
-let toastTimer = null;
+let toastTimer     = null;
+let toastHideTimer = null;
 function createToastElement() {
   const el = document.createElement('div');
   el.id = 'toast';
@@ -303,18 +304,43 @@ function createToastElement() {
   return el;
 }
 
-function showToast(triggerEl) {
-  const mainRect = document.querySelector('main').getBoundingClientRect();
-  const rowRect  = triggerEl.closest('.word-item').getBoundingClientRect();
-  toastEl.textContent = 'Copied!';
-  toastEl.style.left = rowRect.left + 'px';
-  toastEl.style.top  = (rowRect.top - 6) + 'px';
+function showToast(triggerEl, copiedText = '') {
+  clearTimeout(toastTimer);
+  clearTimeout(toastHideTimer);
+
+  const rect = triggerEl.getBoundingClientRect();
+  toastEl.textContent = copiedText ? `Copied: ${copiedText}` : 'Copied!';
+
+  // サイズ計測のため一時表示（opacity:0 のまま）
   toastEl.hidden = false;
+  toastEl.classList.remove('show', 'hide');
+
+  const toastW  = toastEl.offsetWidth;
+  const btnCX   = rect.left + rect.width / 2;
+  const padding = 8;
+  const vw      = window.innerWidth;
+
+  // トースト左端をビューポート内にクランプ
+  const rawLeft    = btnCX - toastW / 2;
+  const clampedLeft = Math.max(padding, Math.min(vw - toastW - padding, rawLeft));
+
+  // 三角はボタン中央を常に指す（クランプ量だけオフセット補正）
+  const arrowLeft = btnCX - clampedLeft;
+
+  toastEl.style.left = clampedLeft + 'px';
+  toastEl.style.top  = (rect.top - 8) + 'px';
+  toastEl.style.setProperty('--arrow-left', arrowLeft + 'px');
+
+  void toastEl.offsetWidth; // アニメーション再起動のためのreflow
   toastEl.classList.add('show');
-  if (toastTimer) clearTimeout(toastTimer);
+
   toastTimer = setTimeout(() => {
     toastEl.classList.remove('show');
-    toastEl.hidden = true;
+    toastEl.classList.add('hide');
+    toastHideTimer = setTimeout(() => {
+      toastEl.classList.remove('hide');
+      toastEl.hidden = true;
+    }, 200);
   }, 1200);
 }
 
