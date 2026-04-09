@@ -7,15 +7,17 @@ const DEBOUNCE_MS = 120;
 const PAGE_SIZE   = 100;
 
 // ─── DOM ─────────────────────────────────────────────────────────────────────
-const inputEl    = document.getElementById('search-input');
-const countEl    = document.getElementById('hit-count');
-const resultsList = document.getElementById('results-list');
-const copyBtn      = document.getElementById('copy-btn');
+const inputEl       = document.getElementById('search-input');
+const countEl       = document.getElementById('hit-count');
+const resultsList   = document.getElementById('results-list');
+const copyBtn       = document.getElementById('copy-btn');
 const viewToggleBtn = document.getElementById('view-toggle');
-const loadingEl  = document.getElementById('loading-indicator');
-const backToTopBtn = document.getElementById('back-to-top');
-const clearBtn   = document.getElementById('clear-btn');
-const toastEl    = createToastElement();
+const loadingEl     = document.getElementById('loading-indicator');
+const backToTopBtn  = document.getElementById('back-to-top');
+const clearBtn      = document.getElementById('clear-btn');
+const searchAreaEl  = document.querySelector('.search-sticky-wrap');
+const resultsHeaderEl = document.querySelector('.results-header');
+const toastEl       = createToastElement();
 
 // ─── 状態 ─────────────────────────────────────────────────────────────────────
 let debounceTimer   = null;
@@ -482,6 +484,15 @@ function showToast(triggerEl, copiedText = '') {
 }
 
 // ─── コピーボタン ─────────────────────────────────────────────────────────────
+
+// ─── スティッキー検索エリア：結果ヘッダーの top を動的に同期 ──────────────────────
+function syncResultsHeaderTop() {
+  resultsHeaderEl.style.top = Math.ceil(searchAreaEl.getBoundingClientRect().height) + 'px';
+}
+syncResultsHeaderTop();
+if (typeof ResizeObserver !== 'undefined') {
+  new ResizeObserver(syncResultsHeaderTop).observe(searchAreaEl);
+}
 
 backToTopBtn.addEventListener('click', () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });

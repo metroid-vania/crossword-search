@@ -52,10 +52,14 @@ header {
   gap: 12px;
 }
 
+.header-icon-link {
+  display: flex;
+  flex-shrink: 0;
+}
+
 .header-icon {
   width: 48px;
   height: 48px;
-  flex-shrink: 0;
 }
 
 header h1 {
@@ -78,19 +82,28 @@ main {
   max-width: 720px;
   width: 100%;
   margin: 0 auto;
-  padding: 24px 16px 40px;
+  padding: 4px 16px 40px;
 }
 
 /* ─────────────────────────────────────────
    検索ボックス
 ───────────────────────────────────────── */
+.search-sticky-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--clr-bg);
+  padding: 24px 16px 16px;
+}
+
 .search-area {
+  max-width: 688px; /* main の max-width(720px) - 左右パディング(16px×2) */
+  margin: 0 auto;
   background: var(--clr-surface);
   border: 1px solid var(--clr-border);
   border-radius: var(--radius);
   padding: 20px;
   box-shadow: var(--shadow);
-  margin-bottom: 16px;
 }
 
 .search-area label {
@@ -194,16 +207,21 @@ main {
    結果ヘッダー（件数 + コピーボタン）
 ───────────────────────────────────────── */
 .results-header {
+  position: sticky;
+  top: 0; /* JS で上書き */
+  z-index: 20;
+  background: var(--clr-bg);
+  padding: 0 16px 8px;
+}
+
+.results-header-inner {
+  max-width: 688px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
   min-height: 36px;
-  margin-bottom: 10px;
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: var(--clr-bg);
-  padding: 6px 0;
+  padding: 2px 0 6px;
 }
 
 #hit-count {
@@ -523,7 +541,7 @@ main {
 #back-to-top {
   position: fixed;
   bottom: 28px;
-  right: max(48px, calc(50% - 360px + 48px));
+  right: 28px;
   width: 56px;
   height: 56px;
   border: none;
@@ -588,7 +606,7 @@ footer a:hover {
     font-size: 1rem;
   }
 
-  .results-header {
+  .results-header-inner {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;

@@ -15,20 +15,20 @@
   <meta name="twitter:title" content="クロスワード辞典">
   <meta name="twitter:description" content="クロスワード作成/解答用の単語検索Webアプリ。">
   <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="stylesheet" href="style.css?v=2026040801">
+  <link rel="stylesheet" href="style.css?v=2026040913">
 </head>
 <body>
 
 <header>
-  <img src="favicon.png" alt="" class="header-icon" aria-hidden="true">
+  <a href="/" class="header-icon-link" aria-label="ホームへ戻る"><img src="favicon.png" alt="" class="header-icon" aria-hidden="true"></a>
   <div>
     <h1>クロスワード辞典</h1>
     <p>パターンに当てはまる単語を瞬時に検索！</p>
   </div>
 </header>
 
-<main>
-  <!-- 検索エリア -->
+<!-- 検索エリア（main の外に出してブラウザ幅いっぱいに広げる） -->
+<div class="search-sticky-wrap">
   <section class="search-area">
     <label for="search-input">検索パターンを入力</label>
     <div class="input-row">
@@ -59,16 +59,20 @@
       <code>１〜９</code> … 数字ワイルドカード
     </p>
   </section>
+</div>
 
-  <!-- 結果ヘッダー -->
-  <div class="results-header">
+<!-- 結果ヘッダー（main の外に出してブラウザ幅いっぱいに広げる） -->
+<div class="results-header">
+  <div class="results-header-inner">
     <span id="hit-count"></span>
     <span class="results-actions">
       <button id="view-toggle" hidden>簡易表示</button>
       <button id="copy-btn" disabled class="disabled" hidden>まとめてコピー</button>
     </span>
   </div>
+</div>
 
+<main>
   <!-- 結果リスト -->
   <ul id="results-list"></ul>
   <div id="loading-indicator" class="loading-indicator" aria-live="polite" hidden>
@@ -92,6 +96,6 @@
     <polyline points="18 15 12 9 6 15"/>
   </svg>
 </button>
-<script src="app.js?v=2026040801"></script>
+<script src="app.js?v=2026040913"></script>
 </body>
 </html>
