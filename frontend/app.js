@@ -149,6 +149,16 @@ inputEl.addEventListener('keydown', (e) => {
   }
 });
 
+// PC：Esc キーで検索欄へ即ジャンプ（検索欄以外にフォーカスがある場合のみ）
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape' || isMobile()) return;
+  if (window.scrollY === 0) return; // トップにいるときは何もしない
+  e.preventDefault();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  inputEl.focus();
+  inputEl.select();
+});
+
 window.addEventListener('scroll', () => {
   // PCはボタン不要（CSS side でも非表示だが念のため制御しない）
   // スマホのみ：検索エリアがスクロールで隠れたタイミング相当で表示
@@ -541,10 +551,8 @@ backToTopBtn.addEventListener('click', () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   // スマホ：スクロール完了後に検索入力欄へフォーカス
   if (isMobile()) {
-    setTimeout(() => {
-      inputEl.focus();
-      inputEl.select();
-    }, 420);
+    inputEl.focus();
+    inputEl.select();
   }
 });
 
