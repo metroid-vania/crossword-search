@@ -149,6 +149,12 @@ inputEl.addEventListener('keydown', (e) => {
   }
 });
 
+// フォームsubmit（iOSの「完了」キー含む）でキーボードを閉じる
+document.getElementById('search-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  if (isMobile()) inputEl.blur();
+});
+
 // PC：Esc キーで検索欄へ即ジャンプ（検索欄以外にフォーカスがある場合のみ）
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape' || isMobile()) return;

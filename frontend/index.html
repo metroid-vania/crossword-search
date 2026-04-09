@@ -15,7 +15,7 @@
   <meta name="twitter:title" content="クロスワード辞典">
   <meta name="twitter:description" content="クロスワード作成/解答用の単語検索Webアプリ。">
   <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="stylesheet" href="style.css?v=2026040929">
+  <link rel="stylesheet" href="style.css?v=2026040936">
 </head>
 <body>
 
@@ -31,6 +31,7 @@
 <div class="search-sticky-wrap">
   <section class="search-area">
     <label for="search-input">検索パターンを入力</label>
+    <form id="search-form" action="#" novalidate>
     <div class="input-row">
       <div class="input-wrapper">
         <svg class="input-icon-search" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -44,6 +45,7 @@
           autocorrect="off"
           autocapitalize="off"
           spellcheck="false"
+          enterkeyhint="done"
           placeholder="例: ？？カ？, ＊イロ, １２３３"
         >
         <button type="button" id="clear-btn" aria-label="入力をクリア" hidden>
@@ -53,6 +55,7 @@
         </button>
       </div>
     </div>
+    </form>
     <p class="hint">
       <code>?</code> 任意の1字 &nbsp;
       <code>*</code> 任意の0字以上 &nbsp;
@@ -108,6 +111,6 @@
   </svg>
   <span class="btt-label">続けて検索</span>
 </button>
-<script src="app.js?v=2026040933"></script>
+<script src="app.js?v=2026040937"></script>
 </body>
 </html>
