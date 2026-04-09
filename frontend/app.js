@@ -102,8 +102,14 @@ inputEl.addEventListener('input', () => {
   // 入力直後に旧リクエスト・プリフェッチをキャンセル
   if (abortController) { abortController.abort(); abortController = null; }
   cancelPrefetch();
-  // 結果を即フェードして「更新中」を視覚的に示す
-  resultsList.classList.add('stale');
+  // DOM ノードが多い場合は即解放してメモリ・描画バッファを解消
+  // （少量なら stale フェードで視覚的な連続性を維持）
+  if (resultsList.children.length > 60) {
+    resultsList.replaceChildren();
+    currentData = null;
+  } else {
+    resultsList.classList.add('stale');
+  }
   debounceTimer = setTimeout(() => doSearch(true), DEBOUNCE_MS);
 });
 
@@ -112,7 +118,10 @@ clearBtn.addEventListener('click', () => {
   clearBtn.hidden = true;
   inputEl.focus();
   clearTimeout(debounceTimer);
+  if (abortController) { abortController.abort(); abortController = null; }
   cancelPrefetch();
+  resultsList.replaceChildren();
+  currentData = null;
   doSearch(true);
 });
 
@@ -143,6 +152,8 @@ async function doSearch(reset) {
     currentQuery  = query;
     currentOffset = 0;
     hasMore       = false;
+    // 再検索時は結果リスト先頭が見えるように先頭へスクロール
+    if (window.scrollY > 0) window.scrollTo({ top: 0, behavior: 'smooth' });
   } else if (query !== currentQuery) {
     return;
   }
@@ -341,7 +352,7 @@ function setCopyEnabled(enabled) {
 // ─── バックグラウンドプリフェッチ ─────────────────────────────────────────────
 
 /** アイドル時に次ページをバックグラウンド取得するスケジューラー */
-const PREFETCH_LIMIT = 2000; // バックグラウンド取得の上限件数
+const PREFETCH_LIMIT = 400;  // バックグラウンド取得の上限件数（DOM 蓄積量を抑制）
 
 function schedulePrefetch() {
   if (idlePrefetchId !== null || !hasMore || isLoading || !currentQuery) return;
