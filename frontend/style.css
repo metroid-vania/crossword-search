@@ -213,6 +213,16 @@ main {
   background: var(--clr-bg);
   padding: 0 16px 8px;
 }
+/* Safari サブピクセルの隙間を塞ぐ */
+.results-header::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--clr-bg);
+}
 
 .results-header-inner {
   max-width: 688px;
