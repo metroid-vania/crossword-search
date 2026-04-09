@@ -134,7 +134,9 @@ inputEl.addEventListener('keydown', (e) => {
 });
 
 window.addEventListener('scroll', () => {
-  backToTopBtn.classList.toggle('visible', window.scrollY >= 300);
+  // PCはボタン不要（CSS side でも非表示だが念のため制御しない）
+  // スマホのみ：検索エリアがスクロールで隠れたタイミング相当で表示
+  backToTopBtn.classList.toggle('visible', isMobile() && window.scrollY >= 300);
 
   if (!hasMore || isLoading || !currentQuery) return;
   const threshold = 200;
@@ -496,8 +498,17 @@ function showToast(triggerEl, copiedText = '') {
 
 // ─── コピーボタン ─────────────────────────────────────────────────────────────
 
+// ─── デバイス判定 ─────────────────────────────────────────────────────────────
+/** タッチデバイス（スマホ・タブレット）かどうかを返す */
+const isMobile = () => window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
 // ─── スティッキー検索エリア：結果ヘッダーの top を動的に同期 ──────────────────────
 function syncResultsHeaderTop() {
+  // スマホは検索エリアが非sticky なので offset 不要
+  if (isMobile()) {
+    resultsHeaderEl.style.top = '0';
+    return;
+  }
   resultsHeaderEl.style.top = Math.ceil(searchAreaEl.getBoundingClientRect().height) + 'px';
 }
 syncResultsHeaderTop();
@@ -505,8 +516,20 @@ if (typeof ResizeObserver !== 'undefined') {
   new ResizeObserver(syncResultsHeaderTop).observe(searchAreaEl);
 }
 
+// スマホ時はボタンの aria-label を「続けて検索」に更新
+if (isMobile()) {
+  backToTopBtn.setAttribute('aria-label', '続けて検索');
+}
+
 backToTopBtn.addEventListener('click', () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  // スマホ：スクロール完了後に検索入力欄へフォーカス
+  if (isMobile()) {
+    setTimeout(() => {
+      inputEl.focus();
+      inputEl.select();
+    }, 420);
+  }
 });
 
 copyBtn.addEventListener('click', async (e) => {

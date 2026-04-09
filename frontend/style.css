@@ -570,6 +570,12 @@ main {
   z-index: 100;
 }
 
+/* モバイル用コンテンツはデフォルトで非表示 */
+.btt-search,
+.btt-label {
+  display: none;
+}
+
 #back-to-top.visible {
   opacity: 1;
   pointer-events: auto;
@@ -577,6 +583,48 @@ main {
 
 #back-to-top:hover {
   background: var(--clr-primary-hv);
+}
+
+/* ─────────────────────────────────────────
+   PC：トップへ戻るボタン 常時非表示
+───────────────────────────────────────── */
+@media (hover: hover) and (pointer: fine) {
+  #back-to-top {
+    display: none !important;
+  }
+}
+
+/* ─────────────────────────────────────────
+   スマホ
+───────────────────────────────────────── */
+@media (hover: none) and (pointer: coarse) {
+  /* 検索エリアをスクロール追従から解除（結果表示エリアを広く） */
+  .search-sticky-wrap {
+    position: static;
+  }
+
+  /* 「続けて検索」ボタン：ピル型に変形 */
+  #back-to-top {
+    width: auto;
+    height: 44px;
+    border-radius: 22px;
+    padding: 0 18px 0 14px;
+    gap: 6px;
+    font-size: .88rem;
+    font-weight: 600;
+    letter-spacing: .03em;
+    right: 16px;
+    bottom: 20px;
+  }
+
+  .btt-arrow {
+    display: none;
+  }
+
+  .btt-search,
+  .btt-label {
+    display: block;
+  }
 }
 
 /* ─────────────────────────────────────────
