@@ -68,7 +68,7 @@ function toFullWidthPattern(str) {
     '1': '１', '2': '２', '3': '３', '4': '４', '5': '５',
     '6': '６', '7': '７', '8': '８', '9': '９',
   };
-  return toKatakana(str).replace(/[?*1-9]/g, c => half2full[c] ?? c);
+  return expandSmallKana(toKatakana(str)).replace(/[?*1-9]/g, c => half2full[c] ?? c);
 }
 
 // ─── 簡易表示トグル ───────────────────────────────────────────────────────────
@@ -257,13 +257,13 @@ function updateCountDisplay(data) {
   const { count, total, hasMore: more } = data;
   const fullPattern = toFullWidthPattern(removeSpaces(inputEl.value.trim()));
   if (count === 0) {
-    countEl.textContent = `【${fullPattern}】の検索結果（0 件ヒット）`;
+    countEl.textContent = `【${fullPattern}】の検索結果（0件）`;
     countEl.className   = 'zero';
   } else if (more) {
-    countEl.textContent = `【${fullPattern}】の検索結果（${count} 件以上ヒット）`;
+    countEl.textContent = `【${fullPattern}】の検索結果（${count}件以上）`;
     countEl.className   = '';
   } else {
-    countEl.textContent = `【${fullPattern}】の検索結果（${count} 件ヒット）`;
+    countEl.textContent = `【${fullPattern}】の検索結果（${count}件）`;
     countEl.className   = '';
   }
   const isAllWords = !more && count === total;
