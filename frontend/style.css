@@ -255,8 +255,11 @@ main {
   font-size: .84rem;
   font-family: inherit;
   font-weight: 600;
-  padding: 0 14px;
+  padding: 0 12px;
   height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
   border: 1.5px solid var(--clr-primary);
   border-radius: 6px;
   cursor: pointer;
@@ -308,19 +311,26 @@ main {
   font-size: .84rem;
   font-family: inherit;
   font-weight: 600;
-  padding: 0 14px;
+  padding: 0 12px;
   height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   background: var(--clr-primary);
   color: #fff;
-  transition: background .15s, opacity .15s;
   white-space: nowrap;
 }
 
 #copy-btn:hover:not(:disabled) {
   background: var(--clr-primary-hv);
+  transition: background .15s;
+}
+
+#copy-btn[hidden] {
+  display: none;
 }
 
 #copy-btn:disabled,

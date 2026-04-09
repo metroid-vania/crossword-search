@@ -31,8 +31,7 @@ let idlePrefetchId  = null; // バックグラウンドプリフェッチ用
 let simpleMode      = localStorage.getItem('simpleMode') !== '0';
 let isComposing     = false; // IME 変換中フラグ
 
-// 初期状態を反映
-applySimpleMode();
+// 初期状態は applySimpleMode() の定義後に反映（ICON_* 定数依存のため）
 
 // ─── ユーティリティ ───────────────────────────────────────────────────────────
 
@@ -73,10 +72,18 @@ function toFullWidthPattern(str) {
 
 // ─── 簡易表示トグル ───────────────────────────────────────────────────────────
 
+// 詳細表示アイコン（行リスト）
+const ICON_LIST = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="9" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="9" y1="18" x2="21" y2="18"/><rect x="2" y="4" width="4" height="4" rx=".8"/><rect x="2" y="10" width="4" height="4" rx=".8"/><rect x="2" y="16" width="4" height="4" rx=".8"/></svg>';
+// 簡易表示アイコン（グリッド）
+const ICON_GRID = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>';
+
 function applySimpleMode() {
   resultsList.classList.toggle('simple', simpleMode);
-  viewToggleBtn.textContent = simpleMode ? '詳細表示' : '簡易表示';
+  viewToggleBtn.innerHTML = simpleMode
+    ? `${ICON_LIST}詳細表示`
+    : `${ICON_GRID}簡易表示`;
 }
+applySimpleMode(); // 初期状態を反映
 
 viewToggleBtn.addEventListener('click', () => {
   simpleMode = !simpleMode;
@@ -96,7 +103,16 @@ inputEl.addEventListener('compositionend',   () => {
 });
 
 inputEl.addEventListener('input', () => {
-  clearBtn.hidden = inputEl.value === '';
+  const isEmpty = inputEl.value === '';
+  clearBtn.hidden = isEmpty;
+  if (isEmpty) {
+    copyBtn.hidden = true;
+    viewToggleBtn.hidden = true;
+    countEl.textContent = '';
+    countEl.className   = '';
+    resultsList.replaceChildren();
+    currentData = null;
+  } // 入力が空になったら即座に非表示
   if (isComposing) return; // IME 変換中はスキップ
   clearTimeout(debounceTimer);
   // 入力直後に旧リクエスト・プリフェッチをキャンセル
@@ -549,9 +565,10 @@ copyBtn.addEventListener('click', async (e) => {
 
   try {
     await copyText(text);
-    const original = copyBtn.textContent;
-    copyBtn.textContent = 'Copied!';
-    setTimeout(() => { copyBtn.textContent = original; }, 2000);
+    const labelEl = copyBtn.querySelector('.copy-btn-label');
+    const original = labelEl.textContent;
+    labelEl.textContent = 'Copied!';
+    setTimeout(() => { labelEl.textContent = original; }, 2000);
   } catch (e) {
     alert('クリップボードへのコピーに失敗しました。\n' + e.message);
   }
