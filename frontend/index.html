@@ -15,7 +15,7 @@
   <meta name="twitter:title" content="クロスワード辞典">
   <meta name="twitter:description" content="クロスワード作成/解答用の単語検索Webアプリ。">
   <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="stylesheet" href="style.css?v=2026041012">
+  <link rel="stylesheet" href="style.css?v=2026041013">
 </head>
 <body>
 
@@ -68,16 +68,10 @@
 <div class="results-header">
   <div class="results-header-inner">
     <span id="hit-count"></span>
-    <span class="results-actions">
-      <button id="view-toggle" hidden>簡易表示</button>
-      <button id="copy-btn" disabled class="disabled" hidden>
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="9" y="9" width="13" height="13" rx="2"/>
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-        </svg>
-        <span class="copy-btn-label">まとめてコピー</span>
-      </button>
-    </span>
+    <div class="view-toggle-group" id="view-toggle-group" hidden>
+      <button id="btn-detail" type="button">詳細表示</button>
+      <button id="btn-simple" type="button">簡易表示</button>
+    </div>
   </div>
 </div>
 
@@ -111,6 +105,6 @@
   </svg>
   <span class="btt-label" aria-hidden="true">続けて検索</span>
 </button>
-<script src="app.js?v=2026041011"></script>
+<script src="app.js?v=2026041013"></script>
 </body>
 </html>

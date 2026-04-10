@@ -10,8 +10,9 @@ const PAGE_SIZE   = 100;
 const inputEl       = document.getElementById('search-input');
 const countEl       = document.getElementById('hit-count');
 const resultsList   = document.getElementById('results-list');
-const copyBtn       = document.getElementById('copy-btn');
-const viewToggleBtn = document.getElementById('view-toggle');
+const viewToggleGroup = document.getElementById('view-toggle-group');
+const btnDetail       = document.getElementById('btn-detail');
+const btnSimple       = document.getElementById('btn-simple');
 const loadingEl     = document.getElementById('loading-indicator');
 const backToTopBtn  = document.getElementById('back-to-top');
 const clearBtn      = document.getElementById('clear-btn');
@@ -74,26 +75,27 @@ function toFullWidthPattern(str) {
   return expandSmallKana(toKatakana(str)).replace(/[?*1-9]/g, c => half2full[c] ?? c);
 }
 
-// ─── 簡易表示トグル ───────────────────────────────────────────────────────────
-
-// 詳細表示アイコン（行リスト）
-const ICON_LIST = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="9" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="9" y1="18" x2="21" y2="18"/><rect x="2" y="4" width="4" height="4" rx=".8"/><rect x="2" y="10" width="4" height="4" rx=".8"/><rect x="2" y="16" width="4" height="4" rx=".8"/></svg>';
-// 簡易表示アイコン（グリッド）
-const ICON_GRID = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>';
+// ─── 表示切替 ────────────────────────────────────────────────────────────────
 
 function applySimpleMode() {
   resultsList.classList.toggle('simple', simpleMode);
-  viewToggleBtn.innerHTML = simpleMode
-    ? `${ICON_LIST}詳細表示`
-    : `${ICON_GRID}簡易表示`;
+  btnDetail.classList.toggle('active', !simpleMode);
+  btnSimple.classList.toggle('active', simpleMode);
 }
 applySimpleMode(); // 初期状態を反映
 
-viewToggleBtn.addEventListener('click', () => {
-  simpleMode = !simpleMode;
-  localStorage.setItem('simpleMode', simpleMode ? '1' : '0');
+btnDetail.addEventListener('click', () => {
+  simpleMode = false;
+  localStorage.setItem('simpleMode', '0');
   applySimpleMode();
-  viewToggleBtn.blur();
+  btnDetail.blur();
+});
+
+btnSimple.addEventListener('click', () => {
+  simpleMode = true;
+  localStorage.setItem('simpleMode', '1');
+  applySimpleMode();
+  btnSimple.blur();
 });
 
 // ─── 検索 ─────────────────────────────────────────────────────────────────────
@@ -112,8 +114,7 @@ inputEl.addEventListener('input', () => {
   const isEmpty = inputEl.value === '';
   clearBtn.hidden = isEmpty;
   if (isEmpty) {
-    copyBtn.hidden = true;
-    viewToggleBtn.hidden = true;
+    viewToggleGroup.hidden = true;
     countEl.textContent = '';
     countEl.className   = '';
     resultsList.replaceChildren();
@@ -348,8 +349,6 @@ function updateCountDisplay(data) {
     countEl.textContent = `【${fullPattern}】の検索結果（${count}件）`;
     countEl.className   = '';
   }
-  const isAllWords = !more && count === total;
-  setCopyEnabled(count > 0 && !more && !isAllWords);
 }
 
 /** 初回・リセット時のフル描画 */
@@ -361,14 +360,11 @@ function renderResults(data) {
     countEl.textContent = '';
     countEl.className   = '';
     resultsList.innerHTML = '';
-    copyBtn.hidden = true;
-    viewToggleBtn.hidden = true;
-    setCopyEnabled(false);
+    viewToggleGroup.hidden = true;
     setLoading(false);
     return;
   }
-  copyBtn.hidden = false;
-  viewToggleBtn.hidden = false;
+  viewToggleGroup.hidden = false;
 
   updateCountDisplay(data);
 
@@ -410,14 +406,8 @@ resultsList.addEventListener('click', async (e) => {
 function renderError(msg) {
   countEl.textContent   = '';
   resultsList.innerHTML = `<li class="message error">エラーが発生しました: ${escHtml(msg)}</li>`;
-  setCopyEnabled(false);
   setLoading(false);
   currentData = null;
-}
-
-function setCopyEnabled(enabled) {
-  copyBtn.disabled = !enabled;
-  copyBtn.classList.toggle('disabled', !enabled);
 }
 
 // ─── バックグラウンドプリフェッチ ─────────────────────────────────────────────
@@ -606,31 +596,6 @@ backToTopBtn.addEventListener('click', () => {
   }
 });
 
-copyBtn.addEventListener('click', async (e) => {
-  if (copyBtn.disabled || !currentData) return;
-
-  const { words, hasMore: more } = currentData;
-  if (!words.length || more) return;
-
-  const pattern     = inputEl.value.trim();
-  const fullPattern = toFullWidthPattern(pattern);
-
-  // 読みを展開（拗音・促音展開 + ひらがな→カタカナ）して重複除去
-  const lines = words.map(w => expandSmallKana(toKatakana(w.reading)));
-  const unique = [...new Set(lines)];
-
-  const text = `【${fullPattern}】\n` + unique.join('\n');
-
-  try {
-    await copyText(text);
-    const labelEl = copyBtn.querySelector('.copy-btn-label');
-    const original = labelEl.textContent;
-    labelEl.textContent = 'Copied!';
-    setTimeout(() => { labelEl.textContent = original; }, 2000);
-  } catch (e) {
-    alert('クリップボードへのコピーに失敗しました。\n' + e.message);
-  }
-});
 
 // ─── URL からの初期クエリ復元 ─────────────────────────────────────────────────
 // ?q=... でページを開いた場合（ブックマーク・シェア・リロード）に自動検索

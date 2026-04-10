@@ -256,17 +256,25 @@ main {
   align-items: center;
 }
 
-#view-toggle {
+/* 表示切替セグメントコントロール */
+.view-toggle-group {
+  display: flex;
+  border: 1.5px solid var(--clr-primary);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.view-toggle-group[hidden] {
+  display: none;
+}
+
+.view-toggle-group button {
   font-size: .84rem;
   font-family: inherit;
   font-weight: 600;
   padding: 0 12px;
   height: 34px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  border: 1.5px solid var(--clr-primary);
-  border-radius: 6px;
+  border: none;
   cursor: pointer;
   background: transparent;
   color: var(--clr-primary);
@@ -274,22 +282,26 @@ main {
   white-space: nowrap;
 }
 
-#view-toggle:hover {
+.view-toggle-group button.active {
   background: var(--clr-primary);
   color: #fff;
 }
 
-#view-toggle:focus {
+.view-toggle-group button:hover:not(.active) {
+  background: rgba(74,94,199,.09);
+}
+
+.view-toggle-group button:focus {
   outline: none;
 }
 
-#view-toggle:focus-visible {
+.view-toggle-group button:focus-visible {
   outline: 2px solid var(--clr-primary);
-  outline-offset: 2px;
+  outline-offset: -2px;
 }
 
-#view-toggle[hidden] {
-  display: none;
+.view-toggle-group button + button {
+  border-left: 1.5px solid var(--clr-primary);
 }
 
 /* 簡易表示モード */
@@ -312,38 +324,6 @@ main {
   padding: 10px 14px;
 }
 
-#copy-btn {
-  font-size: .84rem;
-  font-family: inherit;
-  font-weight: 600;
-  padding: 0 12px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  background: var(--clr-primary);
-  color: #fff;
-  white-space: nowrap;
-}
-
-#copy-btn:hover:not(:disabled) {
-  background: var(--clr-primary-hv);
-  transition: background .15s;
-}
-
-#copy-btn[hidden] {
-  display: none;
-}
-
-#copy-btn:disabled,
-#copy-btn.disabled {
-  background: #e0e0e0;
-  color: var(--clr-disabled);
-  cursor: not-allowed;
-}
 
 /* ─────────────────────────────────────────
    結果リスト
