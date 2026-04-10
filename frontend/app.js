@@ -172,10 +172,11 @@ document.getElementById('search-form').addEventListener('submit', (e) => {
   if (isMobile()) inputEl.blur();
 });
 
-// PC：Esc キーで検索欄へ即ジャンプ（検索欄以外にフォーカスがある場合のみ）
+// PC：Esc キーで検索欄へ即ジャンプ
+// 「トップにいる かつ 検索欄にフォーカス中」のときのみ何もしない
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape' || isMobile()) return;
-  if (window.scrollY === 0) return; // トップにいるときは何もしない
+  if (window.scrollY === 0 && document.activeElement === inputEl) return;
   e.preventDefault();
   window.scrollTo({ top: 0, behavior: 'smooth' });
   inputEl.focus();
