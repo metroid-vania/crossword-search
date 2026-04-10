@@ -15,7 +15,7 @@
   <meta name="twitter:title" content="クロスワード辞典">
   <meta name="twitter:description" content="クロスワード作成/解答用の単語検索Webアプリ。">
   <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="stylesheet" href="style.css?v=2026041013">
+  <link rel="stylesheet" href="style.css?v=2026041018">
 </head>
 <body>
 
@@ -76,6 +76,13 @@
 </div>
 
 <main>
+  <!-- 初回ガイド（入力前のみ表示） -->
+  <div id="search-guide">
+    <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <p class="search-guide-msg">検索パターンを入力すると<br>該当する単語がここに表示されます</p>
+  </div>
   <!-- 結果リスト -->
   <ul id="results-list"></ul>
   <div id="loading-indicator" class="loading-indicator" aria-live="polite" hidden>
@@ -105,6 +112,6 @@
   </svg>
   <span class="btt-label" aria-hidden="true">続けて検索</span>
 </button>
-<script src="app.js?v=2026041013"></script>
+<script src="app.js?v=2026041019"></script>
 </body>
 </html>

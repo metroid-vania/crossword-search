@@ -83,7 +83,9 @@ main {
   max-width: 720px;
   width: 100%;
   margin: 0 auto;
-  padding: 4px 16px 40px;
+  padding: 4px 16px 0;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ─────────────────────────────────────────
@@ -427,6 +429,40 @@ main {
   color: #c0392b;
 }
 
+/* ─────────────────────────────────────────
+   初回ガイド
+───────────────────────────────────────── */
+#search-guide {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  text-align: center;
+  color: var(--clr-muted);
+}
+
+#search-guide[hidden] {
+  display: none;
+}
+
+#search-guide svg {
+  display: block;
+  margin: 0 auto 18px;
+  color: var(--clr-primary);
+  opacity: .22;
+}
+
+.search-guide-msg {
+  font-size: .95rem;
+  line-height: 1.85;
+}
+
+
+/* ─────────────────────────────────────────
+   ローディング
+───────────────────────────────────────── */
 .loading-indicator {
   text-align: center;
   padding: 14px 0 4px;
@@ -598,8 +634,8 @@ main {
     position: static;
   }
 
-  /* FABが隠れないようにコンテンツ下部に余白を追加 */
-  main {
+  /* FABが隠れないようにコンテンツ下部に余白を追加（結果表示中のみ） */
+  main.has-results {
     padding-bottom: 116px;
   }
 

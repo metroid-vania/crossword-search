@@ -16,9 +16,11 @@ const btnSimple       = document.getElementById('btn-simple');
 const loadingEl     = document.getElementById('loading-indicator');
 const backToTopBtn  = document.getElementById('back-to-top');
 const clearBtn      = document.getElementById('clear-btn');
+const guideEl       = document.getElementById('search-guide');
 const footerEl      = document.querySelector('footer');
-const searchAreaEl  = document.querySelector('.search-sticky-wrap');
+const searchAreaEl    = document.querySelector('.search-sticky-wrap');
 const resultsHeaderEl = document.querySelector('.results-header');
+const mainEl          = document.querySelector('main');
 const toastEl       = createToastElement();
 
 // ─── 状態 ─────────────────────────────────────────────────────────────────────
@@ -113,8 +115,11 @@ inputEl.addEventListener('compositionend', () => {
 inputEl.addEventListener('input', () => {
   const isEmpty = inputEl.value === '';
   clearBtn.hidden = isEmpty;
+  guideEl.hidden = !isEmpty; // ガイドは入力が空のときだけ表示
   if (isEmpty) {
     viewToggleGroup.hidden = true;
+    resultsHeaderEl.hidden = true;
+    mainEl.classList.remove('has-results');
     countEl.textContent = '';
     countEl.className   = '';
     resultsList.replaceChildren();
@@ -147,6 +152,9 @@ inputEl.addEventListener('input', () => {
 clearBtn.addEventListener('click', () => {
   inputEl.value = '';
   clearBtn.hidden = true;
+  guideEl.hidden = false;
+  resultsHeaderEl.hidden = true;
+  mainEl.classList.remove('has-results');
   inputEl.focus();
   clearTimeout(debounceTimer);
   if (abortController) { abortController.abort(); abortController = null; }
@@ -361,10 +369,16 @@ function renderResults(data) {
     countEl.className   = '';
     resultsList.innerHTML = '';
     viewToggleGroup.hidden = true;
+    resultsHeaderEl.hidden = true;
+    mainEl.classList.remove('has-results');
+    guideEl.hidden = false;
     setLoading(false);
     return;
   }
   viewToggleGroup.hidden = false;
+  resultsHeaderEl.hidden = false;
+  mainEl.classList.add('has-results');
+  guideEl.hidden = true;
 
   updateCountDisplay(data);
 
@@ -597,11 +611,15 @@ backToTopBtn.addEventListener('click', () => {
 });
 
 
+// ─── 初期状態（クエリなし）：ヘッダー非表示 ──────────────────────────────────────
+resultsHeaderEl.hidden = true;
+
 // ─── URL からの初期クエリ復元 ─────────────────────────────────────────────────
 // ?q=... でページを開いた場合（ブックマーク・シェア・リロード）に自動検索
 const _initQuery = new URLSearchParams(location.search).get('q') ?? '';
 if (_initQuery) {
   inputEl.value = _initQuery;
   clearBtn.hidden = false;
+  guideEl.hidden = true; // URLクエリがある場合はガイドを非表示
   doSearch(true);
 }
