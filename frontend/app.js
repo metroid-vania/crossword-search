@@ -15,6 +15,7 @@ const viewToggleBtn = document.getElementById('view-toggle');
 const loadingEl     = document.getElementById('loading-indicator');
 const backToTopBtn  = document.getElementById('back-to-top');
 const clearBtn      = document.getElementById('clear-btn');
+const footerEl      = document.querySelector('footer');
 const searchAreaEl  = document.querySelector('.search-sticky-wrap');
 const resultsHeaderEl = document.querySelector('.results-header');
 const toastEl       = createToastElement();
@@ -29,7 +30,10 @@ let isLoading       = false;
 let abortController = null; // 進行中の fetch をキャンセルするコントローラー
 let idlePrefetchId  = null; // バックグラウンドプリフェッチ用
 let simpleMode      = localStorage.getItem('simpleMode') !== '0';
-let isComposing     = false; // IME 変換中フラグ
+let isComposing       = false; // IME 変換中フラグ
+let viewportResizing  = false; // キーボード開閉中フラグ（infinite scroll 誤発火防止）
+let viewportResizeTimer = null;
+let prevVH = window.visualViewport ? window.visualViewport.height : window.innerHeight;
 
 // 初期状態は applySimpleMode() の定義後に反映（ICON_* 定数依存のため）
 
@@ -96,8 +100,10 @@ viewToggleBtn.addEventListener('click', () => {
 
 // IME 変換中は input イベントを無視し、確定後に1回だけ検索する
 inputEl.addEventListener('compositionstart', () => { isComposing = true; });
-inputEl.addEventListener('compositionend',   () => {
+inputEl.addEventListener('compositionend', () => {
   isComposing = false;
+  // 同クエリなら再検索不要（iOSキーボードcloseによる compositionend 誤発火対策）
+  if (removeSpaces(inputEl.value.trim()) === currentQuery && currentData !== null) return;
   clearTimeout(debounceTimer);
   debounceTimer = setTimeout(() => doSearch(true), DEBOUNCE_MS);
 });
@@ -114,6 +120,14 @@ inputEl.addEventListener('input', () => {
     currentData = null;
   } // 入力が空になったら即座に非表示
   if (isComposing) return; // IME 変換中はスキップ
+
+  // 同クエリなら再検索不要（iOSキーボードcloseによる input 誤発火対策）
+  const q = removeSpaces(inputEl.value.trim());
+  if (q !== '' && q === currentQuery && currentData !== null) {
+    resultsList.classList.remove('stale');
+    return;
+  }
+
   clearTimeout(debounceTimer);
   // 入力直後に旧リクエスト・プリフェッチをキャンセル
   if (abortController) { abortController.abort(); abortController = null; }
@@ -144,6 +158,9 @@ clearBtn.addEventListener('click', () => {
 // Enter キーで debounce をスキップして即時検索
 inputEl.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !isComposing) {
+    // スマホ：同クエリの場合は再検索しない（iOSキーボードcloseによる誤発火対策）
+    const q = removeSpaces(inputEl.value.trim());
+    if (isMobile() && q === currentQuery && currentData !== null) return;
     clearTimeout(debounceTimer);
     doSearch(true);
   }
@@ -165,12 +182,31 @@ document.addEventListener('keydown', (e) => {
   inputEl.select();
 });
 
-window.addEventListener('scroll', () => {
-  // PCはボタン不要（CSS side でも非表示だが念のため制御しない）
-  // スマホのみ：検索エリアがスクロールで隠れたタイミング相当で表示
-  backToTopBtn.classList.toggle('visible', isMobile() && window.scrollY >= 300);
+function updateFabBottom() {
+  if (!isMobile() || !footerEl) return;
+  const vh        = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  const footerTop = footerEl.getBoundingClientRect().top;
+  const visible   = Math.max(0, vh - footerTop);
+  backToTopBtn.style.bottom = Math.max(20, visible + 20) + 'px';
+}
 
-  if (!hasMore || isLoading || !currentQuery) return;
+window.addEventListener('scroll', () => {
+  // スマホ：スクロール量に応じてFABを表示
+  if (isMobile()) backToTopBtn.classList.toggle('visible', window.scrollY >= 300);
+  updateFabBottom();
+
+  // scroll イベント内でビューポート高さの変化を検出（キーボード開閉を確実に捕捉）
+  if (isMobile()) {
+    const currentVH = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    if (currentVH !== prevVH) {
+      prevVH = currentVH;
+      viewportResizing = true;
+      clearTimeout(viewportResizeTimer);
+      viewportResizeTimer = setTimeout(() => { viewportResizing = false; }, 800);
+    }
+  }
+
+  if (!hasMore || isLoading || !currentQuery || viewportResizing) return;
   const threshold = 200;
   const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - threshold;
   if (nearBottom) {
@@ -552,6 +588,13 @@ if (typeof ResizeObserver !== 'undefined') {
 if (isMobile()) {
   backToTopBtn.setAttribute('aria-label', '続けて検索');
 }
+
+// スマホ：初期表示時 & キーボード開閉時にFAB位置を更新
+updateFabBottom();
+if (isMobile() && window.visualViewport) {
+  window.visualViewport.addEventListener('resize', updateFabBottom);
+}
+
 
 backToTopBtn.addEventListener('click', () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });

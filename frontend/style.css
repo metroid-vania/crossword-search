@@ -10,12 +10,12 @@
 :root {
   --clr-bg:         #f5f5f5;
   --clr-surface:    #ffffff;
-  --clr-primary:    #1a6abf;
-  --clr-primary-hv: #155aa0;
+  --clr-primary:    #384860;
+  --clr-primary-hv: #2e3b4e;
   --clr-border:     #d0d7de;
   --clr-text:       #1f2328;
   --clr-muted:      #656d76;
-  --clr-reading:    #1a6abf;
+  --clr-reading:    #384860;
   --clr-disabled:   #8c959f;
   --clr-badge:      #dff0d8;
   --clr-badge-txt:  #2d6a4f;
@@ -176,7 +176,7 @@ main {
 
 #search-input:focus {
   border-color: var(--clr-primary);
-  box-shadow: 0 0 0 3px rgba(26,106,191,.15);
+  box-shadow: 0 0 0 3px rgba(56,72,96,.15);
 }
 
 #search-input::placeholder {
@@ -369,8 +369,8 @@ main {
 }
 
 .word-item:hover {
-  background: #f0f5ff;
-  border-color: #b0c8f0;
+  background: #eceff4;
+  border-color: #9aafc6;
 }
 
 .reading {
@@ -422,9 +422,9 @@ main {
 }
 
 .variant-link:hover {
-  color: #2a5aa8;
-  background: #e8f0ff;
-  border-color: #8fb0e7;
+  color: #384860;
+  background: #eceff4;
+  border-color: #9aafc6;
   text-decoration: none;
 }
 
@@ -613,27 +613,33 @@ main {
     position: static;
   }
 
-  /* 「続けて検索」ボタン：ピル型に変形 */
+  /* FABが隠れないようにコンテンツ下部に余白を追加 */
+  main {
+    padding-bottom: 116px;
+  }
+
+  /* 「続けて検索」FABボタン：常時表示の丸型 */
   #back-to-top {
-    width: auto;
-    height: 44px;
-    border-radius: 22px;
-    padding: 0 18px 0 14px;
-    gap: 6px;
-    font-size: .88rem;
-    font-weight: 600;
-    letter-spacing: .03em;
-    right: 16px;
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    padding: 0;
+    gap: 0;
+    right: 20px;
     bottom: 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.32);
   }
 
   .btt-arrow {
     display: none;
   }
 
-  .btt-search,
-  .btt-label {
+  .btt-search {
     display: block;
+  }
+
+  .btt-label {
+    display: none;
   }
 }
 
