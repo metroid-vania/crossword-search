@@ -152,6 +152,11 @@ main {
   display: none;
 }
 
+/* ×ボタン非表示時（プレースホルダー表示中）は右パディングを縮小 */
+.input-wrapper:has(#clear-btn[hidden]) #search-input {
+  padding-right: 12px;
+}
+
 #clear-btn {
   position: absolute;
   right: 10px;
