@@ -42,9 +42,9 @@ let prevVH = window.visualViewport ? window.visualViewport.height : window.inner
 
 // ─── ユーティリティ ───────────────────────────────────────────────────────────
 
-/** 半角・全角スペースを除去 */
+/** 半角・全角スペースを除去、連続する＊/*を1文字に圧縮 */
 function removeSpaces(str) {
-  return str.replace(/[ \u3000]/g, '');
+  return str.replace(/[ \u3000]/g, '').replace(/[*＊]+/g, '＊');
 }
 
 /** ひらがな → カタカナ */
@@ -99,6 +99,7 @@ btnSimple.addEventListener('click', () => {
   applySimpleMode();
   btnSimple.blur();
 });
+
 
 // ─── 検索 ─────────────────────────────────────────────────────────────────────
 
@@ -375,6 +376,7 @@ function renderResults(data) {
     setLoading(false);
     return;
   }
+
   viewToggleGroup.hidden = false;
   resultsHeaderEl.hidden = false;
   mainEl.classList.add('has-results');
@@ -391,7 +393,7 @@ function renderResults(data) {
   for (const word of data.words) {
     fragment.appendChild(buildWordItem(word));
   }
-  resultsList.replaceChildren(fragment); // innerHTML='' + appendChild を1操作でアトミックに
+  resultsList.replaceChildren(fragment);
 }
 
 /** ページネーション時の差分追記（リスト全再描画なし） */
