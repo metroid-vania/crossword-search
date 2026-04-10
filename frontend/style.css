@@ -623,6 +623,14 @@ main {
   #back-to-top {
     display: none !important;
   }
+
+  .search-sticky-wrap {
+    padding-top: 48px;
+  }
+
+  main {
+    padding-bottom: 48px;
+  }
 }
 
 /* ─────────────────────────────────────────
