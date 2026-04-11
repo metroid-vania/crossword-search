@@ -429,7 +429,7 @@ function renderError(msg) {
 // ─── バックグラウンドプリフェッチ ─────────────────────────────────────────────
 
 /** アイドル時に次ページをバックグラウンド取得するスケジューラー */
-const PREFETCH_LIMIT = 400;  // バックグラウンド取得の上限件数（DOM 蓄積量を抑制）
+const PREFETCH_LIMIT = 500;  // バックグラウンド取得の上限件数（DOM 蓄積量を抑制）
 
 function schedulePrefetch() {
   if (idlePrefetchId !== null || !hasMore || isLoading || !currentQuery) return;
