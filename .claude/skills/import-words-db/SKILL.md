@@ -14,7 +14,7 @@ description: >
 以下のコマンドを Bash ツールで実行し、出力をそのままユーザーに表示する。
 
 ```bash
-cd "C:\Users\sideroll\My Projects\crossword-search\backend" && php import.php 2>&1
+cd backend && php import.php 2>&1
 ```
 
 タイムアウトは 120000ms（2分）を指定すること。

@@ -15,7 +15,7 @@ description: >
 2. 以下のコマンドを Bash ツールで実行する（タイムアウト 30000ms）：
 
 ```bash
-php "C:\Users\sideroll\My Projects\crossword-search\backend\search_cli.php" "<パターン>" 2>&1
+php backend/search_cli.php "<パターン>" 2>&1
 ```
 
 3. 出力をそのままユーザーに表示する
