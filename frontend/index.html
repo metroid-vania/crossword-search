@@ -1,6 +1,37 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+  <!--
+    アクセス解析（Google Analytics / Microsoft Clarity）
+    本番ドメイン（crossword-builder.com）でのみ有効。
+    ローカル開発・フォーク環境では起動しないため、本番データが汚染されません。
+    利用状況の開示はフッターの「プライバシーポリシー」を参照。
+  -->
+  <script>
+    (function () {
+      var host = location.hostname;
+      if (host !== 'findword.crossword-builder.com') return;
+
+      // Google tag (gtag.js)
+      var gtagScript = document.createElement('script');
+      gtagScript.async = true;
+      gtagScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-00BT3SM7ZY';
+      document.head.appendChild(gtagScript);
+
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ dataLayer.push(arguments); }
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', 'G-00BT3SM7ZY');
+
+      // Microsoft Clarity
+      (function(c,l,a,r,i,t,y){
+          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+      })(window, document, "clarity", "script", "wbkjl4jcc3");
+    })();
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#4a5ec7">
@@ -95,10 +126,11 @@
 </main>
 
 <footer>
-  辞書データは <a href="https://github.com/skk-dev/dict" target="_blank" rel="noopener">SKK-JISYO.L</a> に基づいています
-  （<a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" rel="noopener">GPL</a>）<br>
-  このアプリもGPLで公開しています（<a href="https://github.com/metroid-vania/crossword-search" target="_blank" rel="noopener">GitHub</a>）<br>
-  2026 <a href="https://crossword-builder.com" target="_blank" rel="noopener">CROSSWORD-BUILDER.com</a>
+  © 2026 <a href="https://crossword-builder.com" target="_blank" rel="noopener">CROSSWORD-BUILDER.com</a>
+  ・ 辞書: <a href="https://github.com/skk-dev/dict" target="_blank" rel="noopener">SKK-JISYO.L</a>
+  ・ <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" rel="noopener">GPL v3</a>
+  ・ <a href="https://github.com/metroid-vania/crossword-search" target="_blank" rel="noopener">GitHub</a>
+  ・ <a href="privacy.html">プライバシー</a>
 </footer>
 
 <button id="back-to-top" aria-label="TOPへ戻る">

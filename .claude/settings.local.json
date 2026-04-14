@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash(rm -rf*)",
+      "Bash(rm -r*)",
+      "Bash(sudo*)",
+      "Bash(git push --force*)",
+      "Bash(chmod 777*)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Bash(cat */.env)",
+      "Bash(cat */.env.*)"
+    ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true,
+    "allowUnsandboxedCommands": false,
+    "network": {
+      "allowedDomains": [
+        "github.com",
+        "*.npmjs.org",
+        "registry.yarnpkg.com"
+      ]
+    }
+  }
+}
