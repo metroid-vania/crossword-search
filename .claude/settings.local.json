@@ -2,14 +2,27 @@
   "permissions": {
     "deny": [
       "Bash(rm -rf*)",
-      "Bash(rm -r*)",
+      "Bash(rm -r *)",
+      "Bash(rm -f*)",
       "Bash(sudo*)",
       "Bash(git push --force*)",
+      "Bash(git push * --force*)",
       "Bash(chmod 777*)",
+      "Bash(find*-delete*)",
+      "Bash(find*-exec*rm*)",
       "Read(**/.env)",
       "Read(**/.env.*)",
-      "Bash(cat */.env)",
-      "Bash(cat */.env.*)"
+      "Read(.env)",
+      "Read(.env.*)",
+      "Bash(cat*.env*)",
+      "Bash(head*.env*)",
+      "Bash(tail*.env*)",
+      "Bash(less*.env*)",
+      "Bash(more*.env*)",
+      "Bash(grep*.env*)",
+      "Bash(type*.env*)",
+      "Bash(base64*.env*)",
+      "Bash(xxd*.env*)"
     ]
   },
   "sandbox": {
