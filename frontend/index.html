@@ -54,7 +54,7 @@
   <meta name="twitter:description" content="クロスワード作成/解答用の単語検索Webアプリ。">
   <meta name="twitter:image" content="https://findword.crossword-builder.com/og-image.jpg">
   <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="stylesheet" href="style.css?v=2026041102">
+  <link rel="stylesheet" href="style.css?v=2026041602">
 </head>
 <body>
 
@@ -69,7 +69,7 @@
 <!-- 検索エリア（main の外に出してブラウザ幅いっぱいに広げる） -->
 <div class="search-sticky-wrap">
   <section class="search-area">
-    <label for="search-input">検索パターンを入力します：</label>
+    <label for="search-input">検索パターンを入力：</label>
     <form id="search-form" action="#" novalidate>
     <div class="input-row">
       <div class="input-wrapper">
@@ -85,7 +85,7 @@
           autocapitalize="off"
           spellcheck="false"
           enterkeyhint="done"
-          placeholder="例: ？しか？ / ＊いろ / 12123"
+          placeholder="例: ？？いろ / ＊パズル / １２３２１"
         >
         <button type="button" id="clear-btn" aria-label="入力をクリア" hidden>
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -95,11 +95,6 @@
       </div>
     </div>
     </form>
-    <p class="hint">
-      <code>?</code> 任意の1字 &nbsp;
-      <code>*</code> 任意の0字以上 &nbsp;
-      <code>1-9</code> ナンクロ数字
-    </p>
   </section>
 </div>
 
@@ -117,10 +112,34 @@
 <main>
   <!-- 初回ガイド（入力前のみ表示） -->
   <div id="search-guide">
-    <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-    </svg>
-    <p class="search-guide-msg">検索パターンを入力すると<br>該当する単語がここに表示されます</p>
+    <h2 class="guide-title">検索パターン例</h2>
+    <dl class="guide-list" style="margin:0;padding:0">
+      <div class="guide-item">
+        <dt><code>？</code> 任意の1文字</dt>
+        <dd>
+          <span class="guide-input">？？いろ</span>
+          <span class="guide-arrow" aria-hidden="true">→</span>
+          <span class="guide-result">アイイロ(藍色)、アオイロ(青色) …</span>
+        </dd>
+      </div>
+      <div class="guide-item">
+        <dt><code>＊</code> 任意の0文字以上</dt>
+        <dd>
+          <span class="guide-input">＊パズル</span>
+          <span class="guide-arrow" aria-hidden="true">→</span>
+          <span class="guide-result">パズル、ジグソーパズル、クロスワードパズル</span>
+        </dd>
+      </div>
+      <div class="guide-item">
+        <dt><code>1〜9</code> 同じ数字＝同じ文字</dt>
+        <dd>
+          <span class="guide-input">１２３２１</span>
+          <span class="guide-arrow" aria-hidden="true">→</span>
+          <span class="guide-result">カイケイカ(会計科)、カッパツカ(活発化) …</span>
+        </dd>
+      </div>
+    </dl>
+    <p class="guide-note">ひらがな入力OK ・ 半角/全角どちらでも使えます</p>
   </div>
   <!-- 結果リスト -->
   <ul id="results-list"></ul>
