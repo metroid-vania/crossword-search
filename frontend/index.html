@@ -54,7 +54,7 @@
   <meta name="twitter:description" content="クロスワード作成/解答用の単語検索Webアプリ。">
   <meta name="twitter:image" content="https://findword.crossword-builder.com/og-image.jpg">
   <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="stylesheet" href="style.css?v=2026041606">
+  <link rel="stylesheet" href="style.css?v=2026041607">
 </head>
 <body>
 
@@ -62,8 +62,13 @@
   <a href="/" class="header-icon-link" aria-label="ホームへ戻る"><img src="favicon.png" alt="" class="header-icon" aria-hidden="true"></a>
   <div>
     <h1>クロスワード辞典</h1>
-    <p>パターンに当てはまる単語を瞬時に検索！</p
+    <p>パターンに当てはまる単語を瞬時に検索！</p>
   </div>
+  <a href="help.html" class="header-help-link" aria-label="使い方ガイド">
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+    </svg>
+  </a>
 </header>
 
 <!-- 検索エリア（main の外に出してブラウザ幅いっぱいに広げる） -->
@@ -139,7 +144,7 @@
         </dd>
       </div>
     </dl>
-    <p class="guide-note">ひらがな ・ 拗促音 ・ 半角/全角 いずれも入力可</p>
+    <p class="guide-note"><a href="help.html">使い方ガイドを見る →</a></p>
   </div>
   <!-- 結果リスト -->
   <ul id="results-list"></ul>

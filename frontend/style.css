@@ -75,6 +75,25 @@ header p {
   margin-top: 2px;
 }
 
+.header-help-link {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: #fff;
+  opacity: .75;
+  transition: opacity .15s, background .15s;
+}
+
+.header-help-link:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, .15);
+}
+
 /* ─────────────────────────────────────────
    メインコンテンツ
 ───────────────────────────────────────── */

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#4a5ec7">
+  <meta name="robots" content="noindex,follow">
+  <title>使い方ガイド｜クロスワード辞典</title>
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://findword.crossword-builder.com/help.html">
+  <meta property="og:title" content="使い方ガイド｜クロスワード辞典">
+  <meta property="og:description" content="クロスワード辞典の検索方法・操作ガイド。">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:site_name" content="クロスワード辞典">
+  <meta property="og:image" content="https://findword.crossword-builder.com/og-image.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://findword.crossword-builder.com/og-image.jpg">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" href="style.css?v=2026041607">
+  <style>
+    .help-main { max-width: 720px; margin: 0 auto; padding: 1.5em 1.2em 3em; line-height: 1.8; }
+    .help-main h2 { font-size: 1.1em; margin-top: 1.8em; border-left: 4px solid #4a5ec7; padding-left: 0.5em; }
+    .help-main h2:first-of-type { margin-top: 0.5em; }
+    .help-main h3 { font-size: 1em; margin-top: 1.2em; }
+    .help-main table { border-collapse: collapse; width: 100%; margin: 0.8em 0; font-size: 0.92em; }
+    .help-main th, .help-main td { border: 1px solid #ccc; padding: 0.4em 0.6em; text-align: left; vertical-align: top; }
+    .help-main th { background: #f0f2fb; white-space: nowrap; }
+    .help-main code { background: #f0f2fb; padding: 0.1em 0.35em; border-radius: 3px; font-size: 0.95em; }
+    .help-main kbd { display: inline-block; background: #f5f5f5; border: 1px solid #ccc; border-bottom-width: 2px; border-radius: 4px; padding: 0.1em 0.45em; font-family: inherit; font-size: 0.88em; line-height: 1.4; }
+    .help-main ul, .help-main ol { padding-left: 1.5em; }
+    .help-main li { margin-bottom: 0.4em; }
+    .help-main .tip { background: #f0f2fb; border-radius: 6px; padding: 0.7em 1em; margin: 0.8em 0; font-size: 0.92em; }
+    .back-link { display: inline-block; margin-top: 2em; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="header-icon-link" aria-label="ホームへ戻る"><img src="favicon.png" alt="" class="header-icon" aria-hidden="true"></a>
+  <div>
+    <h1>クロスワード辞典</h1>
+    <p>使い方ガイド</p>
+  </div>
+  <a href="help.html" class="header-help-link" aria-label="使い方ガイド">
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+    </svg>
+  </a>
+</header>
+
+<main class="help-main">
+
+  <h2>1. 検索パターンの書き方</h2>
+  <p>検索ボックスにパターンを入力すると、条件に合う単語がリアルタイムで表示されます。</p>
+
+  <table>
+    <thead>
+      <tr><th>記号</th><th>意味</th><th>入力例</th><th>ヒットする単語</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>？</code></td>
+        <td>任意の1文字</td>
+        <td>？？いろ</td>
+        <td>アイイロ(藍色)、アオイロ(青色) …</td>
+      </tr>
+      <tr>
+        <td><code>＊</code></td>
+        <td>任意の0文字以上</td>
+        <td>＊パズル</td>
+        <td>パズル、ジグソーパズル …</td>
+      </tr>
+      <tr>
+        <td><code>１</code>〜<code>９</code></td>
+        <td>同じ数字＝同じ文字<br>違う数字＝違う文字</td>
+        <td>１２３３</td>
+        <td>アリババ、イノシシ(猪) …</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>組み合わせ例</h3>
+  <ul>
+    <li><code>ク？スワード</code> → クロスワード</li>
+    <li><code>＊トリ</code> → トリ、コトリ、カキトリ …</li>
+    <li><code>１２１２</code> → アイアイ、イロイロ …（繰り返しパターン）</li>
+  </ul>
+
+  <div class="tip">
+    ひらがな・カタカナどちらで入力しても同じ結果になります。拗音（ャュョ）・促音（ッ）も自動で吸収されます。
+  </div>
+
+  <h2>2. 検索のしくみ</h2>
+  <ul>
+    <li>入力するたびに自動で検索が実行されます（Enterキー不要）。</li>
+    <li>ワイルドカードを含まない場合は完全一致検索になります。</li>
+    <li>スペース（半角・全角）は無視されます。</li>
+  </ul>
+
+  <h3>URLで検索を共有</h3>
+  <p>
+    検索中のURLにはパターンが含まれます（例：<code>?q=＊パズル</code>）。
+    このURLをブックマークしたり、他の人に共有すると同じ検索結果を再現できます。
+  </p>
+
+  <h2>3. 表示モード</h2>
+  <p>検索結果の上部にある切り替えボタンで、2つの表示モードを選べます。</p>
+  <table>
+    <thead>
+      <tr><th>モード</th><th>表示内容</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>詳細表示</strong></td>
+        <td>カタカナ読み＋表記（漢字・英語など）を表示</td>
+      </tr>
+      <tr>
+        <td><strong>簡易表示</strong></td>
+        <td>カタカナ読みのみをコンパクトに表示</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>選んだモードはブラウザに記憶されるため、次回以降も同じ表示で使えます。</p>
+
+  <h2>4. 検索結果の使い方</h2>
+
+  <h3>単語をコピー</h3>
+  <p>
+    検索結果のカタカナ読み部分をクリック（タップ）すると、その単語がクリップボードにコピーされます。
+  </p>
+  <div class="tip">
+    コピー時、拗音・促音は大文字に展開されます（例：ファックス → フアツクス）。
+    クロスワードのマス目にそのまま使える形式です。
+  </div>
+
+  <h3>表記をGoogle検索</h3>
+  <p>
+    表記部分（漢字・英語など）をクリック（タップ）すると、その言葉でGoogle検索が開きます。
+    単語の意味や用法を確認したいときに便利です。
+  </p>
+
+  <h2>5. ショートカット</h2>
+  <table>
+    <thead>
+      <tr><th>環境</th><th>操作</th><th>動作</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>PC</td>
+        <td><kbd>Esc</kbd> キー</td>
+        <td>検索欄にフォーカスを移動（どこにいても一発で戻れます）</td>
+      </tr>
+      <tr>
+        <td>スマホ</td>
+        <td>画面右下の <strong>🔍ボタン</strong> をタップ</td>
+        <td>ページ先頭に戻り、検索欄にフォーカスを移動</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="back-link"><a href="/">← トップへ戻る</a></p>
+</main>
+
+<footer>
+  2026 <a href="https://crossword-builder.com" target="_blank" rel="noopener">CROSSWORD-BUILDER.com</a>
+</footer>
+
+</body>
+</html>
