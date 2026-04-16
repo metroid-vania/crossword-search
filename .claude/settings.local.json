@@ -23,6 +23,9 @@
       "Bash(type*.env*)",
       "Bash(base64*.env*)",
       "Bash(xxd*.env*)"
+    ],
+    "allow": [
+      "mcp__Claude_Preview__preview_start"
     ]
   },
   "sandbox": {

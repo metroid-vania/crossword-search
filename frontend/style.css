@@ -111,7 +111,7 @@ main {
 
 .search-area label {
   display: block;
-  font-size: .88rem;
+  font-size: 1rem;
   font-weight: 600;
   margin-bottom: 8px;
   color: var(--clr-text);
@@ -468,7 +468,7 @@ main {
 }
 
 .guide-title {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--clr-primary);
   margin: 0 0 16px;
@@ -480,14 +480,28 @@ main {
   padding: 0;
   width: 100%;
   max-width: 420px;
-}
-
-.guide-item {
   background: var(--clr-surface);
   border: 1px solid var(--clr-border);
   border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.guide-item {
   padding: 12px 14px;
-  margin-bottom: 10px;
+}
+
+.guide-item + .guide-item {
+  position: relative;
+}
+
+.guide-item + .guide-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 14px;
+  right: 14px;
+  border-top: 1px solid var(--clr-border);
+  transform: translateZ(0);
 }
 
 .guide-item dt {
