@@ -117,6 +117,7 @@ inputEl.addEventListener('input', () => {
   const isEmpty = inputEl.value === '';
   clearBtn.hidden = isEmpty;
   guideEl.hidden = !isEmpty; // ガイドは入力が空のときだけ表示
+  updateFabVisibility();     // スマホFAB：入力状態に応じて表示/非表示を更新
   if (isEmpty) {
     viewToggleGroup.hidden = true;
     resultsHeaderEl.hidden = true;
@@ -156,6 +157,7 @@ clearBtn.addEventListener('click', () => {
   guideEl.hidden = false;
   resultsHeaderEl.hidden = true;
   mainEl.classList.remove('has-results');
+  updateFabVisibility(); // スマホFAB：入力クリア時に非表示へ
   inputEl.focus();
   clearTimeout(debounceTimer);
   if (abortController) { abortController.abort(); abortController = null; }
@@ -201,9 +203,20 @@ function updateFabBottom() {
   backToTopBtn.style.bottom = Math.max(20, visible + 20) + 'px';
 }
 
+// スマホ：入力に文字がある かつ 検索エリアが画面外に出たら FAB を表示
+// （scrollY 判定だと iOS キーボード開時の自動スクロールで誤発火するため、
+//   実際に検索欄が見えなくなったかで判定する）
+function updateFabVisibility() {
+  if (!isMobile()) return;
+  const hasInput = inputEl.value !== '';
+  const rect = searchAreaEl.getBoundingClientRect();
+  const searchOffscreen = rect.bottom < 0;
+  backToTopBtn.classList.toggle('visible', hasInput && searchOffscreen);
+}
+
 window.addEventListener('scroll', () => {
-  // スマホ：スクロール量に応じてFABを表示
-  if (isMobile()) backToTopBtn.classList.toggle('visible', window.scrollY >= 300);
+  // スマホ：スクロール量・入力状態に応じてFABを表示
+  updateFabVisibility();
   updateFabBottom();
 
   // scroll イベント内でビューポート高さの変化を検出（キーボード開閉を確実に捕捉）
