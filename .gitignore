@@ -16,3 +16,6 @@ desktop.ini
 .idea/
 *.swp
 *.swo
+
+# ─── Claude Code ローカル設定（個人環境固有・コミット非推奨）──────
+.claude/settings.local.json

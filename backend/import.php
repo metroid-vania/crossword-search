@@ -21,6 +21,12 @@
  * --------------------------------------------------------------------
  */
 
+// CLI 専用（HTTP 経由の実行を禁止：DB 削除・再構築を防ぐ）
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    exit('This script is CLI only.');
+}
+
 set_time_limit(0);
 
 $hasSqlite3 = class_exists('SQLite3');

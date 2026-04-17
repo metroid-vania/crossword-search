@@ -4,6 +4,12 @@
  * 使い方: php search_cli.php <検索パターン> [上限件数]
  */
 
+// CLI 専用（HTTP 経由の実行を禁止）
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    exit('This script is CLI only.');
+}
+
 function displayResults(string $json): void {
     $data = json_decode($json, true);
     if (!$data || isset($data['error'])) {
