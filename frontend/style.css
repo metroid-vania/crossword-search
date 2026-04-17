@@ -134,6 +134,7 @@ main {
   font-weight: 600;
   margin-bottom: 8px;
   color: var(--clr-text);
+  text-align: center;
 }
 
 .input-row {
@@ -349,6 +350,10 @@ main {
 
 #results-list.simple .variants {
   display: none;
+}
+
+#results-list.simple .message {
+  width: 100%;
 }
 
 #results-list.simple .word-item {
@@ -766,13 +771,14 @@ main {
     padding-bottom: 116px;
   }
 
-  /* 「続けて検索」FABボタン：常時表示の丸型 */
+  /* 「再検索」FABボタン：常時表示の丸型 */
   #back-to-top {
     width: 84px;
     height: 84px;
     border-radius: 50%;
     padding: 0;
-    gap: 0;
+    flex-direction: column;
+    gap: 2px;
     right: 20px;
     bottom: 20px;
     box-shadow: 0 4px 16px rgba(0,0,0,.32);
@@ -784,10 +790,16 @@ main {
 
   .btt-search {
     display: block;
+    width: 28px;
+    height: 28px;
   }
 
   .btt-label {
-    display: none;
+    display: block;
+    font-size: .78rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: .02em;
   }
 }
 
@@ -831,7 +843,7 @@ footer a:hover {
 
   .results-header-inner {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 8px;
   }
 }

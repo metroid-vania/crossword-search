@@ -54,7 +54,7 @@
   <meta name="twitter:description" content="クロスワード作成/解答用の単語検索Webアプリ。">
   <meta name="twitter:image" content="https://findword.crossword-builder.com/og-image.jpg">
   <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="stylesheet" href="style.css?v=2026041607">
+  <link rel="stylesheet" href="style.css?v=2026041701">
 </head>
 <body>
 
@@ -74,7 +74,7 @@
 <!-- 検索エリア（main の外に出してブラウザ幅いっぱいに広げる） -->
 <div class="search-sticky-wrap">
   <section class="search-area">
-    <label for="search-input">検索パターンを入力：</label>
+    <label for="search-input">当てはまる単語を探そう</label>
     <form id="search-form" action="#" novalidate>
     <div class="input-row">
       <div class="input-wrapper">
@@ -90,7 +90,7 @@
           autocapitalize="off"
           spellcheck="false"
           enterkeyhint="done"
-          placeholder="例: ？？いろ / ＊パズル / １２３３"
+          placeholder="パターンを入力してリアルタイム検索"
         >
         <button type="button" id="clear-btn" aria-label="入力をクリア" hidden>
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -174,7 +174,7 @@
   <svg class="btt-search" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
   </svg>
-  <span class="btt-label" aria-hidden="true">続けて検索</span>
+  <span class="btt-label" aria-hidden="true">再検索</span>
 </button>
 <script src="app.js?v=2026041103"></script>
 </body>
