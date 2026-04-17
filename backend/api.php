@@ -13,7 +13,29 @@ header('Access-Control-Allow-Methods: GET');
 header('Vary: Accept-Encoding');
 
 $query = trim($_GET['q'] ?? '');
-$offset = max(0, (int)($_GET['offset'] ?? 0));
+
+// 入力長制限（DoS 対策：長大クエリによる重い LIKE や再帰爆発を防ぐ）
+if (mb_strlen($query) > 50) {
+    http_response_code(400);
+    echo json_encode(
+        ['error' => 'クエリが長すぎます（最大50文字）。'],
+        JSON_UNESCAPED_UNICODE
+    );
+    exit;
+}
+
+// ワイルドカード `*` / `＊` の個数制限（バックトラッキング爆発対策）
+$starCount = preg_match_all('/[\*＊]/u', $query);
+if ($starCount > 5) {
+    http_response_code(400);
+    echo json_encode(
+        ['error' => 'ワイルドカード（*）が多すぎます（最大5個）。'],
+        JSON_UNESCAPED_UNICODE
+    );
+    exit;
+}
+
+$offset = max(0, min(10000, (int)($_GET['offset'] ?? 0))); // 上限 10000（深ページング抑制）
 $limit  = (int)($_GET['limit'] ?? 100);
 if ($limit <= 0) $limit = 100;
 if ($limit > 200) $limit = 200; // 過負荷防止
