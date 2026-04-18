@@ -8,19 +8,120 @@
 }
 
 :root {
+  /* 基本色 */
   --clr-bg:         #f5f5f5;
   --clr-surface:    #ffffff;
-  --clr-primary:    #4a5ec7;
-  --clr-primary-hv: #3a4db5;
   --clr-border:     #d0d7de;
   --clr-text:       #1f2328;
   --clr-muted:      #656d76;
-  --clr-reading:    #4a5ec7;
   --clr-disabled:   #8c959f;
-  --clr-badge:      #dff0d8;
-  --clr-badge-txt:  #2d6a4f;
+  --clr-reading:    #111827;
+  --clr-divider:    #d8dee6;
+
+  /* プライマリ（テキスト・アクセント用：暗い背景では明るくする） */
+  --clr-primary:      #4a5ec7;
+  --clr-primary-rgb:  74, 94, 199;  /* rgba の透明度調整用 */
+  /* プライマリ（白文字を乗せる塗りつぶし：両モードで同じ濃さを維持） */
+  --clr-primary-fill:    #4a5ec7;
+  --clr-primary-fill-hv: #3a4db5;
+  --clr-primary-hv:      var(--clr-primary-fill-hv); /* 下位互換 */
+
+  /* ホバー / 副次色 */
+  --clr-hover-bg:       #eef0fc;
+  --clr-hover-border:   #a0aadf;
+  --clr-variant-bg:     #f4f5f7;
+  --clr-variant-border: #d9dee5;
+  --clr-variant-text:   #4a5560;
+  --clr-chip-soft-bg:   #f0f2fb;
+  --clr-code-bg:        #f0f3f6;
+  --clr-clear-btn-bg:   #d0d7de;
+  --clr-clear-btn-hv:   #8c959f;
+
+  /* 状態 */
+  --clr-error:      #c0392b;
+
+  /* トースト */
+  --clr-toast-bg:   rgb(17, 24, 39);
+  --clr-toast-text: #ffffff;
+
   --radius:         8px;
   --shadow:         0 1px 3px rgba(0,0,0,.12);
+}
+
+/* ─────────────────────────────────────────
+   ダークモード
+   ・初期状態は OS 設定（prefers-color-scheme）に追従
+   ・ユーザーがヘッダーのトグルで明示指定した場合は
+     html[data-theme="light" | "dark"] が最優先で適用される
+───────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  /* ユーザーが明示的にライトを選んでいない場合のみ適用 */
+  html:not([data-theme="light"]) {
+    --clr-bg:         #13161c;
+    --clr-surface:    #1e222b;
+    --clr-border:     #323845;
+    --clr-text:       #e5e7eb;
+    --clr-muted:      #9aa0a8;
+    --clr-disabled:   #5c6270;
+    --clr-reading:    #f3f4f6;
+    --clr-divider:    #3a3f4a;
+
+    --clr-primary:         #8b99e5;
+    --clr-primary-rgb:     139, 153, 229;
+    --clr-primary-fill:    #4a5ec7;
+    --clr-primary-fill-hv: #5d70d2;
+
+    --clr-hover-bg:       rgba(139, 153, 229, .12);
+    --clr-hover-border:   #6975b5;
+    --clr-variant-bg:     #2a2e3a;
+    --clr-variant-border: #3a3f4a;
+    --clr-variant-text:   #c5ccd6;
+    --clr-chip-soft-bg:   rgba(139, 153, 229, .15);
+    --clr-code-bg:        #252931;
+    --clr-clear-btn-bg:   #3a3f4a;
+    --clr-clear-btn-hv:   #5c6270;
+
+    --clr-error:      #e06a5d;
+
+    --clr-toast-bg:   #3a3f4a;
+    --clr-toast-text: #f3f4f6;
+
+    --shadow:         0 1px 3px rgba(0,0,0,.5);
+  }
+}
+
+/* ユーザーがダークを明示指定（OS 設定より優先） */
+html[data-theme="dark"] {
+  --clr-bg:         #13161c;
+  --clr-surface:    #1e222b;
+  --clr-border:     #323845;
+  --clr-text:       #e5e7eb;
+  --clr-muted:      #9aa0a8;
+  --clr-disabled:   #5c6270;
+  --clr-reading:    #f3f4f6;
+  --clr-divider:    #3a3f4a;
+
+  --clr-primary:         #8b99e5;
+  --clr-primary-rgb:     139, 153, 229;
+  --clr-primary-fill:    #4a5ec7;
+  --clr-primary-fill-hv: #5d70d2;
+
+  --clr-hover-bg:       rgba(139, 153, 229, .12);
+  --clr-hover-border:   #6975b5;
+  --clr-variant-bg:     #2a2e3a;
+  --clr-variant-border: #3a3f4a;
+  --clr-variant-text:   #c5ccd6;
+  --clr-chip-soft-bg:   rgba(139, 153, 229, .15);
+  --clr-code-bg:        #252931;
+  --clr-clear-btn-bg:   #3a3f4a;
+  --clr-clear-btn-hv:   #5c6270;
+
+  --clr-error:      #e06a5d;
+
+  --clr-toast-bg:   #3a3f4a;
+  --clr-toast-text: #f3f4f6;
+
+  --shadow:         0 1px 3px rgba(0,0,0,.5);
 }
 
 html {
@@ -44,7 +145,7 @@ body {
    ヘッダー
 ───────────────────────────────────────── */
 header {
-  background: var(--clr-primary);
+  background: var(--clr-primary-fill);
   color: #fff;
   padding: 14px 20px;
   box-shadow: 0 2px 4px rgba(0,0,0,.15);
@@ -76,7 +177,6 @@ header p {
 }
 
 .header-help-link {
-  margin-left: auto;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -93,6 +193,49 @@ header p {
   opacity: 1;
   background: rgba(255, 255, 255, .15);
 }
+
+/* テーマ切替ボタン */
+.header-theme-toggle {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  opacity: .75;
+  transition: opacity .15s, background .15s, transform .3s ease;
+}
+
+.header-theme-toggle:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, .15);
+}
+
+.header-theme-toggle:active {
+  transform: rotate(-20deg);
+}
+
+/* アイコン表示切替：ライト表示時は月、ダーク表示時は太陽 */
+.theme-icon-sun { display: none; }
+.theme-icon-moon { display: block; }
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) .theme-icon-sun { display: block; }
+  html:not([data-theme="light"]) .theme-icon-moon { display: none; }
+}
+
+html[data-theme="dark"] .theme-icon-sun { display: block; }
+html[data-theme="dark"] .theme-icon-moon { display: none; }
+
+html[data-theme="light"] .theme-icon-sun { display: none; }
+html[data-theme="light"] .theme-icon-moon { display: block; }
 
 /* ─────────────────────────────────────────
    メインコンテンツ
@@ -166,7 +309,7 @@ main {
   min-width: 40px;
   height: 36px;
   padding: 0 10px;
-  border: 1.5px solid rgba(74, 94, 199, .25);
+  border: 1.5px solid rgba(var(--clr-primary-rgb), .25);
   background: var(--clr-surface);
   color: var(--clr-primary);
   border-radius: 8px;
@@ -180,13 +323,13 @@ main {
 }
 
 .wc-chip-wild {
-  background: #f0f2fb;
-  border-color: rgba(74, 94, 199, .5);
+  background: var(--clr-chip-soft-bg);
+  border-color: rgba(var(--clr-primary-rgb), .5);
   font-size: 1.2rem;
 }
 
 .wc-chip:active {
-  background: rgba(74, 94, 199, .15);
+  background: rgba(var(--clr-primary-rgb), .15);
   border-color: var(--clr-primary);
 }
 
@@ -211,20 +354,22 @@ main {
   font-size: 1.25rem;
   font-family: inherit;
   padding: 10px 40px 10px 40px;
-  border: 1.5px solid rgba(74, 94, 199, .35);
+  border: 1.5px solid rgba(var(--clr-primary-rgb), .35);
   border-radius: 6px;
   outline: none;
+  background: var(--clr-surface);
+  color: var(--clr-text);
   transition: border-color .15s, box-shadow .15s;
   letter-spacing: .06em;
   text-overflow: ellipsis;
-  box-shadow: 0 0 0 0 rgba(74, 94, 199, 0);
+  box-shadow: 0 0 0 0 rgba(var(--clr-primary-rgb), 0);
   animation: input-invite 1.8s ease-out .5s;
 }
 
 @keyframes input-invite {
-  0%   { box-shadow: 0 0 0 0   rgba(74, 94, 199, 0); }
-  40%  { box-shadow: 0 0 0 6px rgba(74, 94, 199, .15); }
-  100% { box-shadow: 0 0 0 0   rgba(74, 94, 199, 0); }
+  0%   { box-shadow: 0 0 0 0   rgba(var(--clr-primary-rgb), 0); }
+  40%  { box-shadow: 0 0 0 6px rgba(var(--clr-primary-rgb), .15); }
+  100% { box-shadow: 0 0 0 0   rgba(var(--clr-primary-rgb), 0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -251,7 +396,7 @@ main {
   padding: 0;
   border: none;
   border-radius: 50%;
-  background: #d0d7de;
+  background: var(--clr-clear-btn-bg);
   color: #fff;
   cursor: pointer;
   flex-shrink: 0;
@@ -259,16 +404,16 @@ main {
 }
 
 #clear-btn:hover {
-  background: #8c959f;
+  background: var(--clr-clear-btn-hv);
 }
 
 #search-input:focus {
   border-color: var(--clr-primary);
-  box-shadow: 0 0 0 3px rgba(74,94,199,.18);
+  box-shadow: 0 0 0 3px rgba(var(--clr-primary-rgb), .18);
 }
 
 #search-input::placeholder {
-  color: #adb5bd;
+  color: var(--clr-disabled);
   font-size: 1rem;
 }
 
@@ -284,12 +429,12 @@ main {
 }
 
 .hint code {
-  background: #f0f3f6;
+  background: var(--clr-code-bg);
   border-radius: 3px;
   padding: 1px 5px;
   font-family: "Consolas", "Menlo", monospace;
   font-size: .82rem;
-  color: #c0392b;
+  color: var(--clr-error);
 }
 
 /* ─────────────────────────────────────────
@@ -379,12 +524,12 @@ main {
 }
 
 .view-toggle-group button.active {
-  background: var(--clr-primary);
+  background: var(--clr-primary-fill);
   color: #fff;
 }
 
 .view-toggle-group button:hover:not(.active) {
-  background: rgba(74,94,199,.09);
+  background: rgba(var(--clr-primary-rgb), .09);
 }
 
 .view-toggle-group button:focus {
@@ -454,14 +599,14 @@ main {
 }
 
 .word-item:hover {
-  background: #eef0fc;
-  border-color: #a0aadf;
+  background: var(--clr-hover-bg);
+  border-color: var(--clr-hover-border);
 }
 
 .reading {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--clr-reading);
   letter-spacing: .06em;
   white-space: nowrap;
   flex-shrink: 0;
@@ -489,7 +634,7 @@ main {
   align-items: center;
   align-self: stretch;
   gap: 6px;
-  border-left: 1px solid #d8dee6;
+  border-left: 1px solid var(--clr-divider);
   padding-left: 12px;
   min-height: calc(0.82rem * 1.45 + 4px); /* ピルと同じ高さを確保 */
 }
@@ -497,19 +642,19 @@ main {
 .variant-link {
   display: inline-block;
   padding: 1px 10px;
-  border: 1px solid #d9dee5;
+  border: 1px solid var(--clr-variant-border);
   border-radius: 999px;
-  background: #f4f5f7;
-  color: #4a5560;
+  background: var(--clr-variant-bg);
+  color: var(--clr-variant-text);
   text-decoration: none;
   line-height: 1.45;
   transition: background-color .12s ease, border-color .12s ease, color .12s ease;
 }
 
 .variant-link:hover {
-  color: #4a5ec7;
-  background: #eef0fc;
-  border-color: #a0aadf;
+  color: var(--clr-primary);
+  background: var(--clr-hover-bg);
+  border-color: var(--clr-hover-border);
   text-decoration: none;
 }
 
@@ -524,7 +669,7 @@ main {
 }
 
 .message.error {
-  color: #c0392b;
+  color: var(--clr-error);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -558,13 +703,15 @@ main {
 }
 
 .error-retry:hover {
-  background: var(--clr-primary);
+  background: var(--clr-primary-fill);
   color: #fff;
+  border-color: var(--clr-primary-fill);
 }
 
 .error-retry:active {
-  background: var(--clr-primary-hv);
+  background: var(--clr-primary-fill-hv);
   color: #fff;
+  border-color: var(--clr-primary-fill-hv);
 }
 
 /* ─────────────────────────────────────────
@@ -597,7 +744,7 @@ main {
 
 .suggestion-btn {
   padding: 8px 14px;
-  border: 1.5px solid rgba(74, 94, 199, .35);
+  border: 1.5px solid rgba(var(--clr-primary-rgb), .35);
   background: var(--clr-surface);
   color: var(--clr-primary);
   border-radius: 999px;
@@ -609,12 +756,12 @@ main {
 }
 
 .suggestion-btn:hover {
-  background: #eef0fc;
+  background: var(--clr-hover-bg);
   border-color: var(--clr-primary);
 }
 
 .suggestion-btn:active {
-  background: rgba(74, 94, 199, .15);
+  background: rgba(var(--clr-primary-rgb), .15);
 }
 
 /* ─────────────────────────────────────────
@@ -686,7 +833,7 @@ main {
 
 .guide-item dt code {
   display: inline-block;
-  background: var(--clr-primary);
+  background: var(--clr-primary-fill);
   color: #fff;
   font-size: .8rem;
   font-weight: 700;
@@ -784,7 +931,7 @@ main {
   top: 4px;
   width: 14px;
   height: 20px;
-  background: var(--clr-primary);
+  background: var(--clr-primary-fill);
   border-radius: 0 2px 2px 0;
   transform-origin: left center;
   opacity: 0;
@@ -805,8 +952,8 @@ main {
 
 .toast {
   position: fixed;
-  background: rgb(17, 24, 39);
-  color: #fff;
+  background: var(--clr-toast-bg);
+  color: var(--clr-toast-text);
   font-size: .84rem;
   font-weight: 600;
   padding: 5px 12px;
@@ -824,7 +971,7 @@ main {
   position: absolute;
   width: 10px;
   height: 10px;
-  background: rgb(17, 24, 39);
+  background: var(--clr-toast-bg);
   bottom: -5px;
   left: var(--arrow-left, 50%);
   transform: translateX(-50%) rotate(45deg);
@@ -832,10 +979,11 @@ main {
 
 /* エラー時は赤系に */
 .toast.error {
-  background: #c0392b;
+  background: var(--clr-error);
+  color: #fff;
 }
 .toast.error::after {
-  background: #c0392b;
+  background: var(--clr-error);
 }
 
 /* 下から上へスライドイン */
@@ -869,7 +1017,7 @@ main {
   height: 56px;
   border: none;
   border-radius: 50%;
-  background: var(--clr-primary);
+  background: var(--clr-primary-fill);
   color: #fff;
   display: flex;
   align-items: center;
@@ -894,7 +1042,7 @@ main {
 }
 
 #back-to-top:hover {
-  background: var(--clr-primary-hv);
+  background: var(--clr-primary-fill-hv);
 }
 
 /* ─────────────────────────────────────────
@@ -993,6 +1141,10 @@ footer a:hover {
 @media (max-width: 480px) {
   #search-input {
     font-size: 1.05rem;
+  }
+
+  .header-tagline {
+    display: none;
   }
 
   .sp-br {
