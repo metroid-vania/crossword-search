@@ -296,12 +296,8 @@ async function doSearch(reset) {
   if (query === '') {
     setLoading(false);
     renderResults(null);
-    history.replaceState(null, '', location.pathname); // URL からクエリを除去
     return;
   }
-
-  // URL を現在のクエリで更新（ブックマーク・リロード対応）
-  history.replaceState(null, '', '?q=' + encodeURIComponent(query));
 
   // 辞書の語長制約（2〜13文字）に基づく即時 0 件判定（API 不要）
   // ・＊を除いた文字数 ≥ 14 → 14文字以上の語は存在しない
@@ -745,12 +741,3 @@ backToTopBtn.addEventListener('click', () => {
 // ─── 初期状態（クエリなし）：ヘッダー非表示 ──────────────────────────────────────
 resultsHeaderEl.hidden = true;
 
-// ─── URL からの初期クエリ復元 ─────────────────────────────────────────────────
-// ?q=... でページを開いた場合（ブックマーク・シェア・リロード）に自動検索
-const _initQuery = new URLSearchParams(location.search).get('q') ?? '';
-if (_initQuery) {
-  inputEl.value = _initQuery;
-  clearBtn.hidden = false;
-  guideEl.hidden = true; // URLクエリがある場合はガイドを非表示
-  doSearch(true);
-}
