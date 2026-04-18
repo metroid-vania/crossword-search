@@ -390,7 +390,6 @@ function renderResults(data) {
     return;
   }
 
-  viewToggleGroup.hidden = false;
   resultsHeaderEl.hidden = false;
   mainEl.classList.add('has-results');
   guideEl.hidden = true;
@@ -398,9 +397,12 @@ function renderResults(data) {
   updateCountDisplay(data);
 
   if (data.count === 0) {
+    viewToggleGroup.hidden = true; // 0件ならトグルは意味がないので隠す
     resultsList.innerHTML = '<li class="message">該当する単語が見つかりませんでした。</li>';
     return;
   }
+
+  viewToggleGroup.hidden = false;
 
   const fragment = document.createDocumentFragment();
   for (const word of data.words) {
