@@ -331,7 +331,15 @@ async function doSearch(reset) {
       `${API_URL}?q=${encodeURIComponent(query)}&offset=${currentOffset}&limit=${PAGE_SIZE}`,
       { signal: abortController.signal }
     );
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (!res.ok) {
+      // API は 4xx/5xx でも {"error":"..."} の JSON を返す
+      let apiMsg = null;
+      try { apiMsg = (await res.json())?.error ?? null; } catch (_) {}
+      const err = new Error(apiMsg || `HTTP ${res.status}`);
+      err.status     = res.status;
+      err.apiMessage = apiMsg;
+      throw err;
+    }
     const data = await res.json();
     // レスポンス到着時点でクエリが変わっていたら破棄
     if (query !== currentQuery) return;
@@ -353,8 +361,9 @@ async function doSearch(reset) {
 
   } catch (e) {
     if (e.name === 'AbortError') return; // キャンセルされたリクエストは無視
+    if (query !== currentQuery) return;  // 既にユーザーが別のクエリに移っていれば無視
     console.error(e);
-    renderError(e.message);
+    renderError(classifyError(e));
   } finally {
     isLoading = false;
     setLoading(false);
@@ -540,13 +549,81 @@ resultsList.addEventListener('click', async (e) => {
     await copyText(copyReading);
     showToast(btn, copyReading);
   } catch (err) {
-    alert('クリップボードへのコピーに失敗しました。\n' + err.message);
+    console.error(err);
+    showToast(btn, 'コピーに失敗しました', true);
   }
 });
 
-function renderError(msg) {
-  countEl.textContent   = '';
-  resultsList.innerHTML = `<li class="message error">エラーが発生しました: ${escHtml(msg)}</li>`;
+/** エラーを種別分け（ネットワーク / サーバー / クライアント / 不明） */
+function classifyError(e) {
+  // fetch 自体が失敗（DNS/CORS/ネットワーク断）→ TypeError
+  if (e.name === 'TypeError' || !navigator.onLine) {
+    return { kind: 'network' };
+  }
+  if (typeof e.status === 'number') {
+    if (e.status >= 500) return { kind: 'server', message: e.apiMessage };
+    if (e.status >= 400) return { kind: 'client', message: e.apiMessage };
+  }
+  return { kind: 'unknown', message: e.message };
+}
+
+function renderError(info) {
+  // ヘッダーと件数表示はクリア（エラー時は混乱を避ける）
+  countEl.textContent = '';
+  countEl.className   = '';
+  resultsHeaderEl.hidden = false;
+  mainEl.classList.add('has-results');
+  guideEl.hidden         = true;
+  viewToggleGroup.hidden = true;
+
+  let title, hint, showRetry;
+  switch (info.kind) {
+    case 'network':
+      title     = 'ネットワークに接続できません。';
+      hint      = '通信状況を確認して再度お試しください。';
+      showRetry = true;
+      break;
+    case 'server':
+      title     = 'サーバーでエラーが発生しました。';
+      hint      = info.message || 'しばらく待ってから再度お試しください。';
+      showRetry = true;
+      break;
+    case 'client':
+      title     = info.message || 'リクエストに問題があります。';
+      hint      = '入力内容を見直してください。';
+      showRetry = false; // 同じクエリでの再試行は無意味
+      break;
+    default:
+      title     = '予期しないエラーが発生しました。';
+      hint      = info.message ? `詳細: ${info.message}` : '';
+      showRetry = true;
+  }
+
+  const li = document.createElement('li');
+  li.className = 'message error';
+
+  const titleEl = document.createElement('div');
+  titleEl.className = 'error-title';
+  titleEl.textContent = title;
+  li.appendChild(titleEl);
+
+  if (hint) {
+    const hintEl = document.createElement('div');
+    hintEl.className = 'error-hint';
+    hintEl.textContent = hint;
+    li.appendChild(hintEl);
+  }
+
+  if (showRetry) {
+    const btn = document.createElement('button');
+    btn.type        = 'button';
+    btn.className   = 'error-retry';
+    btn.textContent = '再試行';
+    btn.addEventListener('click', () => doSearch(true));
+    li.appendChild(btn);
+  }
+
+  resultsList.replaceChildren(li);
   setLoading(false);
   currentData = null;
 }
@@ -656,12 +733,17 @@ function createToastElement() {
   return el;
 }
 
-function showToast(triggerEl, copiedText = '') {
+function showToast(triggerEl, copiedText = '', isError = false) {
   clearTimeout(toastTimer);
   clearTimeout(toastHideTimer);
 
   const rect = triggerEl.getBoundingClientRect();
-  toastEl.textContent = copiedText ? `Copied: ${copiedText}` : 'Copied!';
+  if (isError) {
+    toastEl.textContent = copiedText || 'エラー';
+  } else {
+    toastEl.textContent = copiedText ? `Copied: ${copiedText}` : 'Copied!';
+  }
+  toastEl.classList.toggle('error', isError);
 
   // サイズ計測のため一時表示（opacity:0 のまま）
   toastEl.hidden = false;

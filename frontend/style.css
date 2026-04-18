@@ -525,6 +525,46 @@ main {
 
 .message.error {
   color: #c0392b;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.error-title {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.error-hint {
+  font-size: .88rem;
+  color: var(--clr-muted);
+  max-width: 420px;
+  line-height: 1.6;
+}
+
+.error-retry {
+  margin-top: 8px;
+  padding: 8px 22px;
+  border: 1.5px solid var(--clr-primary);
+  background: var(--clr-surface);
+  color: var(--clr-primary);
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: .95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .12s, color .12s;
+}
+
+.error-retry:hover {
+  background: var(--clr-primary);
+  color: #fff;
+}
+
+.error-retry:active {
+  background: var(--clr-primary-hv);
+  color: #fff;
 }
 
 /* ─────────────────────────────────────────
@@ -788,6 +828,14 @@ main {
   bottom: -5px;
   left: var(--arrow-left, 50%);
   transform: translateX(-50%) rotate(45deg);
+}
+
+/* エラー時は赤系に */
+.toast.error {
+  background: #c0392b;
+}
+.toast.error::after {
+  background: #c0392b;
 }
 
 /* 下から上へスライドイン */
