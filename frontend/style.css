@@ -143,6 +143,53 @@ main {
   align-items: center;
 }
 
+/* スマホ用ワイルドカード挿入チップ（デフォルト非表示・モバイル用メディアクエリで表示） */
+.wc-chips {
+  display: none;
+  gap: 6px;
+  margin-top: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  padding-bottom: 2px;
+}
+.wc-chips::-webkit-scrollbar { display: none; } /* WebKit */
+
+/* IME 変換中はチップを無効化（iOS Safari で composition を強制確定できないため） */
+.wc-chips.disabled {
+  opacity: .4;
+  pointer-events: none;
+}
+
+.wc-chip {
+  flex: 0 0 auto;
+  min-width: 40px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1.5px solid rgba(74, 94, 199, .25);
+  background: var(--clr-surface);
+  color: var(--clr-primary);
+  border-radius: 8px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .1s, border-color .1s;
+}
+
+.wc-chip-wild {
+  background: #f0f2fb;
+  border-color: rgba(74, 94, 199, .5);
+  font-size: 1.2rem;
+}
+
+.wc-chip:active {
+  background: rgba(74, 94, 199, .15);
+  border-color: var(--clr-primary);
+}
+
 .input-wrapper {
   position: relative;
   flex: 1;
@@ -280,6 +327,18 @@ main {
   font-size: 1.05rem;
   font-weight: 600;
   color: var(--clr-text);
+  font-variant-numeric: tabular-nums; /* 件数の数字幅を等幅化して更新時のブレを抑える */
+  transition: color .15s, opacity .15s;
+}
+
+#hit-count .count {
+  display: inline-block;
+  min-width: 1.2em; /* 1桁⇄複数桁でレイアウトが揺れないように最小幅を確保 */
+  text-align: right;
+}
+
+#hit-count.stale {
+  opacity: .5; /* 検索結果の更新待ち（debounce 中）に薄くフェード */
 }
 
 #hit-count.zero {
@@ -466,6 +525,56 @@ main {
 
 .message.error {
   color: #c0392b;
+}
+
+/* ─────────────────────────────────────────
+   0件時の代替候補提案（「もしかして？」）
+───────────────────────────────────────── */
+.suggestions {
+  list-style: none;
+  text-align: center;
+  padding: 0 16px 40px;
+  margin: -16px 0 0; /* .message の下に詰めて配置 */
+}
+
+/* 簡易表示モードでは .suggestions も全幅に揃える */
+#results-list.simple .suggestions {
+  width: 100%;
+}
+
+.suggestions-title {
+  color: var(--clr-muted);
+  font-size: .92rem;
+  margin-bottom: 10px;
+}
+
+.suggestions-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.suggestion-btn {
+  padding: 8px 14px;
+  border: 1.5px solid rgba(74, 94, 199, .35);
+  background: var(--clr-surface);
+  color: var(--clr-primary);
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .12s, border-color .12s;
+}
+
+.suggestion-btn:hover {
+  background: #eef0fc;
+  border-color: var(--clr-primary);
+}
+
+.suggestion-btn:active {
+  background: rgba(74, 94, 199, .15);
 }
 
 /* ─────────────────────────────────────────
@@ -764,6 +873,11 @@ main {
   /* 検索エリアをスクロール追従から解除（結果表示エリアを広く） */
   .search-sticky-wrap {
     position: static;
+  }
+
+  /* スマホ時はワイルドカード挿入チップを表示（IME 切替不要で入力できる） */
+  .wc-chips {
+    display: flex;
   }
 
   /* FABが隠れないようにコンテンツ下部に余白を追加（結果表示中のみ） */

@@ -104,9 +104,15 @@ btnSimple.addEventListener('click', () => {
 // ─── 検索 ─────────────────────────────────────────────────────────────────────
 
 // IME 変換中は input イベントを無視し、確定後に1回だけ検索する
-inputEl.addEventListener('compositionstart', () => { isComposing = true; });
+// 変換中はワイルドカードチップも無効化する（iOS Safari で IME を強制確定できないため、
+// 変換中にチップをタップさせない方が確実）
+inputEl.addEventListener('compositionstart', () => {
+  isComposing = true;
+  document.getElementById('wc-chips')?.classList.add('disabled');
+});
 inputEl.addEventListener('compositionend', () => {
   isComposing = false;
+  document.getElementById('wc-chips')?.classList.remove('disabled');
   // 同クエリなら再検索不要（iOSキーボードcloseによる compositionend 誤発火対策）
   if (removeSpaces(inputEl.value.trim()) === currentQuery && currentData !== null) return;
   clearTimeout(debounceTimer);
@@ -133,6 +139,7 @@ inputEl.addEventListener('input', () => {
   const q = removeSpaces(inputEl.value.trim());
   if (q !== '' && q === currentQuery && currentData !== null) {
     resultsList.classList.remove('stale');
+    countEl.classList.remove('stale');
     return;
   }
 
@@ -148,6 +155,7 @@ inputEl.addEventListener('input', () => {
   } else {
     resultsList.classList.add('stale');
   }
+  if (currentData !== null) countEl.classList.add('stale'); // 件数の更新待ちをフェードで示す
   debounceTimer = setTimeout(() => doSearch(true), DEBOUNCE_MS);
 });
 
@@ -166,6 +174,39 @@ clearBtn.addEventListener('click', () => {
   currentData = null;
   doSearch(true);
 });
+
+// ─── スマホ用ワイルドカード挿入チップ ───────────────────────────────────────
+// タップで ？ / ＊ / １〜９ をカーソル位置に挿入。フォーカスは入力欄に維持する。
+const wcChipsEl = document.getElementById('wc-chips');
+if (wcChipsEl) {
+  // pointerdown でフォーカスが input から外れるのを防ぐ
+  wcChipsEl.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('.wc-chip')) e.preventDefault();
+  });
+  wcChipsEl.addEventListener('click', (e) => {
+    const chip = e.target.closest('.wc-chip');
+    if (!chip) return;
+    const ch = chip.dataset.insert;
+    if (!ch) return;
+    insertAtCursor(inputEl, ch);
+  });
+}
+
+/**
+ * 入力欄のカーソル位置に文字列を挿入（選択範囲があれば置換）
+ * IME 変換中はチップ自体が無効化される設計のため、composition 状態を考慮する必要はない。
+ */
+function insertAtCursor(el, text) {
+  el.focus();
+  const start  = el.selectionStart ?? el.value.length;
+  const end    = el.selectionEnd   ?? el.value.length;
+  const before = el.value.slice(0, start);
+  const after  = el.value.slice(end);
+  el.value = before + text + after;
+  const pos = start + text.length;
+  try { el.setSelectionRange(pos, pos); } catch (_) { /* iOS で稀にエラー */ }
+  el.dispatchEvent(new Event('input', { bubbles: true }));
+}
 
 // Enter キーで debounce をスキップして即時検索
 inputEl.addEventListener('keydown', (e) => {
@@ -359,18 +400,13 @@ function buildWordItem(word) {
 
 /** 件数表示・コピーボタン状態を更新する共通処理 */
 function updateCountDisplay(data) {
-  const { count, total, hasMore: more } = data;
+  const { count, hasMore: more } = data;
   const fullPattern = toFullWidthPattern(removeSpaces(inputEl.value.trim()));
-  if (count === 0) {
-    countEl.textContent = `【${fullPattern}】の検索結果（0件）`;
-    countEl.className   = 'zero';
-  } else if (more) {
-    countEl.textContent = `【${fullPattern}】の検索結果（${count}件以上）`;
-    countEl.className   = '';
-  } else {
-    countEl.textContent = `【${fullPattern}】の検索結果（${count}件）`;
-    countEl.className   = '';
-  }
+  const patternHtml = `<span class="pattern">${escHtml(fullPattern)}</span>`;
+  const countHtml   = `<span class="count">${count}${more ? '件以上' : '件'}</span>`;
+  countEl.innerHTML = `【${patternHtml}】の検索結果（${countHtml}）`;
+  countEl.classList.remove('stale');
+  countEl.classList.toggle('zero', count === 0);
 }
 
 /** 初回・リセット時のフル描画 */
@@ -399,6 +435,7 @@ function renderResults(data) {
   if (data.count === 0) {
     viewToggleGroup.hidden = true; // 0件ならトグルは意味がないので隠す
     resultsList.innerHTML = '<li class="message">該当する単語が見つかりませんでした。</li>';
+    suggestCandidates(currentQuery); // バックグラウンドで代替候補を取得し、見つかれば表示
     return;
   }
 
@@ -409,6 +446,83 @@ function renderResults(data) {
     fragment.appendChild(buildWordItem(word));
   }
   resultsList.replaceChildren(fragment);
+}
+
+// ─── 0件時の代替候補提案（「もしかして？」） ─────────────────────────────────
+// 入力パターンで 0 件だったとき、末尾に ＊ を付ける・1 文字削る・数字を ？ に
+// 置き換える、などのバリエーションを API で並列チェックしてヒットする候補だけ表示。
+function buildCandidates(q) {
+  const out = [];
+  const hasStar = /[*＊]/.test(q);
+  const chars   = [...q];
+
+  if (!hasStar) {
+    out.push(q + '＊');      // 末尾ワイルドカード
+    out.push('＊' + q);      // 先頭ワイルドカード
+  }
+  if (chars.length > 2) {
+    out.push(chars.slice(0, -1).join('')); // 末尾1文字削除
+  }
+  if (/[1-9１-９]/.test(q)) {
+    out.push(q.replace(/[1-9１-９]/g, '？')); // 数字ワイルドカード → ？
+  }
+
+  // 重複除去・元クエリと同一のものを除外・50文字超を除外
+  return [...new Set(out)].filter(c => c !== q && c.length > 0 && c.length <= 50);
+}
+
+async function suggestCandidates(originalQuery) {
+  const candidates = buildCandidates(originalQuery);
+  if (candidates.length === 0) return;
+
+  const results = await Promise.all(
+    candidates.map(async (c) => {
+      try {
+        const res = await fetch(`${API_URL}?q=${encodeURIComponent(c)}&limit=1`);
+        if (!res.ok) return null;
+        const data = await res.json();
+        return data.count > 0 ? c : null;
+      } catch (_) {
+        return null;
+      }
+    })
+  );
+
+  // ユーザーが入力を変えていた・検索結果が変わっていたら表示しない
+  if (removeSpaces(inputEl.value.trim()) !== originalQuery) return;
+  if (currentData && currentData.count !== 0) return;
+
+  const hits = results.filter(Boolean).slice(0, 3);
+  if (hits.length === 0) return;
+
+  renderSuggestions(hits);
+}
+
+function renderSuggestions(patterns) {
+  const li = document.createElement('li');
+  li.className = 'suggestions';
+
+  const title = document.createElement('div');
+  title.className = 'suggestions-title';
+  title.textContent = 'もしかして？';
+  li.appendChild(title);
+
+  const row = document.createElement('div');
+  row.className = 'suggestions-row';
+  for (const p of patterns) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'suggestion-btn';
+    btn.textContent = p;
+    btn.addEventListener('click', () => {
+      inputEl.value = p;
+      inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+      inputEl.focus();
+    });
+    row.appendChild(btn);
+  }
+  li.appendChild(row);
+  resultsList.appendChild(li);
 }
 
 /** ページネーション時の差分追記（リスト全再描画なし） */

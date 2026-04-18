@@ -54,7 +54,7 @@
   <meta name="twitter:description" content="クロスワード作成/解答用の単語検索Webアプリ。">
   <meta name="twitter:image" content="https://findword.crossword-builder.com/og-image.jpg">
   <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="stylesheet" href="style.css?v=2026041701">
+  <link rel="stylesheet" href="style.css?v=2026041906">
 </head>
 <body>
 
@@ -98,6 +98,20 @@
           </svg>
         </button>
       </div>
+    </div>
+    <!-- スマホ用：ワイルドカード挿入チップ（PC 非表示） -->
+    <div class="wc-chips" id="wc-chips" aria-label="ワイルドカード挿入">
+      <button type="button" class="wc-chip wc-chip-wild" data-insert="？" aria-label="？（任意の1文字）を挿入">？</button>
+      <button type="button" class="wc-chip wc-chip-wild" data-insert="＊" aria-label="＊（任意の0文字以上）を挿入">＊</button>
+      <button type="button" class="wc-chip" data-insert="１" aria-label="１を挿入">１</button>
+      <button type="button" class="wc-chip" data-insert="２" aria-label="２を挿入">２</button>
+      <button type="button" class="wc-chip" data-insert="３" aria-label="３を挿入">３</button>
+      <button type="button" class="wc-chip" data-insert="４" aria-label="４を挿入">４</button>
+      <button type="button" class="wc-chip" data-insert="５" aria-label="５を挿入">５</button>
+      <button type="button" class="wc-chip" data-insert="６" aria-label="６を挿入">６</button>
+      <button type="button" class="wc-chip" data-insert="７" aria-label="７を挿入">７</button>
+      <button type="button" class="wc-chip" data-insert="８" aria-label="８を挿入">８</button>
+      <button type="button" class="wc-chip" data-insert="９" aria-label="９を挿入">９</button>
     </div>
     </form>
   </section>
@@ -176,6 +190,6 @@
   </svg>
   <span class="btt-label" aria-hidden="true">再検索</span>
 </button>
-<script src="app.js?v=2026041704"></script>
+<script src="app.js?v=2026041906"></script>
 </body>
 </html>
