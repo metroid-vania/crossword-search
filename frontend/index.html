@@ -213,5 +213,12 @@
   <span class="btt-label" aria-hidden="true">再検索</span>
 </button>
 <script src="app.js?v=2026041932"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    });
+  }
+</script>
 </body>
 </html>
