@@ -77,7 +77,7 @@
   <meta name="twitter:description" content="クロスワード作成/解答用の単語検索Webアプリ。">
   <meta name="twitter:image" content="https://findword.crossword-builder.com/og-image.jpg">
   <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="stylesheet" href="style.css?v=2026041918">
+  <link rel="stylesheet" href="style.css?v=2026041919">
 </head>
 <body>
 
@@ -159,6 +159,9 @@
   </div>
 </div>
 
+<!-- スクリーンリーダー向け：検索結果件数の通知（視覚的には非表示） -->
+<div id="sr-status" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
 <main>
   <!-- 入力前ガイド（凡例＋ヘルプリンク） -->
   <div id="search-guide">
@@ -199,6 +202,6 @@
   </svg>
   <span class="btt-label" aria-hidden="true">再検索</span>
 </button>
-<script src="app.js?v=2026041918"></script>
+<script src="app.js?v=2026041919"></script>
 </body>
 </html>

@@ -21,6 +21,7 @@ const footerEl      = document.querySelector('footer');
 const searchAreaEl    = document.querySelector('.search-sticky-wrap');
 const resultsHeaderEl = document.querySelector('.results-header');
 const mainEl          = document.querySelector('main');
+const srStatusEl      = document.getElementById('sr-status'); // SR 向け aria-live 通知
 const toastEl       = createToastElement();
 
 // ─── 状態 ─────────────────────────────────────────────────────────────────────
@@ -132,6 +133,7 @@ inputEl.addEventListener('input', () => {
     countEl.className   = '';
     resultsList.replaceChildren();
     currentData = null;
+    clearAnnouncement();
   } // 入力が空になったら即座に非表示
   if (isComposing) return; // IME 変換中はスキップ
 
@@ -420,6 +422,24 @@ function updateCountDisplay(data) {
   countEl.innerHTML = `【${patternHtml}】の検索結果（${countHtml}）`;
   countEl.classList.remove('stale');
   countEl.classList.toggle('zero', count === 0);
+  announceCount(count, more);
+}
+
+/** スクリーンリーダー向け：検索結果件数を通知する */
+function announceCount(count, more) {
+  if (!srStatusEl) return;
+  const msg = count === 0
+    ? '該当する単語はありません'
+    : `${count}件${more ? '以上' : ''}見つかりました`;
+  // 同一文字列だと再通知されないため、一度空にしてから設定する
+  srStatusEl.textContent = '';
+  // 非同期化することで aria-live の確実な再発火を狙う
+  setTimeout(() => { srStatusEl.textContent = msg; }, 30);
+}
+
+/** スクリーンリーダー通知をクリア */
+function clearAnnouncement() {
+  if (srStatusEl) srStatusEl.textContent = '';
 }
 
 /** 初回・リセット時のフル描画 */
@@ -435,6 +455,7 @@ function renderResults(data) {
     resultsHeaderEl.hidden = true;
     mainEl.classList.remove('has-results');
     guideEl.hidden = false;
+    clearAnnouncement();
     setLoading(false);
     return;
   }
@@ -583,6 +604,7 @@ function renderError(info) {
   mainEl.classList.add('has-results');
   guideEl.hidden         = true;
   viewToggleGroup.hidden = true;
+  clearAnnouncement();
 
   let title, hint, showRetry;
   switch (info.kind) {
