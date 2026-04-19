@@ -34,8 +34,9 @@
   --clr-variant-text:   #4a5560;
   --clr-chip-soft-bg:   #f0f2fb;
   --clr-code-bg:        #f0f3f6;
-  --clr-clear-btn-bg:   #d0d7de;
-  --clr-clear-btn-hv:   #8c959f;
+  --clr-code-accent:    #c7254e;
+  --clr-clear-btn-bg:   #4a4f58;
+  --clr-clear-btn-hv:   #23272f;
 
   /* 状態 */
   --clr-error:      #c0392b;
@@ -78,6 +79,7 @@
     --clr-variant-text:   #c5ccd6;
     --clr-chip-soft-bg:   rgba(139, 153, 229, .15);
     --clr-code-bg:        #252931;
+    --clr-code-accent:    #ff8095;
     --clr-clear-btn-bg:   #3a3f4a;
     --clr-clear-btn-hv:   #5c6270;
 
@@ -113,6 +115,7 @@ html[data-theme="dark"] {
   --clr-variant-text:   #c5ccd6;
   --clr-chip-soft-bg:   rgba(139, 153, 229, .15);
   --clr-code-bg:        #252931;
+  --clr-code-accent:    #ff8095;
   --clr-clear-btn-bg:   #3a3f4a;
   --clr-clear-btn-hv:   #5c6270;
 
@@ -765,15 +768,13 @@ main {
 }
 
 /* ─────────────────────────────────────────
-   初回ガイド
+   入力前ガイド（凡例）
 ───────────────────────────────────────── */
 #search-guide {
-  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 24px 16px;
+  padding: 20px 16px 24px;
   color: var(--clr-text);
   animation: guide-fadein .3s ease-out;
 }
@@ -787,95 +788,54 @@ main {
   display: none;
 }
 
-.guide-title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--clr-primary);
-  margin: 0 0 16px;
-  letter-spacing: .05em;
-}
-
-.guide-list {
+.legend {
   margin: 0;
-  padding: 0;
+  padding: 10px 14px;
   width: 100%;
-  max-width: 420px;
+  max-width: 360px;
   background: var(--clr-surface);
   border: 1px solid var(--clr-border);
   border-radius: var(--radius);
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.guide-item {
-  padding: 12px 14px;
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.guide-item + .guide-item {
-  position: relative;
+.legend-item dt {
+  flex: 0 0 auto;
 }
 
-.guide-item + .guide-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 14px;
-  right: 14px;
-  border-top: 1px solid var(--clr-border);
-  transform: translateZ(0);
-}
-
-.guide-item dt {
-  font-size: .85rem;
-  font-weight: 600;
-  color: var(--clr-text);
-  margin-bottom: 6px;
-}
-
-.guide-item dt code {
+.legend-item dt code {
   display: inline-block;
-  background: var(--clr-primary-fill);
-  color: #fff;
+  min-width: 52px;
+  box-sizing: border-box;
+  text-align: center;
+  background: var(--clr-code-bg);
+  color: var(--clr-code-accent);
   font-size: .8rem;
   font-weight: 700;
-  padding: 1px 7px;
+  padding: 2px 8px;
   border-radius: 4px;
-  margin-right: 4px;
   font-family: inherit;
+  letter-spacing: .02em;
 }
 
-.guide-item dd {
+.legend-item dd {
   margin: 0;
-  font-size: .85rem;
-  line-height: 1.6;
+  font-size: .88rem;
   color: var(--clr-muted);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.guide-input {
-  display: inline-block;
-  font-weight: 600;
-  color: var(--clr-primary);
-  font-size: .9rem;
-  letter-spacing: .08em;
-}
-
-.guide-arrow {
-  display: inline-block;
-  margin: 0 4px;
-  color: var(--clr-disabled);
-  font-size: .8rem;
-}
-
-.guide-result {
-  font-size: .82rem;
-  color: var(--clr-muted);
+  line-height: 1.5;
 }
 
 .guide-note {
-  margin: 6px 0 0;
-  font-size: .78rem;
+  margin: 12px 0 0;
+  font-size: .82rem;
   color: var(--clr-disabled);
 }
 
@@ -1074,6 +1034,14 @@ main {
   /* スマホ時はワイルドカード挿入チップを表示（IME 切替不要で入力できる） */
   .wc-chips {
     display: flex;
+  }
+
+  /* 入力欄がフォーカスされていない（≒キーボード非表示）ときはチップを無効化
+     - キャレット位置が見えない状態での挿入ミスを防ぐ
+     - .disabled（IME変換中）と同じ見た目でOK */
+  body:not(.input-focused) .wc-chips {
+    opacity: .4;
+    pointer-events: none;
   }
 
   /* FABが隠れないようにコンテンツ下部に余白を追加（結果表示中のみ） */

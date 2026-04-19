@@ -177,6 +177,14 @@ clearBtn.addEventListener('click', () => {
 
 // ─── スマホ用ワイルドカード挿入チップ ───────────────────────────────────────
 // タップで ？ / ＊ / １〜９ をカーソル位置に挿入。フォーカスは入力欄に維持する。
+// 入力欄が非フォーカス（≒キーボード非表示）のときは CSS 側で無効化。
+inputEl.addEventListener('focus', () => {
+  document.body.classList.add('input-focused');
+});
+inputEl.addEventListener('blur', () => {
+  document.body.classList.remove('input-focused');
+});
+
 const wcChipsEl = document.getElementById('wc-chips');
 if (wcChipsEl) {
   // pointerdown でフォーカスが input から外れるのを防ぐ
