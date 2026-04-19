@@ -16,6 +16,7 @@ const btnSimple       = document.getElementById('btn-simple');
 const loadingEl     = document.getElementById('loading-indicator');
 const backToTopBtn  = document.getElementById('back-to-top');
 const clearBtn      = document.getElementById('clear-btn');
+const copyAllBtn    = document.getElementById('copy-all-btn');
 const guideEl       = document.getElementById('search-guide');
 const footerEl      = document.querySelector('footer');
 const searchAreaEl    = document.querySelector('.search-sticky-wrap');
@@ -133,6 +134,7 @@ inputEl.addEventListener('input', () => {
     countEl.className   = '';
     resultsList.replaceChildren();
     currentData = null;
+    updateCopyAllBtn(null);
     clearAnnouncement();
   } // 入力が空になったら即座に非表示
   if (isComposing) return; // IME 変換中はスキップ
@@ -174,8 +176,31 @@ clearBtn.addEventListener('click', () => {
   cancelPrefetch();
   resultsList.replaceChildren();
   currentData = null;
+  updateCopyAllBtn(null);
   doSearch(true);
 });
+
+// ─── すべてコピー ──────────────────────────────────────────────────────────
+if (copyAllBtn) {
+  copyAllBtn.addEventListener('click', async () => {
+    if (!currentData || currentData.count === 0 || currentData.hasMore) return;
+    const pattern = toFullWidthPattern(removeSpaces(inputEl.value.trim()));
+    // 読みを拗音・促音展開してから重複排除（変換後に同じになるケースもあるため）
+    const seen = new Set();
+    const readings = [];
+    for (const w of currentData.words) {
+      const r = expandSmallKana(w.reading);
+      if (!seen.has(r)) { seen.add(r); readings.push(r); }
+    }
+    const text = `【${pattern}】\n${readings.join('\n')}`;
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast(copyAllBtn, 'すべてコピーしました', false, true);
+    } catch (e) {
+      showToast(copyAllBtn, 'コピーに失敗しました', true);
+    }
+  });
+}
 
 // ─── スマホ用ワイルドカード挿入チップ ───────────────────────────────────────
 // タップで ？ / ＊ / １〜９ をカーソル位置に挿入。フォーカスは入力欄に維持する。
@@ -423,6 +448,21 @@ function updateCountDisplay(data) {
   countEl.classList.remove('stale');
   countEl.classList.toggle('zero', count === 0);
   announceCount(count, more);
+  updateCopyAllBtn(data);
+}
+
+/** すべてコピーボタンの表示/有効状態を更新 */
+function updateCopyAllBtn(data) {
+  if (!copyAllBtn) return;
+  // データなし／0件／全件未ロード（hasMore）は非表示
+  if (!data || data.count === 0 || data.hasMore) {
+    copyAllBtn.hidden = true;
+    copyAllBtn.disabled = true;
+    return;
+  }
+  copyAllBtn.hidden = false;
+  copyAllBtn.disabled = false;
+  copyAllBtn.title = '検索結果をすべてコピー';
 }
 
 /** スクリーンリーダー向け：検索結果件数を通知する */
@@ -455,6 +495,7 @@ function renderResults(data) {
     resultsHeaderEl.hidden = true;
     mainEl.classList.remove('has-results');
     guideEl.hidden = false;
+    updateCopyAllBtn(null);
     clearAnnouncement();
     setLoading(false);
     return;
@@ -604,6 +645,7 @@ function renderError(info) {
   mainEl.classList.add('has-results');
   guideEl.hidden         = true;
   viewToggleGroup.hidden = true;
+  updateCopyAllBtn(null);
   clearAnnouncement();
 
   let title, hint, showRetry;
@@ -763,13 +805,15 @@ function createToastElement() {
   return el;
 }
 
-function showToast(triggerEl, copiedText = '', isError = false) {
+function showToast(triggerEl, copiedText = '', isError = false, noPrefix = false) {
   clearTimeout(toastTimer);
   clearTimeout(toastHideTimer);
 
   const rect = triggerEl.getBoundingClientRect();
   if (isError) {
     toastEl.textContent = copiedText || 'エラー';
+  } else if (noPrefix) {
+    toastEl.textContent = copiedText || 'コピーしました';
   } else {
     toastEl.textContent = copiedText ? `コピーしました: ${copiedText}` : 'コピーしました';
   }
@@ -777,12 +821,17 @@ function showToast(triggerEl, copiedText = '', isError = false) {
 
   // サイズ計測のため一時表示（opacity:0 のまま）
   toastEl.hidden = false;
-  toastEl.classList.remove('show', 'hide');
+  toastEl.classList.remove('show', 'hide', 'below');
 
   const toastW  = toastEl.offsetWidth;
+  const toastH  = toastEl.offsetHeight;
   const btnCX   = rect.left + rect.width / 2;
   const padding = 8;
   const vw      = window.innerWidth;
+
+  // 通常はボタンの上に表示。上に十分な余白がなければ下に出す
+  // （スティッキーヘッダー内のボタンをタップしたときなどのケース）
+  const showBelow = rect.top < toastH + padding + 8;
 
   // トースト左端をビューポート内にクランプ
   const rawLeft    = btnCX - toastW / 2;
@@ -792,8 +841,9 @@ function showToast(triggerEl, copiedText = '', isError = false) {
   const arrowLeft = btnCX - clampedLeft;
 
   toastEl.style.left = clampedLeft + 'px';
-  toastEl.style.top  = (rect.top - 8) + 'px';
+  toastEl.style.top  = showBelow ? (rect.bottom + 8) + 'px' : (rect.top - 8) + 'px';
   toastEl.style.setProperty('--arrow-left', arrowLeft + 'px');
+  toastEl.classList.toggle('below', showBelow);
 
   void toastEl.offsetWidth; // アニメーション再起動のためのreflow
   toastEl.classList.add('show');

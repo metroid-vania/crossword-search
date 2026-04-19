@@ -513,6 +513,49 @@ main {
 }
 
 
+/* 件数 ＋ すべてコピー（アイコンのみ）を横並び */
+.hit-count-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+/* すべてコピー ボタン（アイコンのみ、さり気なく） */
+.copy-all-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--clr-muted);
+  cursor: pointer;
+  transition: background .15s, color .15s, opacity .15s;
+}
+
+.copy-all-btn[hidden] {
+  display: none;
+}
+
+.copy-all-btn:hover:not(:disabled) {
+  background: rgba(var(--clr-primary-rgb), .12);
+  color: var(--clr-primary);
+}
+
+.copy-all-btn:focus-visible {
+  outline: 2px solid var(--clr-primary);
+  outline-offset: 2px;
+}
+
+.copy-all-btn:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
 /* 表示切替セグメントコントロール */
 .view-toggle-group {
   display: flex;
@@ -977,6 +1020,26 @@ main {
 @keyframes toast-fade-out {
   from { opacity: 1; transform: translateY(-100%); }
   to   { opacity: 0; transform: translateY(calc(-100% - 4px)); }
+}
+
+/* 下方向表示（ボタン上に余白が足りないとき／スティッキーヘッダー等） */
+.toast.below::after {
+  top: -5px;
+  bottom: auto;
+}
+.toast.below.show {
+  animation: toast-slide-down .22s cubic-bezier(.18, .89, .32, 1.28) forwards;
+}
+.toast.below.hide {
+  animation: toast-fade-out-down .18s ease forwards;
+}
+@keyframes toast-slide-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes toast-fade-out-down {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(4px); }
 }
 
 /* ─────────────────────────────────────────
