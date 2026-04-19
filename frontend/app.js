@@ -34,7 +34,7 @@ let hasMore         = false;
 let isLoading       = false;
 let abortController = null; // 進行中の fetch をキャンセルするコントローラー
 let idlePrefetchId  = null; // バックグラウンドプリフェッチ用
-let simpleMode      = localStorage.getItem('simpleMode') !== '0';
+let simpleMode      = localStorage.getItem('simpleMode') === '1';
 let isComposing       = false; // IME 変換中フラグ
 let viewportResizing  = false; // キーボード開閉中フラグ（infinite scroll 誤発火防止）
 let viewportResizeTimer = null;
@@ -877,6 +877,20 @@ syncResultsHeaderTop();
 if (typeof ResizeObserver !== 'undefined') {
   new ResizeObserver(syncResultsHeaderTop).observe(searchAreaEl);
 }
+
+// ─── 下にスクロールしたかを検知して body.is-scrolled を付与 ───────────────────
+// （PC表示時、最上部にいる間は検索エリア上部を 48px、スクロール後は 24px に縮小）
+function updateIsScrolled() {
+  const scrolled = window.scrollY > 0;
+  const prev = document.body.classList.contains('is-scrolled');
+  if (prev === scrolled) return;
+  document.body.classList.toggle('is-scrolled', scrolled);
+  // 検索エリアの高さが padding-top 変化で瞬時に変わるので、
+  // 件数表示ヘッダーの sticky top も同タイミングで同期し、ズレ・揺れを防ぐ
+  syncResultsHeaderTop();
+}
+updateIsScrolled();
+window.addEventListener('scroll', updateIsScrolled, { passive: true });
 
 // スマホ時はボタンの aria-label を「続けて検索」に更新
 if (isMobile()) {

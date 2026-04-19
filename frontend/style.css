@@ -1089,8 +1089,17 @@ main {
     display: none !important;
   }
 
+  /* 最上部（未スクロール）は以前通りゆったり 48px
+     下にスクロールしたら 24px に縮小（スティッキー追従時の上部余白を詰める）
+     ※トランジションは付けない：
+       検索エリアの高さが滑らかに変わると、追従する .results-header の
+       sticky top（JSで同期）が毎フレームずれて件数表示が揺れるため、
+       スクロール開始と同時に瞬時に切り替える */
   .search-sticky-wrap {
     padding-top: 48px;
+  }
+  body.is-scrolled .search-sticky-wrap {
+    padding-top: 24px;
   }
 
   main {
