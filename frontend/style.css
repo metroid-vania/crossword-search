@@ -894,6 +894,20 @@ main {
   font-size: .82rem;
   color: var(--clr-disabled);
 }
+.guide-note a,
+.guide-note a:visited,
+.help-main a,
+.help-main a:visited,
+.privacy-main a,
+.privacy-main a:visited {
+  color: var(--clr-primary);
+  text-decoration: underline;
+}
+.guide-note a:hover,
+.help-main a:hover,
+.privacy-main a:hover {
+  color: var(--clr-primary-fill-hv);
+}
 
 
 /* ─────────────────────────────────────────
