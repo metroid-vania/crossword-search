@@ -369,7 +369,7 @@ main {
   width: 100%;
   font-size: 1.25rem;
   font-family: inherit;
-  padding: 10px 40px 10px 40px;
+  padding: 10px 44px 10px 40px;
   border: 1.5px solid rgba(var(--clr-primary-rgb), .35);
   border-radius: 6px;
   outline: none;
@@ -417,6 +417,13 @@ main {
   cursor: pointer;
   flex-shrink: 0;
   transition: background .12s;
+}
+
+/* タップ判定を 44x44 に拡張（視覚は 24x24 のまま） */
+#clear-btn::before {
+  content: "";
+  position: absolute;
+  inset: -10px;
 }
 
 #clear-btn:hover {
