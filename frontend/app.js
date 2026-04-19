@@ -749,7 +749,7 @@ function showToast(triggerEl, copiedText = '', isError = false) {
   if (isError) {
     toastEl.textContent = copiedText || 'エラー';
   } else {
-    toastEl.textContent = copiedText ? `Copied: ${copiedText}` : 'Copied!';
+    toastEl.textContent = copiedText ? `コピーしました: ${copiedText}` : 'コピーしました';
   }
   toastEl.classList.toggle('error', isError);
 

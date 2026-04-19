@@ -261,7 +261,7 @@ main {
   top: 0;
   z-index: 30;
   background: var(--clr-bg);
-  padding: 24px 16px 16px;
+  padding: 24px 16px 40px;
 }
 
 .search-area {
