@@ -34,6 +34,7 @@ let hasMore         = false;
 let isLoading       = false;
 let abortController = null; // 進行中の fetch をキャンセルするコントローラー
 let idlePrefetchId  = null; // バックグラウンドプリフェッチ用
+let hasNetworkError = false; // 直前の検索がネットワークエラーで失敗したか（online 復帰時の自動リトライ判定用）
 let simpleMode      = localStorage.getItem('simpleMode') === '1';
 let isComposing       = false; // IME 変換中フラグ
 let viewportResizing  = false; // キーボード開閉中フラグ（infinite scroll 誤発火防止）
@@ -293,6 +294,13 @@ inputEl.addEventListener('blur', () => {
   }
 });
 
+// ネットワーク復帰時に、直前のネットワークエラーを自動リトライ
+window.addEventListener('online', () => {
+  if (!hasNetworkError) return;
+  if (!inputEl.value.trim()) return;
+  doSearch(true);
+});
+
 // PC：Esc キーで検索欄へ即ジャンプ
 // 「トップにいる かつ 検索欄にフォーカス中」のときのみ何もしない
 document.addEventListener('keydown', (e) => {
@@ -411,6 +419,7 @@ async function doSearch(reset) {
     const data = await res.json();
     // レスポンス到着時点でクエリが変わっていたら破棄
     if (query !== currentQuery) return;
+    hasNetworkError = false; // 成功したのでフラグ解除
     hasMore = !!data.hasMore;
     const newWords = data.words;
     currentOffset += newWords.length;
@@ -671,6 +680,9 @@ function classifyError(e) {
 }
 
 function renderError(info) {
+  // online 復帰時の自動リトライ対象はネットワークエラーのみ
+  hasNetworkError = info.kind === 'network';
+
   // ヘッダーと件数表示はクリア（エラー時は混乱を避ける）
   countEl.textContent = '';
   countEl.className   = '';
