@@ -260,6 +260,18 @@ document.getElementById('search-form').addEventListener('submit', (e) => {
   if (isMobile()) inputEl.blur();
 });
 
+// blur時にsubmitを発火してブラウザのオートコンプリート履歴に値を保存する
+inputEl.addEventListener('blur', () => {
+  if (isComposing) return;
+  if (!inputEl.value.trim()) return;
+  const form = document.getElementById('search-form');
+  if (typeof form.requestSubmit === 'function') {
+    form.requestSubmit();
+  } else {
+    form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+  }
+});
+
 // PC：Esc キーで検索欄へ即ジャンプ
 // 「トップにいる かつ 検索欄にフォーカス中」のときのみ何もしない
 document.addEventListener('keydown', (e) => {
