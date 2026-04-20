@@ -108,6 +108,27 @@ btnSimple.addEventListener('click', () => {
 // IME 変換中は input イベントを無視し、確定後に1回だけ検索する
 // 変換中はワイルドカードチップも無効化する（iOS Safari で IME を強制確定できないため、
 // 変換中にチップをタップさせない方が確実）
+// ペースト時の自動クリーンアップ
+// 検索に意味のある文字（ひらがな/カタカナ/半角・全角数字/ワイルドカード）のみ残す
+inputEl.addEventListener('paste', (e) => {
+  e.preventDefault();
+  const raw = (e.clipboardData || window.clipboardData)?.getData('text') || '';
+  const cleaned = raw.replace(/[^\u3040-\u309F\u30A0-\u30FF0-9\uFF10-\uFF19?？*＊]/g, '');
+  if (!cleaned) return; // クリーンアップ後が空なら何もしない（元の値を保持）
+
+  // execCommand は deprecated だが、undo 履歴に正しく積まれるので優先
+  if (document.execCommand && document.execCommand('insertText', false, cleaned)) {
+    return;
+  }
+  // フォールバック: 手動で選択範囲を置換
+  const start = inputEl.selectionStart ?? inputEl.value.length;
+  const end = inputEl.selectionEnd ?? inputEl.value.length;
+  inputEl.value = inputEl.value.slice(0, start) + cleaned + inputEl.value.slice(end);
+  const pos = start + cleaned.length;
+  inputEl.setSelectionRange(pos, pos);
+  inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+});
+
 inputEl.addEventListener('compositionstart', () => {
   isComposing = true;
   document.getElementById('wc-chips')?.classList.add('disabled');
