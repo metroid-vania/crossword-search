@@ -79,7 +79,7 @@
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="style.css?v=2026042005">
+  <link rel="stylesheet" href="style.css?v=2026042006">
 </head>
 <body>
 
@@ -124,7 +124,7 @@
           autocapitalize="off"
           spellcheck="false"
           enterkeyhint="done"
-          placeholder="検索パターンを入力 (例: ？？いろ)"
+          placeholder="検索パターンを入力 (例:？？いろ)"
         >
         <button type="button" id="clear-btn" aria-label="入力を消去" title="入力を消去" hidden>
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -176,6 +176,7 @@
 <main>
   <!-- 入力前ガイド（凡例＋ヘルプリンク） -->
   <div id="search-guide">
+    <h2 class="guide-title">ワイルドカード一覧</h2>
     <dl class="legend">
       <div class="legend-item"><dt><code>？</code></dt><dd>任意の1文字</dd></div>
       <div class="legend-item"><dt><code>＊</code></dt><dd>任意の0文字以上</dd></div>
@@ -213,7 +214,7 @@
   </svg>
   <span class="btt-label" aria-hidden="true">再検索</span>
 </button>
-<script src="app.js?v=2026042005"></script>
+<script src="app.js?v=2026042006"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

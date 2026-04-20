@@ -851,6 +851,14 @@ main {
   display: none;
 }
 
+.guide-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 8px;
+  text-align: center;
+  color: var(--clr-muted);
+}
+
 .legend {
   margin: 0;
   padding: 10px 14px;
