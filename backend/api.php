@@ -11,6 +11,9 @@ header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET');
 header('Vary: Accept-Encoding');
+// 既定はキャッシュさせない（400/500 などエラー応答はキャッシュを残したくない）。
+// 成功応答の直前で public キャッシュに上書きする。
+header('Cache-Control: no-store');
 
 $query = trim($_GET['q'] ?? '');
 
@@ -57,6 +60,9 @@ if ($query === '') {
 }
 
 $result = searchWords($db, $query, $total, $offset, $limit);
+// 成功応答：辞書はほぼ不変なので中期ブラウザキャッシュを許可
+//   10分間は新鮮扱い、以降 1時間は古い応答を即時返しつつ裏で再検証
+header('Cache-Control: public, max-age=600, stale-while-revalidate=3600');
 echo json_encode($result, JSON_UNESCAPED_UNICODE);
 
 // ─────────────────────────────────────────────────────────────────────────────
