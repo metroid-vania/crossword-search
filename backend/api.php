@@ -115,30 +115,30 @@ function buildLikePattern(string $pattern): string {
  *   同じ数字 = 同じ文字
  *   違う数字 = 必ず違う文字
  *   * は任意長マッチ
+ *
+ * 入力は事前に preg_split('//u') で分解した char 配列を受け取る
+ * （mb_substr を再帰の毎回呼ぶと O(n²) になるため）
  */
 function matchPattern(
-    string $word,  int $wp,
-    string $pat,   int $pp,
-    array  &$d2c,         // digit  → char
-    array  &$c2d          // char   → digit
+    array $w,  int $wp, int $wlen,
+    array $p,  int $pp, int $plen,
+    array &$d2c,         // digit  → char
+    array &$c2d          // char   → digit
 ): bool {
-    $plen = mb_strlen($pat);
-    $wlen = mb_strlen($word);
-
     if ($pp === $plen) {
         return $wp === $wlen;
     }
 
-    $p = mb_substr($pat, $pp, 1);
+    $ch = $p[$pp];
 
-    if ($p === '*') {
+    if ($ch === '*') {
         // * は 0 文字以上にマッチ → バックトラック
         $sd = $d2c;
         $sc = $c2d;
         for ($i = $wp; $i <= $wlen; $i++) {
             $d2c = $sd;
             $c2d = $sc;
-            if (matchPattern($word, $i, $pat, $pp + 1, $d2c, $c2d)) {
+            if (matchPattern($w, $i, $wlen, $p, $pp + 1, $plen, $d2c, $c2d)) {
                 return true;
             }
         }
@@ -151,39 +151,41 @@ function matchPattern(
         return false;
     }
 
-    $w = mb_substr($word, $wp, 1);
+    $wc = $w[$wp];
 
-    if ($p === '?') {
-        return matchPattern($word, $wp + 1, $pat, $pp + 1, $d2c, $c2d);
+    if ($ch === '?') {
+        return matchPattern($w, $wp + 1, $wlen, $p, $pp + 1, $plen, $d2c, $c2d);
     }
 
-    if (preg_match('/[1-9]/', $p)) {
-        if (isset($d2c[$p])) {
+    // 数字ワイルドカード（1-9）は ASCII 1 バイトなので ord で高速判定
+    $code = ord($ch);
+    if ($code >= 0x31 && $code <= 0x39) {
+        if (isset($d2c[$ch])) {
             // 既マップ：同じ文字でなければ失敗
-            if ($d2c[$p] !== $w) {
+            if ($d2c[$ch] !== $wc) {
                 return false;
             }
-            return matchPattern($word, $wp + 1, $pat, $pp + 1, $d2c, $c2d);
+            return matchPattern($w, $wp + 1, $wlen, $p, $pp + 1, $plen, $d2c, $c2d);
         }
         // 未マップ：違う数字がすでにこの文字を使っていれば失敗
-        if (isset($c2d[$w]) && $c2d[$w] !== $p) {
+        if (isset($c2d[$wc]) && $c2d[$wc] !== $ch) {
             return false;
         }
-        $d2c[$p] = $w;
-        $c2d[$w] = $p;
-        $ok = matchPattern($word, $wp + 1, $pat, $pp + 1, $d2c, $c2d);
+        $d2c[$ch] = $wc;
+        $c2d[$wc] = $ch;
+        $ok = matchPattern($w, $wp + 1, $wlen, $p, $pp + 1, $plen, $d2c, $c2d);
         if (!$ok) {
-            unset($d2c[$p]);
-            unset($c2d[$w]);
+            unset($d2c[$ch]);
+            unset($c2d[$wc]);
         }
         return $ok;
     }
 
     // リテラル文字
-    if ($p !== $w) {
+    if ($ch !== $wc) {
         return false;
     }
-    return matchPattern($word, $wp + 1, $pat, $pp + 1, $d2c, $c2d);
+    return matchPattern($w, $wp + 1, $wlen, $p, $pp + 1, $plen, $d2c, $c2d);
 }
 
 function searchWords(SQLite3 $db, string $query, int $total, int $offset, int $limit): array {
@@ -277,6 +279,10 @@ function searchWords(SQLite3 $db, string $query, int $total, int $offset, int $l
     $words          = [];
     $hasMore        = false;
 
+    // パターン側は候補ごとに不変なので事前に分解
+    $patChars = preg_split('//u', $normalized, -1, PREG_SPLIT_NO_EMPTY);
+    $patLen   = count($patChars);
+
     while (true) {
         if (connection_aborted()) break;  // クライアント切断なら即終了
         if (!$hasStar) {
@@ -310,7 +316,9 @@ function searchWords(SQLite3 $db, string $query, int $total, int $offset, int $l
             $chunkRows++;
             $d2c = [];
             $c2d = [];
-            if (!matchPattern($row['normalized'], 0, $normalized, 0, $d2c, $c2d)) {
+            $wordChars = preg_split('//u', $row['normalized'], -1, PREG_SPLIT_NO_EMPTY);
+            $wordLen   = count($wordChars);
+            if (!matchPattern($wordChars, 0, $wordLen, $patChars, 0, $patLen, $d2c, $c2d)) {
                 continue;
             }
             if ($matchedIndex < $offset) {
