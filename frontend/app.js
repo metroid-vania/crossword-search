@@ -13,7 +13,7 @@ const resultsList   = document.getElementById('results-list');
 const viewToggleGroup = document.getElementById('view-toggle-group');
 const btnDetail       = document.getElementById('btn-detail');
 const btnSimple       = document.getElementById('btn-simple');
-const loadingEl     = document.getElementById('loading-indicator');
+const loadingEl     = document.getElementById('search-spinner');
 const backToTopBtn  = document.getElementById('back-to-top');
 const clearBtn      = document.getElementById('clear-btn');
 const copyAllBtn    = document.getElementById('copy-all-btn');
@@ -916,14 +916,17 @@ let loadingTimer = null;
 
 function setLoading(loading) {
   if (!loadingEl) return;
+  // NOTE: loadingEl は <svg> 要素。SVGElement は HTMLElement を継承していないため
+  // `.hidden` プロパティは効かない（値だけJSプロパティとして格納されて attribute が動かない）。
+  // setAttribute / removeAttribute で明示的に操作する必要がある。
   if (loading) {
     if (!loadingTimer) {
-      loadingTimer = setTimeout(() => { loadingEl.hidden = false; }, 100);
+      loadingTimer = setTimeout(() => { loadingEl.removeAttribute('hidden'); }, 100);
     }
   } else {
     clearTimeout(loadingTimer);
     loadingTimer = null;
-    loadingEl.hidden = true;
+    loadingEl.setAttribute('hidden', '');
   }
 }
 

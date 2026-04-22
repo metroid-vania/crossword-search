@@ -401,6 +401,66 @@ main {
   padding-right: 12px;
 }
 
+/* 検索中スピナー（×ボタンの左隣）
+   ─── 実装メモ ────────────────────────────────────────────────
+   <div> で <svg> をラップし、div 側を 2D rotate でくるくる回す構造。
+   SVG 直接回転より div 回転のほうが Chrome の合成レイヤー化に
+   載りやすい（ただし Chrome Windows の小要素描画では
+   メインスレッド paint に落ちやすくジャンクが残ることがある。
+   iOS Safari ではスムーズ）。
+   NOTE: rotate3d + backface-visibility: hidden の組み合わせは
+   一部 Chrome/GPU 環境で「背面判定誤り → 不可視化」のバグを踏む
+   ため採用しない。2D rotate + translateZ(0) に留める。
+   ─────────────────────────────────────────────────────────── */
+.search-spinner {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  margin-top: -9px;          /* translateY(-50%) は回転アニメと競合するため固定オフセット */
+  color: var(--clr-primary); /* 内部 <circle stroke="currentColor"> が拾う */
+  animation: search-spinner-rotate .5s linear infinite;
+  transform-origin: 50% 50%;
+  will-change: transform;
+  /* 親の再描画サイクルから切り離して独立に GPU 合成させる */
+  contain: layout paint;
+  pointer-events: none;
+}
+
+.search-spinner > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;         /* stroke-linecap:round が viewBox 外に滲んでも切れないように */
+}
+
+.search-spinner[hidden] {
+  display: none;
+}
+
+/* スピナー表示中は入力の右側に余白を確保（× ボタン＋スピナー分） */
+.input-wrapper:has(.search-spinner:not([hidden])) #search-input {
+  padding-right: 64px;
+}
+
+@keyframes search-spinner-rotate {
+  /* translateZ(0) で 3D コンテキストを維持し GPU レイヤー化を要求
+     （rotate3d と違い backface 判定は走らないので非表示化バグなし）*/
+  from { transform: translateZ(0) rotate(0deg); }
+  to   { transform: translateZ(0) rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-spinner {
+    animation: search-spinner-pulse 1.2s ease-in-out infinite;
+  }
+  @keyframes search-spinner-pulse {
+    0%, 100% { opacity: .3; }
+    50%      { opacity: 1;  }
+  }
+}
+
 #clear-btn {
   position: absolute;
   right: 10px;
@@ -692,6 +752,26 @@ main {
   padding: 0;
   cursor: pointer;
   text-align: left;
+  /* ヒット領域拡張の起点 */
+  position: relative;
+  /* word-item の上下 padding 内側いっぱいまでボタン自身を伸ばす。
+     これにより ::before の top:-10px / bottom:-10px が word-item の
+     枠上下まで正しく届く（text は flex で縦中央配置） */
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+}
+
+/* クリック判定を word-item 枠内（左端〜縦棒｜直前）まで拡張する透明領域。
+   視覚には影響を与えず、クリックは親ボタンに伝搬する。
+     inset 内訳:
+       top/bottom: -10px = word-item の padding 10px ぶん（上下の枠まで）
+       left:      -14px = word-item の padding-left 14px（左枠まで）
+       right:     -12px = word-item の gap 12px（variants の border-left 直前まで） */
+.reading-copy::before {
+  content: "";
+  position: absolute;
+  inset: -10px -12px -10px -14px;
 }
 
 .reading-copy:hover {
@@ -933,75 +1013,8 @@ main {
 
 
 /* ─────────────────────────────────────────
-   ローディング
+   トースト
 ───────────────────────────────────────── */
-.loading-indicator {
-  text-align: center;
-  padding: 14px 0 4px;
-}
-
-/* ─── 辞書めくりアニメーション ─────────────────── */
-.book-loader {
-  display: inline-block;
-  position: relative;
-  width: 38px;
-  height: 30px;
-}
-
-/* 左ページ枠 */
-.book-loader::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 1px;
-  width: 16px;
-  height: 26px;
-  border: 2px solid var(--clr-primary);
-  border-right: none;
-  border-radius: 2px 0 0 2px;
-  opacity: 0.28;
-}
-
-/* 右ページ枠 */
-.book-loader::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 1px;
-  width: 16px;
-  height: 26px;
-  border: 2px solid var(--clr-primary);
-  border-left: none;
-  border-radius: 0 2px 2px 0;
-  opacity: 0.28;
-}
-
-/* めくれるページ（背表紙=中央を軸に右→左へ回転） */
-.book-page {
-  position: absolute;
-  left: 50%;
-  top: 4px;
-  width: 14px;
-  height: 20px;
-  background: var(--clr-primary-fill);
-  border-radius: 0 2px 2px 0;
-  transform-origin: left center;
-  opacity: 0;
-  animation: page-flip 1.2s ease-in-out infinite;
-}
-
-.book-page:nth-child(1) { animation-delay: 0s; }
-.book-page:nth-child(2) { animation-delay: 0.38s; }
-.book-page:nth-child(3) { animation-delay: 0.76s; }
-
-@keyframes page-flip {
-  0%   { transform: perspective(50px) rotateY(  0deg); opacity: 0;   }
-  8%   { transform: perspective(50px) rotateY(  0deg); opacity: 0.9; }
-  50%  { transform: perspective(50px) rotateY(-90deg); opacity: 0.7; }
-  92%  { transform: perspective(50px) rotateY(-180deg); opacity: 0.25; }
-  100% { transform: perspective(50px) rotateY(-180deg); opacity: 0;   }
-}
-
 .toast {
   position: fixed;
   background: var(--clr-toast-bg);
