@@ -870,7 +870,9 @@ function tryOptimisticFilter(newQuery) {
 // ─── バックグラウンドプリフェッチ ─────────────────────────────────────────────
 
 /** アイドル時に次ページをバックグラウンド取得するスケジューラー */
-const PREFETCH_LIMIT = 500;  // バックグラウンド取得の上限件数（DOM 蓄積量を抑制）
+// 大量結果は CSS の content-visibility でオフスクリーンを遅延描画するので
+// DOM 上限を設けずに API の hasMore が尽きるまで取り切る
+const PREFETCH_LIMIT = 10000; // API 側の OFFSET 上限（安全側の打ち切り）
 
 function schedulePrefetch() {
   if (idlePrefetchId !== null || !hasMore || isLoading || !currentQuery) return;

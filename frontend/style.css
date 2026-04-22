@@ -662,6 +662,13 @@ main {
   padding: 10px 14px;
   box-shadow: var(--shadow);
   transition: background .1s;
+  /* ビューポート外のレイアウト/ペイントをブラウザに委譲（CSS Containment） */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 56px; /* 詳細表示の概算高（実描画後は実寸に差し替わる） */
+}
+
+#results-list.simple .word-item {
+  contain-intrinsic-size: auto 40px; /* 簡易表示は 1 行ぶん低い概算 */
 }
 
 .word-item:hover {
