@@ -35,6 +35,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#4a5ec7">
+  <!-- 外部オリジンへの接続ヒント
+       ・variants クリック先（Google 検索）：preconnect で TLS まで事前完了
+       ・アクセス解析（本番のみ）：dns-prefetch で軽量に DNS 解決だけ前倒し -->
+  <link rel="preconnect" href="https://www.google.com" crossorigin>
+  <link rel="dns-prefetch" href="https://www.google.com">
+  <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+  <link rel="dns-prefetch" href="https://www.clarity.ms">
   <script>
     // テーマ初期化（FOUC 回避のため <head> 内で実行）＋トグルハンドラ
     (function () {
