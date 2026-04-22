@@ -68,6 +68,59 @@ function expandSmallKana(str) {
 }
 
 /**
+ * マッチング用の正規化：全角ワイルドカード/数字 → 半角、ひら→カタ、小→大
+ * バックエンドの normalizeQuery / normalized 列と一致させる
+ */
+function normalizeForMatch(str) {
+  const wcMap = {
+    '？':'?','＊':'*',
+    '１':'1','２':'2','３':'3','４':'4','５':'5',
+    '６':'6','７':'7','８':'8','９':'9',
+  };
+  const half = str.replace(/[？＊１-９]/g, c => wcMap[c] ?? c);
+  return expandSmallKana(toKatakana(half));
+}
+
+/**
+ * ローカルでの単語マッチ（バックエンド matchPattern と同じセマンティクス）
+ *   reading: 単語の読み（元のカタカナ、未正規化）
+ *   pattern: 正規化済みパターン文字列
+ * 戻り値: マッチすれば true
+ */
+function matchReading(reading, pattern) {
+  const w = [...expandSmallKana(reading)]; // 小→大で照合側を揃える
+  const p = [...pattern];
+  return matchHelper(w, 0, p, 0, {}, {});
+}
+
+function matchHelper(w, wp, p, pp, d2c, c2d) {
+  if (pp === p.length) return wp === w.length;
+  const ch = p[pp];
+  if (ch === '*') {
+    for (let i = wp; i <= w.length; i++) {
+      if (matchHelper(w, i, p, pp + 1, { ...d2c }, { ...c2d })) return true;
+    }
+    return false;
+  }
+  if (wp >= w.length) return false;
+  const wc = w[wp];
+  if (ch === '?') return matchHelper(w, wp + 1, p, pp + 1, d2c, c2d);
+  if (ch >= '1' && ch <= '9') {
+    if (ch in d2c) {
+      if (d2c[ch] !== wc) return false;
+      return matchHelper(w, wp + 1, p, pp + 1, d2c, c2d);
+    }
+    if (wc in c2d && c2d[wc] !== ch) return false;
+    return matchHelper(
+      w, wp + 1, p, pp + 1,
+      { ...d2c, [ch]: wc },
+      { ...c2d, [wc]: ch },
+    );
+  }
+  return ch === wc && matchHelper(w, wp + 1, p, pp + 1, d2c, c2d);
+}
+
+/**
  * 検索パターンを全角表記に変換（コピー先頭の【】用）
  *   ? → ？  * → ＊  1-9 → １-９  ひらがな → カタカナ
  */
@@ -175,9 +228,9 @@ inputEl.addEventListener('input', () => {
   cancelPrefetch();
   // DOM ノードが多い場合は即解放してメモリ・描画バッファを解消
   // （少量なら stale フェードで視覚的な連続性を維持）
+  // currentData 自体は保持する（doSearch の楽観フィルタで使う）
   if (resultsList.children.length > 60) {
     resultsList.replaceChildren();
-    currentData = null;
   } else {
     resultsList.classList.add('stale');
   }
@@ -387,12 +440,44 @@ async function doSearch(reset) {
     }
   }
 
-  // セッションキャッシュがあれば即座に表示（ネットワーク待ち不要）
+  // メモリキャッシュ（query×offset 単位）があればネットワーク不要で即描画
+  const memHit = memCacheGet(query, currentOffset);
+  if (memHit) {
+    // 在りし日の fetch があればキャンセル（帯域と CPU を節約）
+    if (abortController) { abortController.abort(); abortController = null; }
+    const newWords = memHit.words;
+    hasMore = !!memHit.hasMore;
+    currentOffset += newWords.length;
+    hasNetworkError = false;
+    if (reset || !currentData) {
+      currentData = { ...memHit };
+      renderResults(currentData);
+    } else {
+      currentData.words = currentData.words.concat(newWords);
+      currentData.count = currentData.words.length;
+      currentData.hasMore = hasMore;
+      appendResults(newWords, currentData);
+    }
+    isLoading = false;
+    setLoading(false);
+    schedulePrefetch();
+    return;
+  }
+
+  // セッションキャッシュ（リロード復元用）：即時表示して API でも更新取得
   if (reset) {
     const cached = cacheRead(query);
     if (cached) {
       renderResults(cached);
-      // currentOffset は 0 のまま→ネットワーク取得は常に先頭から
+    } else {
+      // 楽観サブセット描画：前結果を新クエリでローカルフィルタして仮表示
+      // （API 確定まで stale 表示）
+      const optimistic = tryOptimisticFilter(query);
+      if (optimistic) {
+        renderResults(optimistic);
+        resultsList.classList.add('stale');
+        countEl.classList.add('stale');
+      }
     }
   }
 
@@ -400,11 +485,13 @@ async function doSearch(reset) {
   if (abortController) abortController.abort();
   abortController = new AbortController();
 
+  const requestOffset = currentOffset; // メモリキャッシュのキーに使う
+
   try {
     isLoading = true;
     setLoading(true);
     const res = await fetch(
-      `${API_URL}?q=${encodeURIComponent(query)}&offset=${currentOffset}&limit=${PAGE_SIZE}`,
+      `${API_URL}?q=${encodeURIComponent(query)}&offset=${requestOffset}&limit=${PAGE_SIZE}`,
       { signal: abortController.signal }
     );
     if (!res.ok) {
@@ -424,10 +511,13 @@ async function doSearch(reset) {
     const newWords = data.words;
     currentOffset += newWords.length;
 
+    // メモリキャッシュへページ単位で保存
+    memCacheSet(query, requestOffset, data);
+
     if (reset || !currentData) {
       currentData = { ...data };
       renderResults(currentData);
-      cacheWrite(query, currentData); // 1ページ目をキャッシュ保存
+      cacheWrite(query, currentData); // 1ページ目を sessionStorage にも保存
     } else {
       // ページネーション：差分のみ追記（全再描画なし）
       currentData.words = currentData.words.concat(newWords);
@@ -745,6 +835,38 @@ function renderError(info) {
   currentData = null;
 }
 
+// ─── 楽観サブセットフィルタ ──────────────────────────────────────────────────
+// 前回の結果（currentData）を新クエリでローカルマッチして即表示する。
+// マッチャのセマンティクスは PHP 側と同じなので、結果は常に正しい（偽陽性なし）。
+// ただし currentData が部分ロード（hasMore）の場合は真のマッチのうち一部しか
+// 拾えないため、API 確定で差し替えられるまで stale 表示とする。
+function tryOptimisticFilter(newQuery) {
+  if (!currentData || !Array.isArray(currentData.words) || currentData.words.length === 0) {
+    return null;
+  }
+  const norm = normalizeForMatch(newQuery);
+  if (!norm) return null;
+
+  // 再帰爆発回避：* が多いパターンはローカル実行しない（バックエンドも制限あり）
+  const starCount = (norm.match(/\*/g) || []).length;
+  if (starCount > 3) return null;
+
+  // 計算量制約：対象ワード数が多すぎるなら諦める
+  if (currentData.words.length > 1000) return null;
+
+  const matched = [];
+  for (const w of currentData.words) {
+    if (matchReading(w.reading, norm)) matched.push(w);
+  }
+  if (matched.length === 0) return null; // 0 件なら仮表示せず既存 stale に任せる
+  return {
+    count: matched.length,
+    total: currentData.total,
+    words: matched,
+    hasMore: false, // ローカルフィルタ結果は「この集合内で完結」扱い
+  };
+}
+
 // ─── バックグラウンドプリフェッチ ─────────────────────────────────────────────
 
 /** アイドル時に次ページをバックグラウンド取得するスケジューラー */
@@ -807,12 +929,41 @@ function escHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-// ─── sessionStorage キャッシュ ─────────────────────────────────────────────────
-// リロード後も同じクエリを即座に表示するための 1 ページ目キャッシュ
+// ─── キャッシュ（LRU メモリ + sessionStorage） ────────────────────────────────
+// メモリ: クエリ×offset 粒度で保存（戻る・同クエリ再訪時の追加ページもゼロ待ち）
+// sessionStorage: リロード復元用、1 ページ目のみ（容量節約）
 
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 分（辞書は変わらないので長めでも安全）
+const MEM_CACHE_MAX = 50;            // ~50 エントリ（100件×平均300Bで 1.5MB 程度）
+const memCache = new Map();          // Map は挿入順を保つので LRU の土台に使える
+
+function memKey(query, offset) { return `${query}@${offset}`; }
+
+function memCacheGet(query, offset) {
+  const k = memKey(query, offset);
+  if (!memCache.has(k)) return null;
+  const v = memCache.get(k);
+  if (Date.now() - v.ts > CACHE_TTL_MS) {
+    memCache.delete(k);
+    return null;
+  }
+  // LRU: 参照時に末尾へ移動
+  memCache.delete(k);
+  memCache.set(k, v);
+  return v.data;
+}
+
+function memCacheSet(query, offset, data) {
+  const k = memKey(query, offset);
+  memCache.set(k, { ts: Date.now(), data });
+  if (memCache.size > MEM_CACHE_MAX) {
+    // 最古（先頭）を落とす
+    memCache.delete(memCache.keys().next().value);
+  }
+}
 
 function cacheWrite(query, data) {
+  // 1 ページ目のみ sessionStorage にも保存（リロード復元用）
   try {
     sessionStorage.setItem(
       'cw_' + query,
