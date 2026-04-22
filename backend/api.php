@@ -111,6 +111,41 @@ function buildLikePattern(string $pattern): string {
 }
 
 /**
+ * 数字ワイルドカードから位置ペア制約を抽出
+ *   同じ数字（例：１...１）→ 同字制約（eq）
+ *   違う数字（例：１...２）→ 異字制約（neq）
+ *
+ * 戻り値: ['eq' => [[posA, posB], ...], 'neq' => [[posA, posB], ...]]
+ *   ※ posA/posB は 1-indexed（SQL substr で使うため）
+ */
+function extractDigitConstraints(array $patChars): array {
+    $posByDigit = [];
+    foreach ($patChars as $i => $ch) {
+        $code = ord($ch);
+        if ($code >= 0x31 && $code <= 0x39) {
+            $posByDigit[$ch][] = $i + 1;
+        }
+    }
+    $eq = [];
+    foreach ($posByDigit as $positions) {
+        // 同じ数字の全位置同士が等しい → 最初の位置と他の位置をペアに
+        for ($i = 1, $n = count($positions); $i < $n; $i++) {
+            $eq[] = [$positions[0], $positions[$i]];
+        }
+    }
+    $neq = [];
+    $digits = array_keys($posByDigit);
+    $dn = count($digits);
+    for ($i = 0; $i < $dn; $i++) {
+        for ($j = $i + 1; $j < $dn; $j++) {
+            // 違う数字の代表位置同士を 1 組（eq 制約で他の位置へ伝播する）
+            $neq[] = [$posByDigit[$digits[$i]][0], $posByDigit[$digits[$j]][0]];
+        }
+    }
+    return ['eq' => $eq, 'neq' => $neq];
+}
+
+/**
  * 数字ワイルドカード制約チェック（バックトラッキング）
  *   同じ数字 = 同じ文字
  *   違う数字 = 必ず違う文字
@@ -272,44 +307,72 @@ function searchWords(SQLite3 $db, string $query, int $total, int $offset, int $l
         ];
     }
 
-    // 数字ワイルドカードあり: PHP 側フィルタが必要なため、候補をチャンクで舐める
+    // パターン側は候補ごとに不変なので事前に分解
+    $patChars = preg_split('//u', $normalized, -1, PREG_SPLIT_NO_EMPTY);
+    $patLen   = count($patChars);
+
+    // ─── 数字ワイルドカードあり、* なし ─────────────────────────────────────
+    // 位置が固定なので、同字/異字制約を substr() で SQL 側に push down できる
+    // → PHP 側フィルタ・チャンク走査が不要で LIMIT/OFFSET が効く
+    if (!$hasStar) {
+        $constraints = extractDigitConstraints($patChars);
+        $fixedLen    = $patLen;
+        $conds       = ["len = :l", "normalized LIKE :p ESCAPE '\\'"];
+        foreach ($constraints['eq'] as [$a, $b]) {
+            $conds[] = "substr(normalized, $a, 1) = substr(normalized, $b, 1)";
+        }
+        foreach ($constraints['neq'] as [$a, $b]) {
+            $conds[] = "substr(normalized, $a, 1) != substr(normalized, $b, 1)";
+        }
+        $sql = "SELECT reading, variants
+                  FROM words
+                 WHERE " . implode(' AND ', $conds) . "
+                 ORDER BY len, normalized
+                 LIMIT :lim OFFSET :off";
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':l',   $fixedLen,    SQLITE3_INTEGER);
+        $stmt->bindValue(':p',   $likePattern, SQLITE3_TEXT);
+        $stmt->bindValue(':lim', $limit + 1,   SQLITE3_INTEGER);
+        $stmt->bindValue(':off', $offset,      SQLITE3_INTEGER);
+
+        $res   = $stmt->execute();
+        $words = [];
+        while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+            $words[] = [
+                'reading'  => $row['reading'],
+                'variants' => json_decode($row['variants'], true),
+            ];
+        }
+        $hasMore = count($words) > $limit;
+        if ($hasMore) array_pop($words);
+        return [
+            'count'   => count($words),
+            'total'   => $total,
+            'words'   => $words,
+            'hasMore' => $hasMore,
+        ];
+    }
+
+    // ─── 数字ワイルドカード + * あり ─────────────────────────────────────
+    // 位置が可変なので PHP 側フィルタが必要。候補をチャンクで舐める
     $candidateChunk = 4000;
     $dbOffset       = 0;
     $matchedIndex   = 0;
     $words          = [];
     $hasMore        = false;
 
-    // パターン側は候補ごとに不変なので事前に分解
-    $patChars = preg_split('//u', $normalized, -1, PREG_SPLIT_NO_EMPTY);
-    $patLen   = count($patChars);
-
     while (true) {
         if (connection_aborted()) break;  // クライアント切断なら即終了
-        if (!$hasStar) {
-            $fixedLen = mb_strlen($normalized);
-            $stmt = $db->prepare(
-                "SELECT reading, normalized, variants
-                   FROM words
-                  WHERE len = :l AND normalized LIKE :p ESCAPE '\\'
-                  ORDER BY len, normalized
-                  LIMIT :lim OFFSET :off"
-            );
-            $stmt->bindValue(':l',   $fixedLen,       SQLITE3_INTEGER);
-            $stmt->bindValue(':p',   $likePattern,    SQLITE3_TEXT);
-            $stmt->bindValue(':lim', $candidateChunk, SQLITE3_INTEGER);
-            $stmt->bindValue(':off', $dbOffset,       SQLITE3_INTEGER);
-        } else {
-            $stmt = $db->prepare(
-                "SELECT reading, normalized, variants
-                   FROM words
-                  WHERE normalized LIKE :p ESCAPE '\\'
-                  ORDER BY len, normalized
-                  LIMIT :lim OFFSET :off"
-            );
-            $stmt->bindValue(':p',   $likePattern,    SQLITE3_TEXT);
-            $stmt->bindValue(':lim', $candidateChunk, SQLITE3_INTEGER);
-            $stmt->bindValue(':off', $dbOffset,       SQLITE3_INTEGER);
-        }
+        $stmt = $db->prepare(
+            "SELECT reading, normalized, variants
+               FROM words
+              WHERE normalized LIKE :p ESCAPE '\\'
+              ORDER BY len, normalized
+              LIMIT :lim OFFSET :off"
+        );
+        $stmt->bindValue(':p',   $likePattern,    SQLITE3_TEXT);
+        $stmt->bindValue(':lim', $candidateChunk, SQLITE3_INTEGER);
+        $stmt->bindValue(':off', $dbOffset,       SQLITE3_INTEGER);
         $res = $stmt->execute();
         $chunkRows = 0;
         while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
