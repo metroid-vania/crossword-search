@@ -4,7 +4,7 @@
  *   - api.php: Network Only（キャッシュしない）
  *   - クロスオリジン: 介入しない
  */
-const VERSION = '2026042006';
+const VERSION = '2026042208';
 const CACHE_NAME = `findword-cache-${VERSION}`;
 
 const PRECACHE_URLS = [
