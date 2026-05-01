@@ -224,14 +224,19 @@ html {
 }
 
 body {
-  font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN",
-               "Hiragino Sans", Meiryo, sans-serif;
+  /* Inter（英数）→ システム英数 → 日本語フォントの順でフォールバック。
+     shadcn 標準の "feature settings" を有効化して、cv11(一階建て a) 等を活かす */
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial,
+               "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+  font-feature-settings: "cv11", "ss01", "ss03";
   font-weight: 400;
   background: var(--clr-bg);
   color: var(--clr-text);
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ─────────────────────────────────────────
@@ -241,7 +246,7 @@ header {
   background: var(--clr-primary-fill);
   color: #fff;
   padding: 14px 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,.15);
+  box-shadow: var(--shadow-sm);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -259,14 +264,15 @@ header {
 
 header h1 {
   font-size: 1.2rem;
-  font-weight: 700;
-  letter-spacing: .02em;
+  font-weight: 600;
+  letter-spacing: -.01em;   /* shadcn 流のタイト目なヘッディング */
 }
 
 header p {
   font-size: .78rem;
   opacity: .85;
   margin-top: 2px;
+  letter-spacing: .01em;
 }
 
 .header-help-link {
@@ -278,13 +284,18 @@ header p {
   height: 36px;
   border-radius: 50%;
   color: #fff;
-  opacity: .75;
-  transition: opacity .15s, background .15s;
+  opacity: .8;
+  transition: opacity .15s, background .15s, box-shadow .15s;
 }
 
 .header-help-link:hover {
   opacity: 1;
   background: rgba(255, 255, 255, .15);
+}
+
+.header-help-link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, .35);
 }
 
 /* テーマ切替ボタン */
@@ -302,13 +313,18 @@ header p {
   background: transparent;
   color: #fff;
   cursor: pointer;
-  opacity: .75;
-  transition: opacity .15s, background .15s, transform .3s ease;
+  opacity: .8;
+  transition: opacity .15s, background .15s, transform .3s ease, box-shadow .15s;
 }
 
 .header-theme-toggle:hover {
   opacity: 1;
   background: rgba(255, 255, 255, .15);
+}
+
+.header-theme-toggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, .35);
 }
 
 .header-theme-toggle:active {
@@ -357,20 +373,21 @@ main {
 .search-area {
   max-width: 688px; /* main の max-width(720px) - 左右パディング(16px×2) */
   margin: 0 auto;
-  background: var(--clr-surface);
-  border: 1px solid var(--clr-border);
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 20px;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-sm);
 }
 
 .search-area label {
   display: block;
   font-size: 1rem;
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   color: var(--clr-text);
   text-align: center;
+  letter-spacing: -.01em;
 }
 
 .input-row {
@@ -397,33 +414,47 @@ main {
   pointer-events: none;
 }
 
+/* shadcn outline Button 寄せ：1px ボーダー、ホバーで accent 背景 */
 .wc-chip {
   flex: 0 0 auto;
   min-width: 40px;
   height: 36px;
-  padding: 0 10px;
-  border: 1.5px solid rgba(var(--clr-primary-rgb), .25);
+  padding: 0 12px;
+  border: 1px solid var(--border);
   background: var(--clr-surface);
-  color: var(--clr-primary);
-  border-radius: 8px;
+  color: var(--clr-text);
+  border-radius: var(--radius-md);
   font-size: 1.05rem;
-  font-weight: 600;
+  font-weight: 500;
   font-family: inherit;
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  transition: background .1s, border-color .1s;
+  transition: background .12s, border-color .12s, color .12s;
 }
 
+/* 強調チップ（？＊）は薄いプライマリ色を残してわずかに目立たせる */
 .wc-chip-wild {
   background: var(--clr-chip-soft-bg);
-  border-color: rgba(var(--clr-primary-rgb), .5);
+  border-color: rgba(var(--clr-primary-rgb), .35);
+  color: var(--clr-primary);
   font-size: 1.2rem;
+}
+
+.wc-chip:hover {
+  background: var(--accent);
+  border-color: var(--clr-primary);
+  color: var(--clr-primary);
 }
 
 .wc-chip:active {
   background: rgba(var(--clr-primary-rgb), .15);
   border-color: var(--clr-primary);
+}
+
+.wc-chip:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ring);
 }
 
 .input-wrapper {
@@ -447,8 +478,9 @@ main {
   font-size: 1.25rem;
   font-family: inherit;
   padding: 10px 44px 10px 40px;
-  border: 1.5px solid rgba(var(--clr-primary-rgb), .35);
-  border-radius: 6px;
+  /* shadcn Input: 1px ボーダー、 focus で 3px ring（ring カラー） */
+  border: 1px solid var(--input);
+  border-radius: var(--radius-md);
   outline: none;
   background: var(--clr-surface);
   color: var(--clr-text);
@@ -461,7 +493,7 @@ main {
 
 @keyframes input-invite {
   0%   { box-shadow: 0 0 0 0   rgba(var(--clr-primary-rgb), 0); }
-  40%  { box-shadow: 0 0 0 6px rgba(var(--clr-primary-rgb), .15); }
+  40%  { box-shadow: 0 0 0 5px rgba(var(--clr-primary-rgb), .14); }
   100% { box-shadow: 0 0 0 0   rgba(var(--clr-primary-rgb), 0); }
 }
 
@@ -497,7 +529,7 @@ main {
   height: 18px;
   margin-top: -9px;          /* translateY(-50%) は回転アニメと競合するため固定オフセット */
   color: var(--clr-primary); /* 内部 <circle stroke="currentColor"> が拾う */
-  animation: search-spinner-rotate .5s linear infinite;
+  animation: search-spinner-rotate .8s linear infinite;
   transform-origin: 50% 50%;
   will-change: transform;
   /* 親の再描画サイクルから切り離して独立に GPU 合成させる */
@@ -538,14 +570,15 @@ main {
   }
 }
 
+/* クリアボタン（shadcn ghost icon button 寄せ：丸型・控えめ・hoverで濃く） */
 #clear-btn {
   position: absolute;
   right: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   padding: 0;
   border: none;
   border-radius: 50%;
@@ -553,23 +586,31 @@ main {
   color: #fff;
   cursor: pointer;
   flex-shrink: 0;
-  transition: background .12s;
+  opacity: .75;
+  transition: background .15s, opacity .15s;
 }
 
-/* タップ判定を 44x44 に拡張（視覚は 24x24 のまま） */
+/* タップ判定を 44x44 に拡張（視覚は 22x22 のまま） */
 #clear-btn::before {
   content: "";
   position: absolute;
-  inset: -10px;
+  inset: -11px;
 }
 
 #clear-btn:hover {
   background: var(--clr-clear-btn-hv);
+  opacity: 1;
+}
+
+#clear-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ring);
 }
 
 #search-input:focus {
   border-color: var(--clr-primary);
-  box-shadow: 0 0 0 3px rgba(var(--clr-primary-rgb), .18);
+  /* shadcn 標準: 3px ring + ring カラー */
+  box-shadow: 0 0 0 3px var(--ring);
 }
 
 #search-input::placeholder {
@@ -629,9 +670,10 @@ main {
 }
 
 #hit-count {
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--clr-text);
+  letter-spacing: -.01em;
   font-variant-numeric: tabular-nums; /* 件数の数字幅を等幅化して更新時のブレを抑える */
   transition: color .15s, opacity .15s;
 }
@@ -665,20 +707,20 @@ main {
   min-width: 0;
 }
 
-/* すべてコピー ボタン（アイコンのみ、さり気なく） */
+/* すべてコピー ボタン（shadcn ghost icon button） */
 .copy-all-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   background: transparent;
-  color: var(--clr-muted);
+  color: var(--muted-foreground);
   cursor: pointer;
-  transition: background .15s, color .15s, opacity .15s;
+  transition: background .15s, color .15s, opacity .15s, box-shadow .15s;
 }
 
 .copy-all-btn[hidden] {
@@ -686,13 +728,13 @@ main {
 }
 
 .copy-all-btn:hover:not(:disabled) {
-  background: rgba(var(--clr-primary-rgb), .12);
-  color: var(--clr-primary);
+  background: var(--accent);
+  color: var(--accent-foreground);
 }
 
 .copy-all-btn:focus-visible {
-  outline: 2px solid var(--clr-primary);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ring);
 }
 
 .copy-all-btn:disabled {
@@ -700,12 +742,13 @@ main {
   cursor: not-allowed;
 }
 
-/* 表示切替セグメントコントロール */
+/* shadcn ToggleGroup（outline variant）: 細ボーダー＋区切り線 */
 .view-toggle-group {
   display: flex;
-  border: 1.5px solid var(--clr-primary);
-  border-radius: 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   overflow: hidden;
+  background: var(--clr-surface);
 }
 
 .view-toggle-group[hidden] {
@@ -713,16 +756,16 @@ main {
 }
 
 .view-toggle-group button {
-  font-size: .84rem;
+  font-size: .82rem;
   font-family: inherit;
-  font-weight: 600;
+  font-weight: 500;
   padding: 0 12px;
-  height: 34px;
+  height: 32px;
   border: none;
   cursor: pointer;
   background: transparent;
-  color: var(--clr-primary);
-  transition: background .15s, color .15s;
+  color: var(--clr-muted);
+  transition: background .15s, color .15s, box-shadow .15s;
   white-space: nowrap;
 }
 
@@ -732,7 +775,8 @@ main {
 }
 
 .view-toggle-group button:hover:not(.active) {
-  background: rgba(var(--clr-primary-rgb), .09);
+  background: var(--accent);
+  color: var(--clr-text);
 }
 
 .view-toggle-group button:focus {
@@ -740,12 +784,12 @@ main {
 }
 
 .view-toggle-group button:focus-visible {
-  outline: 2px solid var(--clr-primary);
-  outline-offset: -2px;
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--clr-primary);
 }
 
 .view-toggle-group button + button {
-  border-left: 1.5px solid var(--clr-primary);
+  border-left: 1px solid var(--border);
 }
 
 /* 簡易表示モード */
@@ -789,16 +833,17 @@ main {
   pointer-events: none;
 }
 
+/* shadcn Card 寄せ：1px ボーダー、極小シャドウ、ホバー時に accent */
 .word-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: var(--clr-surface);
-  border: 1px solid var(--clr-border);
-  border-radius: 6px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   padding: 10px 14px;
-  box-shadow: var(--shadow);
-  transition: background .1s;
+  box-shadow: var(--shadow-xs);
+  transition: background .12s, border-color .12s;
   /* ビューポート外のレイアウト/ペイントをブラウザに委譲（CSS Containment） */
   content-visibility: auto;
   contain-intrinsic-size: auto 56px; /* 詳細表示の概算高（実描画後は実寸に差し替わる） */
@@ -869,22 +914,24 @@ main {
   min-height: calc(0.82rem * 1.45 + 4px); /* ピルと同じ高さを確保 */
 }
 
+/* shadcn Badge (secondary) 寄せ：薄背景の pill */
 .variant-link {
   display: inline-block;
   padding: 1px 10px;
-  border: 1px solid var(--clr-variant-border);
+  border: 1px solid transparent;
   border-radius: 999px;
-  background: var(--clr-variant-bg);
-  color: var(--clr-variant-text);
+  background: var(--secondary);
+  color: var(--secondary-foreground);
   text-decoration: none;
   line-height: 1.45;
+  font-weight: 500;
   transition: background-color .12s ease, border-color .12s ease, color .12s ease;
 }
 
 .variant-link:hover {
   color: var(--clr-primary);
-  background: var(--clr-hover-bg);
-  border-color: var(--clr-hover-border);
+  background: var(--accent);
+  border-color: rgba(var(--clr-primary-rgb), .35);
   text-decoration: none;
 }
 
@@ -918,30 +965,34 @@ main {
   line-height: 1.6;
 }
 
+/* shadcn default Button: プライマリ塗り */
 .error-retry {
   margin-top: 8px;
-  padding: 8px 22px;
-  border: 1.5px solid var(--clr-primary);
-  background: var(--clr-surface);
-  color: var(--clr-primary);
-  border-radius: 999px;
+  padding: 8px 20px;
+  border: 1px solid var(--clr-primary-fill);
+  background: var(--clr-primary-fill);
+  color: #fff;
+  border-radius: var(--radius-md);
   font-family: inherit;
-  font-size: .95rem;
-  font-weight: 600;
+  font-size: .92rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: background .12s, color .12s;
+  transition: background .12s, color .12s, box-shadow .12s;
 }
 
 .error-retry:hover {
-  background: var(--clr-primary-fill);
-  color: #fff;
-  border-color: var(--clr-primary-fill);
+  background: var(--clr-primary-fill-hv);
+  border-color: var(--clr-primary-fill-hv);
 }
 
 .error-retry:active {
   background: var(--clr-primary-fill-hv);
-  color: #fff;
   border-color: var(--clr-primary-fill-hv);
+}
+
+.error-retry:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ring);
 }
 
 /* ─────────────────────────────────────────
@@ -972,26 +1023,33 @@ main {
   gap: 8px;
 }
 
+/* shadcn outline Button: 1px ボーダー＋ホバーで accent */
 .suggestion-btn {
-  padding: 8px 14px;
-  border: 1.5px solid rgba(var(--clr-primary-rgb), .35);
+  padding: 8px 16px;
+  border: 1px solid var(--border);
   background: var(--clr-surface);
-  color: var(--clr-primary);
+  color: var(--clr-text);
   border-radius: 999px;
   font-family: inherit;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
-  transition: background .12s, border-color .12s;
+  transition: background .12s, border-color .12s, color .12s, box-shadow .12s;
 }
 
 .suggestion-btn:hover {
-  background: var(--clr-hover-bg);
+  background: var(--accent);
   border-color: var(--clr-primary);
+  color: var(--clr-primary);
 }
 
 .suggestion-btn:active {
   background: rgba(var(--clr-primary-rgb), .15);
+}
+
+.suggestion-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ring);
 }
 
 /* ─────────────────────────────────────────
@@ -1025,12 +1083,13 @@ main {
 
 .legend {
   margin: 0;
-  padding: 10px 14px;
+  padding: 12px 14px;
   width: 100%;
   max-width: 360px;
-  background: var(--clr-surface);
-  border: 1px solid var(--clr-border);
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
+  box-shadow: var(--shadow-xs);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -1056,7 +1115,7 @@ main {
   font-size: .8rem;
   font-weight: 700;
   padding: 2px 8px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-family: inherit;
   letter-spacing: .02em;
 }
@@ -1090,21 +1149,22 @@ main {
 
 
 /* ─────────────────────────────────────────
-   トースト
+   トースト（shadcn Sonner 寄せ：濃い背景＋反転テキスト＋極小シャドウ）
 ───────────────────────────────────────── */
 .toast {
   position: fixed;
   background: var(--clr-toast-bg);
   color: var(--clr-toast-text);
   font-size: .84rem;
-  font-weight: 600;
-  padding: 5px 12px;
-  border-radius: 8px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, .22);
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
   pointer-events: none;
   white-space: nowrap;
   z-index: 999;
   opacity: 0;
+  letter-spacing: .01em;
 }
 
 /* 吹き出しの三角（正方形45°回転方式、位置はJS側で調整） */
@@ -1119,7 +1179,7 @@ main {
   transform: translateX(-50%) rotate(45deg);
 }
 
-/* エラー時は赤系に */
+/* エラー時は destructive 色 */
 .toast.error {
   background: var(--clr-error);
   color: #fff;
@@ -1185,11 +1245,16 @@ main {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 3px 10px rgba(0,0,0,.25);
+  box-shadow: var(--shadow-lg);
   opacity: 0;
   pointer-events: none;
-  transition: opacity .25s ease, background .15s;
+  transition: opacity .25s ease, background .15s, box-shadow .15s;
   z-index: 100;
+}
+
+#back-to-top:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-lg), 0 0 0 3px var(--ring);
 }
 
 /* モバイル用コンテンツはデフォルトで非表示 */
@@ -1270,7 +1335,7 @@ main {
     gap: 2px;
     right: 20px;
     bottom: 20px;
-    box-shadow: 0 4px 16px rgba(0,0,0,.32);
+    box-shadow: var(--shadow-lg);
   }
 
   .btt-arrow {
