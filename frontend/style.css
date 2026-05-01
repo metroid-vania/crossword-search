@@ -8,45 +8,78 @@
 }
 
 :root {
-  /* 基本色 */
-  --clr-bg:         #f5f5f5;
-  --clr-surface:    #ffffff;
-  --clr-border:     #d0d7de;
-  --clr-text:       #1f2328;
-  --clr-muted:      #656d76;
-  --clr-disabled:   #8c959f;
-  --clr-reading:    #111827;
-  --clr-divider:    #d8dee6;
+  /* ─────────────────────────────────────────
+     デザイントークン（shadcn/ui new-york 寄せ）
+     既存の --clr-* は互換のため残置。新規は shadcn 命名に揃える。
+  ───────────────────────────────────────── */
 
-  /* プライマリ（テキスト・アクセント用：暗い背景では明るくする） */
+  /* 基本色（new-york: ややクールなニュートラル zinc 寄り） */
+  --clr-bg:         #fafafa;   /* zinc-50 相当 */
+  --clr-surface:    #ffffff;
+  --clr-border:     #e4e4e7;   /* zinc-200 */
+  --clr-text:       #09090b;   /* zinc-950 */
+  --clr-muted:      #71717a;   /* zinc-500 */
+  --clr-disabled:   #a1a1aa;   /* zinc-400 */
+  --clr-reading:    #09090b;
+  --clr-divider:    #e4e4e7;
+
+  /* プライマリ（ブランド indigo 維持） */
   --clr-primary:      #4a5ec7;
-  --clr-primary-rgb:  74, 94, 199;  /* rgba の透明度調整用 */
-  /* プライマリ（白文字を乗せる塗りつぶし：両モードで同じ濃さを維持） */
+  --clr-primary-rgb:  74, 94, 199;
   --clr-primary-fill:    #4a5ec7;
   --clr-primary-fill-hv: #3a4db5;
-  --clr-primary-hv:      var(--clr-primary-fill-hv); /* 下位互換 */
+  --clr-primary-hv:      var(--clr-primary-fill-hv);
 
   /* ホバー / 副次色 */
-  --clr-hover-bg:       #eef0fc;
+  --clr-hover-bg:       #f4f4f5;   /* zinc-100：ニュートラルなホバー */
   --clr-hover-border:   #a0aadf;
-  --clr-variant-bg:     #f4f5f7;
-  --clr-variant-border: #d9dee5;
-  --clr-variant-text:   #4a5560;
+  --clr-variant-bg:     #f4f4f5;
+  --clr-variant-border: #e4e4e7;
+  --clr-variant-text:   #52525b;   /* zinc-600 */
   --clr-chip-soft-bg:   #f0f2fb;
-  --clr-code-bg:        #f0f3f6;
+  --clr-code-bg:        #f4f4f5;
   --clr-code-accent:    #c7254e;
-  --clr-clear-btn-bg:   #4a4f58;
-  --clr-clear-btn-hv:   #23272f;
+  --clr-clear-btn-bg:   #71717a;
+  --clr-clear-btn-hv:   #27272a;
 
   /* 状態 */
-  --clr-error:      #c0392b;
+  --clr-error:      #dc2626;   /* shadcn destructive */
 
   /* トースト */
-  --clr-toast-bg:   rgb(17, 24, 39);
-  --clr-toast-text: #ffffff;
+  --clr-toast-bg:   #18181b;   /* zinc-900 */
+  --clr-toast-text: #fafafa;
 
-  --radius:         8px;
-  --shadow:         0 1px 3px rgba(0,0,0,.12);
+  /* shadcn 命名エイリアス */
+  --background:           var(--clr-bg);
+  --foreground:           var(--clr-text);
+  --card:                 var(--clr-surface);
+  --card-foreground:      var(--clr-text);
+  --popover:              var(--clr-surface);
+  --popover-foreground:   var(--clr-text);
+  --primary:              var(--clr-primary-fill);
+  --primary-foreground:   #ffffff;
+  --secondary:            var(--clr-hover-bg);
+  --secondary-foreground: var(--clr-text);
+  --muted:                var(--clr-hover-bg);
+  --muted-foreground:     var(--clr-muted);
+  --accent:               var(--clr-hover-bg);
+  --accent-foreground:    var(--clr-text);
+  --destructive:          var(--clr-error);
+  --border:               var(--clr-border);
+  --input:                var(--clr-border);
+  --ring:                 rgba(var(--clr-primary-rgb), .55);
+
+  /* 角丸スケール（new-york: 0.5rem 基準＋小・中） */
+  --radius:         8px;        /* card / area */
+  --radius-md:      6px;        /* button / input */
+  --radius-sm:      4px;        /* chip 内訳要素 */
+
+  /* シャドウスケール（shadcn は非常に控えめ） */
+  --shadow-xs:      0 1px 2px 0 rgba(0,0,0,.04);
+  --shadow-sm:      0 1px 2px 0 rgba(0,0,0,.05);
+  --shadow:         0 1px 3px 0 rgba(0,0,0,.08), 0 1px 2px -1px rgba(0,0,0,.06);
+  --shadow-md:      0 4px 6px -1px rgba(0,0,0,.10), 0 2px 4px -2px rgba(0,0,0,.06);
+  --shadow-lg:      0 10px 15px -3px rgba(0,0,0,.10), 0 4px 6px -4px rgba(0,0,0,.05);
 }
 
 /* ─────────────────────────────────────────
@@ -55,76 +88,120 @@
    ・ユーザーがヘッダーのトグルで明示指定した場合は
      html[data-theme="light" | "dark"] が最優先で適用される
 ───────────────────────────────────────── */
+/* ダークモード共通トークン（new-york dark: zinc-950 / zinc-50 系） */
 @media (prefers-color-scheme: dark) {
   /* ユーザーが明示的にライトを選んでいない場合のみ適用 */
   html:not([data-theme="light"]) {
-    --clr-bg:         #13161c;
-    --clr-surface:    #1e222b;
-    --clr-border:     #323845;
-    --clr-text:       #e5e7eb;
-    --clr-muted:      #9aa0a8;
-    --clr-disabled:   #5c6270;
-    --clr-reading:    #f3f4f6;
-    --clr-divider:    #3a3f4a;
+    --clr-bg:         #09090b;   /* zinc-950 */
+    --clr-surface:    #18181b;   /* zinc-900 */
+    --clr-border:     #27272a;   /* zinc-800 */
+    --clr-text:       #fafafa;   /* zinc-50 */
+    --clr-muted:      #a1a1aa;   /* zinc-400 */
+    --clr-disabled:   #52525b;   /* zinc-600 */
+    --clr-reading:    #fafafa;
+    --clr-divider:    #27272a;
 
     --clr-primary:         #8b99e5;
     --clr-primary-rgb:     139, 153, 229;
     --clr-primary-fill:    #4a5ec7;
     --clr-primary-fill-hv: #5d70d2;
 
-    --clr-hover-bg:       rgba(139, 153, 229, .12);
+    --clr-hover-bg:       #27272a;   /* zinc-800：ニュートラルなホバー */
     --clr-hover-border:   #6975b5;
-    --clr-variant-bg:     #2a2e3a;
-    --clr-variant-border: #3a3f4a;
-    --clr-variant-text:   #c5ccd6;
+    --clr-variant-bg:     #27272a;
+    --clr-variant-border: #3f3f46;   /* zinc-700 */
+    --clr-variant-text:   #d4d4d8;   /* zinc-300 */
     --clr-chip-soft-bg:   rgba(139, 153, 229, .15);
-    --clr-code-bg:        #252931;
+    --clr-code-bg:        #27272a;
     --clr-code-accent:    #ff8095;
-    --clr-clear-btn-bg:   #3a3f4a;
-    --clr-clear-btn-hv:   #5c6270;
+    --clr-clear-btn-bg:   #3f3f46;
+    --clr-clear-btn-hv:   #71717a;
 
-    --clr-error:      #e06a5d;
+    --clr-error:      #ef4444;
+    --destructive:    #ef4444;
 
-    --clr-toast-bg:   #3a3f4a;
-    --clr-toast-text: #f3f4f6;
+    --clr-toast-bg:   #fafafa;       /* shadcn dark Sonner: 反転して明色背景 */
+    --clr-toast-text: #18181b;
 
-    --shadow:         0 1px 3px rgba(0,0,0,.5);
+    /* shadcn 命名再設定（暗色側で必要なものだけ上書き） */
+    --background:           var(--clr-bg);
+    --foreground:           var(--clr-text);
+    --card:                 var(--clr-surface);
+    --card-foreground:      var(--clr-text);
+    --popover:              var(--clr-surface);
+    --popover-foreground:   var(--clr-text);
+    --secondary:            #27272a;
+    --secondary-foreground: var(--clr-text);
+    --muted:                #27272a;
+    --muted-foreground:     var(--clr-muted);
+    --accent:               #27272a;
+    --accent-foreground:    var(--clr-text);
+    --border:               var(--clr-border);
+    --input:                var(--clr-border);
+    --ring:                 rgba(var(--clr-primary-rgb), .65);
+
+    --shadow-xs:      0 1px 2px 0 rgba(0,0,0,.40);
+    --shadow-sm:      0 1px 2px 0 rgba(0,0,0,.45);
+    --shadow:         0 1px 3px 0 rgba(0,0,0,.55), 0 1px 2px -1px rgba(0,0,0,.45);
+    --shadow-md:      0 4px 6px -1px rgba(0,0,0,.55), 0 2px 4px -2px rgba(0,0,0,.40);
+    --shadow-lg:      0 10px 15px -3px rgba(0,0,0,.60), 0 4px 6px -4px rgba(0,0,0,.40);
   }
 }
 
 /* ユーザーがダークを明示指定（OS 設定より優先） */
 html[data-theme="dark"] {
-  --clr-bg:         #13161c;
-  --clr-surface:    #1e222b;
-  --clr-border:     #323845;
-  --clr-text:       #e5e7eb;
-  --clr-muted:      #9aa0a8;
-  --clr-disabled:   #5c6270;
-  --clr-reading:    #f3f4f6;
-  --clr-divider:    #3a3f4a;
+  --clr-bg:         #09090b;
+  --clr-surface:    #18181b;
+  --clr-border:     #27272a;
+  --clr-text:       #fafafa;
+  --clr-muted:      #a1a1aa;
+  --clr-disabled:   #52525b;
+  --clr-reading:    #fafafa;
+  --clr-divider:    #27272a;
 
   --clr-primary:         #8b99e5;
   --clr-primary-rgb:     139, 153, 229;
   --clr-primary-fill:    #4a5ec7;
   --clr-primary-fill-hv: #5d70d2;
 
-  --clr-hover-bg:       rgba(139, 153, 229, .12);
+  --clr-hover-bg:       #27272a;
   --clr-hover-border:   #6975b5;
-  --clr-variant-bg:     #2a2e3a;
-  --clr-variant-border: #3a3f4a;
-  --clr-variant-text:   #c5ccd6;
+  --clr-variant-bg:     #27272a;
+  --clr-variant-border: #3f3f46;
+  --clr-variant-text:   #d4d4d8;
   --clr-chip-soft-bg:   rgba(139, 153, 229, .15);
-  --clr-code-bg:        #252931;
+  --clr-code-bg:        #27272a;
   --clr-code-accent:    #ff8095;
-  --clr-clear-btn-bg:   #3a3f4a;
-  --clr-clear-btn-hv:   #5c6270;
+  --clr-clear-btn-bg:   #3f3f46;
+  --clr-clear-btn-hv:   #71717a;
 
-  --clr-error:      #e06a5d;
+  --clr-error:      #ef4444;
+  --destructive:    #ef4444;
 
-  --clr-toast-bg:   #3a3f4a;
-  --clr-toast-text: #f3f4f6;
+  --clr-toast-bg:   #fafafa;
+  --clr-toast-text: #18181b;
 
-  --shadow:         0 1px 3px rgba(0,0,0,.5);
+  --background:           var(--clr-bg);
+  --foreground:           var(--clr-text);
+  --card:                 var(--clr-surface);
+  --card-foreground:      var(--clr-text);
+  --popover:              var(--clr-surface);
+  --popover-foreground:   var(--clr-text);
+  --secondary:            #27272a;
+  --secondary-foreground: var(--clr-text);
+  --muted:                #27272a;
+  --muted-foreground:     var(--clr-muted);
+  --accent:               #27272a;
+  --accent-foreground:    var(--clr-text);
+  --border:               var(--clr-border);
+  --input:                var(--clr-border);
+  --ring:                 rgba(var(--clr-primary-rgb), .65);
+
+  --shadow-xs:      0 1px 2px 0 rgba(0,0,0,.40);
+  --shadow-sm:      0 1px 2px 0 rgba(0,0,0,.45);
+  --shadow:         0 1px 3px 0 rgba(0,0,0,.55), 0 1px 2px -1px rgba(0,0,0,.45);
+  --shadow-md:      0 4px 6px -1px rgba(0,0,0,.55), 0 2px 4px -2px rgba(0,0,0,.40);
+  --shadow-lg:      0 10px 15px -3px rgba(0,0,0,.60), 0 4px 6px -4px rgba(0,0,0,.40);
 }
 
 html {
