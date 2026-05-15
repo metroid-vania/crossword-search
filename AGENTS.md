@@ -47,7 +47,7 @@ crossword-search/
 ├── docs/                     補助ドキュメント
 ├── README.md                 公開向け README
 ├── NOTICE.md                 GPL 著作権・改変告知
-└── CLAUDE.md                 このファイル（エージェント向け仕様書）
+└── AGENTS.md                 このファイル（エージェント向け仕様書）
 ```
 
 ## データフォーマット
@@ -158,8 +158,6 @@ crossword-search/
 php -S localhost:8000 -t .
 # → http://localhost:8000/frontend/
 ```
-
-または `.claude/launch.json` 定義の "PHP Dev Server (全体)" を Claude Code 経由で起動可能。
 
 ### DB 更新
 `words.txt` / `words_addition.txt` を変更したら:

@@ -1,8 +1,8 @@
 <?php
 /**
  * 単語検索 API
- * GET /api.php?q=<検索クエリ>
- * Response: {"count":N, "total":N, "words":[{"reading":"...","variants":["..."]}], "limited":bool}
+ * GET /api.php?q=<検索クエリ>&offset=<開始位置>&limit=<件数>
+ * offset / limit は任意。Response: {"count":N, "total":N, "words":[{"reading":"...","variants":["..."]}], "hasMore":bool}
  */
 
 mb_internal_encoding('UTF-8');
