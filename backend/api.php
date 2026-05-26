@@ -1,8 +1,8 @@
 <?php
 /**
  * 単語検索 API
- * GET /api.php?q=<検索クエリ>&offset=<開始位置>&limit=<件数>&len=<文字数>
- * offset / limit / len は任意。Response: {"count":N, "total":N, "words":[{"reading":"...","variants":["..."]}], "hasMore":bool}
+ * GET /api.php?q=<検索クエリ>&offset=<開始位置>&limit=<件数>&len=<文字数>&minLen=<最小文字数>
+ * offset / limit / len / minLen は任意。Response: {"count":N, "total":N, "words":[{"reading":"...","variants":["..."]}], "hasMore":bool}
  */
 
 mb_internal_encoding('UTF-8');
@@ -44,6 +44,8 @@ if ($limit <= 0) $limit = 100;
 if ($limit > 200) $limit = 200; // 過負荷防止
 $lengthFilter = (int)($_GET['len'] ?? 0);
 if ($lengthFilter < 2 || $lengthFilter > 13) $lengthFilter = 0;
+$minLengthFilter = (int)($_GET['minLen'] ?? 0);
+if ($minLengthFilter < 2 || $minLengthFilter > 13 || $lengthFilter > 0) $minLengthFilter = 0;
 
 $dbPath = __DIR__ . '/words.db';
 if (!file_exists($dbPath)) {
@@ -61,7 +63,7 @@ if ($query === '') {
     exit;
 }
 
-$result = searchWords($db, $query, $total, $offset, $limit, $lengthFilter);
+$result = searchWords($db, $query, $total, $offset, $limit, $lengthFilter, $minLengthFilter);
 // 成功応答：辞書はほぼ不変なので中期ブラウザキャッシュを許可
 //   10分間は新鮮扱い、以降 1時間は古い応答を即時返しつつ裏で再検証
 header('Cache-Control: public, max-age=600, stale-while-revalidate=3600');
@@ -235,7 +237,15 @@ function emptyResult(int $total): array {
     return ['count' => 0, 'total' => $total, 'words' => [], 'hasMore' => false];
 }
 
-function searchWords(SQLite3 $db, string $query, int $total, int $offset, int $limit, int $lengthFilter = 0): array {
+function searchWords(
+    SQLite3 $db,
+    string $query,
+    int $total,
+    int $offset,
+    int $limit,
+    int $lengthFilter = 0,
+    int $minLengthFilter = 0
+): array {
     $normalized = normalizeQuery($query);
 
     $hasNumeric  = (bool) preg_match('/[1-9]/', $normalized);
@@ -252,6 +262,9 @@ function searchWords(SQLite3 $db, string $query, int $total, int $offset, int $l
     // ─── 完全一致 ──────────────────────────────────────────────────────────
     if (!$hasNumeric && !$hasWildcard) {
         if ($lengthFilter > 0 && $lengthFilter !== $normalizedLen) {
+            return emptyResult($total);
+        }
+        if ($minLengthFilter > 0 && $normalizedLen < $minLengthFilter) {
             return emptyResult($total);
         }
         $stmt = $db->prepare(
@@ -286,6 +299,9 @@ function searchWords(SQLite3 $db, string $query, int $total, int $offset, int $l
             if ($lengthFilter > 0 && $lengthFilter !== $normalizedLen) {
                 return emptyResult($total);
             }
+            if ($minLengthFilter > 0 && $normalizedLen < $minLengthFilter) {
+                return emptyResult($total);
+            }
             // * がなければ文字数固定 → len でも絞り込む
             $fixedLen = $normalizedLen;
             $stmt = $db->prepare(
@@ -304,6 +320,9 @@ function searchWords(SQLite3 $db, string $query, int $total, int $offset, int $l
             if ($lengthFilter > 0) {
                 $conds[] = "len = :lf";
             }
+            if ($minLengthFilter > 0) {
+                $conds[] = "len >= :ml";
+            }
             $stmt = $db->prepare(
                 "SELECT reading, variants
                    FROM words
@@ -314,6 +333,9 @@ function searchWords(SQLite3 $db, string $query, int $total, int $offset, int $l
             $stmt->bindValue(':p',   $likePattern, SQLITE3_TEXT);
             if ($lengthFilter > 0) {
                 $stmt->bindValue(':lf', $lengthFilter, SQLITE3_INTEGER);
+            }
+            if ($minLengthFilter > 0) {
+                $stmt->bindValue(':ml', $minLengthFilter, SQLITE3_INTEGER);
             }
             $stmt->bindValue(':lim', $limit + 1,   SQLITE3_INTEGER);
             $stmt->bindValue(':off', $offset,      SQLITE3_INTEGER);
@@ -347,6 +369,9 @@ function searchWords(SQLite3 $db, string $query, int $total, int $offset, int $l
     // → PHP 側フィルタ・チャンク走査が不要で LIMIT/OFFSET が効く
     if (!$hasStar) {
         if ($lengthFilter > 0 && $lengthFilter !== $normalizedLen) {
+            return emptyResult($total);
+        }
+        if ($minLengthFilter > 0 && $normalizedLen < $minLengthFilter) {
             return emptyResult($total);
         }
         $constraints = extractDigitConstraints($patChars);
@@ -407,6 +432,9 @@ function searchWords(SQLite3 $db, string $query, int $total, int $offset, int $l
         if ($lengthFilter > 0) {
             $conds[] = "len = :lf";
         }
+        if ($minLengthFilter > 0) {
+            $conds[] = "len >= :ml";
+        }
         $stmt = $db->prepare(
             "SELECT reading, normalized, variants
                FROM words
@@ -417,6 +445,9 @@ function searchWords(SQLite3 $db, string $query, int $total, int $offset, int $l
         $stmt->bindValue(':p',   $likePattern,    SQLITE3_TEXT);
         if ($lengthFilter > 0) {
             $stmt->bindValue(':lf', $lengthFilter, SQLITE3_INTEGER);
+        }
+        if ($minLengthFilter > 0) {
+            $stmt->bindValue(':ml', $minLengthFilter, SQLITE3_INTEGER);
         }
         $stmt->bindValue(':lim', $chunkLimit,     SQLITE3_INTEGER);
         $stmt->bindValue(':off', $dbOffset,       SQLITE3_INTEGER);

@@ -138,7 +138,17 @@ function toFullWidthPattern(str) {
 
 function currentPatternLabel() {
   const pattern = toFullWidthPattern(removeSpaces(inputEl.value.trim()));
-  return selectedLengthFilter > 0 ? `${pattern}／${selectedLengthFilter}文字` : pattern;
+  if (selectedLengthFilter > 0) return `${pattern}／${selectedLengthFilter}文字`;
+  if (selectedLengthFilter < 0) return `${pattern}／${Math.abs(selectedLengthFilter)}文字以上`;
+  return pattern;
+}
+
+function lengthFilterExact(filter = selectedLengthFilter) {
+  return filter > 0 ? filter : 0;
+}
+
+function lengthFilterMin(filter = selectedLengthFilter) {
+  return filter < 0 ? Math.abs(filter) : 0;
 }
 
 // ─── 表示切替 ────────────────────────────────────────────────────────────────
@@ -339,7 +349,8 @@ function buildLengthFilterControls() {
 
   const options = [
     { label: 'すべて', value: 0 },
-    ...Array.from({ length: 12 }, (_, i) => ({ label: `${i + 2}字`, value: i + 2 })),
+    ...Array.from({ length: 6 }, (_, i) => ({ label: `${i + 2}字`, value: i + 2 })),
+    { label: '8字以上', value: -8 },
   ];
 
   for (const option of options) {
@@ -518,6 +529,8 @@ window.addEventListener('scroll', () => {
 async function doSearch(reset) {
   const query = removeSpaces(inputEl.value.trim());
   const lengthFilter = selectedLengthFilter;
+  const exactLengthFilter = lengthFilterExact(lengthFilter);
+  const minLengthFilter = lengthFilterMin(lengthFilter);
 
   if (reset) {
     cancelPrefetch();
@@ -543,7 +556,7 @@ async function doSearch(reset) {
     const nonStarLen = query.replace(/[*＊]/g, '').length;
     const hasStar    = nonStarLen < query.length;
     if (nonStarLen >= 14 || (!hasStar && nonStarLen < 2) ||
-        (hasStar && lengthFilter > 0 && nonStarLen > lengthFilter)) {
+        (hasStar && exactLengthFilter > 0 && nonStarLen > exactLengthFilter)) {
       renderResults({ count: 0, total: 0, words: [], hasMore: false });
       return;
     }
@@ -604,7 +617,8 @@ async function doSearch(reset) {
       offset: String(requestOffset),
       limit: String(PAGE_SIZE),
     });
-    if (lengthFilter > 0) params.set('len', String(lengthFilter));
+    if (exactLengthFilter > 0) params.set('len', String(exactLengthFilter));
+    if (minLengthFilter > 0) params.set('minLen', String(minLengthFilter));
     const res = await fetch(
       `${API_URL}?${params.toString()}`,
       { signal: abortController.signal }
@@ -790,7 +804,7 @@ function buildCandidates(q) {
     add('＊' + q);      // 先頭ワイルドカード
   } else {
     add(q.replace(/[*＊]/g, '？')); // ＊を1文字ワイルドカードにして近い語長を試す
-    if (selectedLengthFilter > 0) {
+    if (selectedLengthFilter !== 0) {
       add(q, '文字数指定なし', 0);
     }
   }
@@ -821,7 +835,10 @@ async function suggestCandidates(originalQuery, originalLengthFilter) {
     candidates.map(async (c) => {
       try {
         const params = new URLSearchParams({ q: c.query, limit: '1' });
-        if (c.len > 0) params.set('len', String(c.len));
+        const exact = lengthFilterExact(c.len);
+        const min = lengthFilterMin(c.len);
+        if (exact > 0) params.set('len', String(exact));
+        if (min > 0) params.set('minLen', String(min));
         const res = await fetch(`${API_URL}?${params.toString()}`);
         if (!res.ok) return null;
         const data = await res.json();
@@ -998,7 +1015,11 @@ function tryOptimisticFilter(newQuery, lengthFilter = 0) {
 
   const matched = [];
   for (const w of currentData.words) {
-    if (lengthFilter > 0 && [...expandSmallKana(w.reading)].length !== lengthFilter) continue;
+    const readingLen = [...expandSmallKana(w.reading)].length;
+    const exact = lengthFilterExact(lengthFilter);
+    const min = lengthFilterMin(lengthFilter);
+    if (exact > 0 && readingLen !== exact) continue;
+    if (min > 0 && readingLen < min) continue;
     if (matchReading(w.reading, norm)) matched.push(w);
   }
   if (matched.length === 0) return null; // 0 件なら仮表示せず既存 stale に任せる
@@ -1086,7 +1107,9 @@ const MEM_CACHE_MAX = 50;            // ~50 エントリ（100件×平均300Bで
 const memCache = new Map();          // Map は挿入順を保つので LRU の土台に使える
 
 function cacheQueryKey(query, lengthFilter = selectedLengthFilter) {
-  return lengthFilter > 0 ? `${query}|len=${lengthFilter}` : query;
+  if (lengthFilter > 0) return `${query}|len=${lengthFilter}`;
+  if (lengthFilter < 0) return `${query}|minLen=${Math.abs(lengthFilter)}`;
+  return query;
 }
 
 function memKey(query, offset, lengthFilter = selectedLengthFilter) {
