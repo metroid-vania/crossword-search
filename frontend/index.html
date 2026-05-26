@@ -96,7 +96,7 @@
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="style.css?v=2026052601">
+  <link rel="stylesheet" href="style.css?v=2026052605">
 </head>
 <body>
 
@@ -180,14 +180,17 @@
 <!-- 結果ヘッダー（main の外に出してブラウザ幅いっぱいに広げる） -->
 <div class="results-header">
   <div class="results-header-inner">
-    <div class="hit-count-wrap">
-      <span id="hit-count"></span>
-      <button id="copy-all-btn" type="button" class="copy-all-btn" hidden aria-label="検索結果をすべてコピー">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-        </svg>
-      </button>
+    <div class="results-summary">
+      <div class="hit-count-wrap">
+        <span id="hit-count"></span>
+        <button id="copy-all-btn" type="button" class="copy-all-btn" hidden aria-label="検索結果をすべてコピー">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+        </button>
+      </div>
+      <div id="length-filter" class="length-filter" aria-label="文字数で絞り込み" hidden></div>
     </div>
     <div class="view-toggle-group" id="view-toggle-group" hidden>
       <button id="btn-detail" type="button">詳細表示</button>
@@ -233,7 +236,7 @@
   </svg>
   <span class="btt-label" aria-hidden="true">再検索</span>
 </button>
-<script src="app.js?v=2026052601"></script>
+<script src="app.js?v=2026052605"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

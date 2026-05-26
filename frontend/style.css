@@ -437,6 +437,67 @@ main {
   color: var(--destructive);
 }
 
+.length-filter {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-top: .2rem;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 1px 0 2px;
+}
+
+.length-filter[hidden] {
+  display: none;
+}
+
+.length-filter::-webkit-scrollbar {
+  display: none;
+}
+
+.length-filter-btn {
+  flex: 0 0 auto;
+  min-width: auto;
+  height: 24px;
+  padding: 0 8px;
+  border: 0;
+  border-left: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted-foreground);
+  border-radius: 0;
+  font-family: inherit;
+  font-size: .82rem;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .12s, color .12s, box-shadow .12s;
+}
+
+.length-filter-btn:first-child {
+  border-left: 0;
+  padding-left: 0;
+}
+
+.length-filter-btn:hover {
+  background: var(--accent);
+  color: var(--clr-primary);
+}
+
+.length-filter-btn.active {
+  color: var(--clr-primary);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.length-filter-btn:focus-visible {
+  outline: none;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
 /* shadcn outline Button 寄せ：1px ボーダー、ホバーで accent 背景 */
 .wc-chip {
   flex: 0 0 auto;
@@ -686,10 +747,19 @@ main {
   max-width: 688px;
   margin: 0 auto;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   min-height: 36px;
   padding: 2px 0 6px;
+  gap: 12px;
+}
+
+.results-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  max-width: 100%;
 }
 
 #hit-count {
@@ -727,6 +797,7 @@ main {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  min-height: 32px;
   min-width: 0;
 }
 
@@ -1426,5 +1497,14 @@ footer a:hover {
     flex-direction: column;
     align-items: center;
     gap: 8px;
+  }
+
+  .results-summary {
+    width: 100%;
+  }
+
+  .hit-count-wrap,
+  .length-filter {
+    justify-content: center;
   }
 }
