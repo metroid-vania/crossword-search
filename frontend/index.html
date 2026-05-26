@@ -12,40 +12,46 @@
       var host = location.hostname;
       if (host !== 'findword.crossword-builder.com') return;
 
-      // Google tag (gtag.js)
-      var gtagScript = document.createElement('script');
-      gtagScript.async = true;
-      gtagScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-00BT3SM7ZY';
-      document.head.appendChild(gtagScript);
+      function scheduleAnalytics(fn) {
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(fn, { timeout: 3000 });
+        } else {
+          setTimeout(fn, 1200);
+        }
+      }
 
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){ dataLayer.push(arguments); }
-      window.gtag = gtag;
-      gtag('js', new Date());
-      gtag('config', 'G-00BT3SM7ZY');
+      function loadAnalytics() {
+        // Google tag (gtag.js)
+        var gtagScript = document.createElement('script');
+        gtagScript.async = true;
+        gtagScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-00BT3SM7ZY';
+        document.head.appendChild(gtagScript);
 
-      // Microsoft Clarity
-      (function(c,l,a,r,i,t,y){
-          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "wbkjl4jcc3");
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ dataLayer.push(arguments); }
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-00BT3SM7ZY');
+
+        // Microsoft Clarity
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "wbkjl4jcc3");
+      }
+
+      window.addEventListener('load', function () {
+        scheduleAnalytics(loadAnalytics);
+      }, { once: true });
     })();
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#4a5ec7">
-  <!-- 外部オリジンへの接続ヒント
-       ・variants クリック先（Google 検索）：preconnect で TLS まで事前完了
-       ・アクセス解析（本番のみ）：dns-prefetch で軽量に DNS 解決だけ前倒し -->
-  <link rel="preconnect" href="https://www.google.com" crossorigin>
-  <link rel="dns-prefetch" href="https://www.google.com">
+  <!-- アクセス解析（本番のみ）：dns-prefetch で軽量に DNS 解決だけ前倒し -->
   <link rel="dns-prefetch" href="https://www.googletagmanager.com">
   <link rel="dns-prefetch" href="https://www.clarity.ms">
-  <!-- Inter（shadcn 標準フォント。英数のみ適用、日本語はシステムフォントに委譲） -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   <script>
     // テーマ初期化（FOUC 回避のため <head> 内で実行）＋トグルハンドラ
     (function () {
@@ -90,7 +96,7 @@
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="style.css?v=2026050101">
+  <link rel="stylesheet" href="style.css?v=2026052601">
 </head>
 <body>
 
@@ -166,6 +172,7 @@
       <button type="button" class="wc-chip" data-insert="８" aria-label="８を挿入">８</button>
       <button type="button" class="wc-chip" data-insert="９" aria-label="９を挿入">９</button>
     </div>
+    <div id="pattern-assist" class="pattern-assist" aria-live="polite" hidden></div>
     </form>
   </section>
 </div>
@@ -226,7 +233,7 @@
   </svg>
   <span class="btt-label" aria-hidden="true">再検索</span>
 </button>
-<script src="app.js?v=2026050101"></script>
+<script src="app.js?v=2026052601"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

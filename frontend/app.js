@@ -18,6 +18,7 @@ const backToTopBtn  = document.getElementById('back-to-top');
 const clearBtn      = document.getElementById('clear-btn');
 const copyAllBtn    = document.getElementById('copy-all-btn');
 const guideEl       = document.getElementById('search-guide');
+const patternAssistEl = document.getElementById('pattern-assist');
 const footerEl      = document.querySelector('footer');
 const searchAreaEl    = document.querySelector('.search-sticky-wrap');
 const resultsHeaderEl = document.querySelector('.results-header');
@@ -190,6 +191,7 @@ inputEl.addEventListener('compositionstart', () => {
 inputEl.addEventListener('compositionend', () => {
   isComposing = false;
   document.getElementById('wc-chips')?.classList.remove('disabled');
+  updatePatternAssist();
   // 同クエリなら再検索不要（iOSキーボードcloseによる compositionend 誤発火対策）
   if (removeSpaces(inputEl.value.trim()) === currentQuery && currentData !== null) return;
   clearTimeout(debounceTimer);
@@ -198,6 +200,7 @@ inputEl.addEventListener('compositionend', () => {
 
 inputEl.addEventListener('input', () => {
   const isEmpty = inputEl.value === '';
+  updatePatternAssist();
   clearBtn.hidden = isEmpty;
   guideEl.hidden = !isEmpty; // ガイドは入力が空のときだけ表示
   updateFabVisibility();     // スマホFAB：入力状態に応じて表示/非表示を更新
@@ -240,6 +243,7 @@ inputEl.addEventListener('input', () => {
 
 clearBtn.addEventListener('click', () => {
   inputEl.value = '';
+  updatePatternAssist();
   clearBtn.hidden = true;
   guideEl.hidden = false;
   resultsHeaderEl.hidden = true;
@@ -316,6 +320,57 @@ function insertAtCursor(el, text) {
   const pos = start + text.length;
   try { el.setSelectionRange(pos, pos); } catch (_) { /* iOS で稀にエラー */ }
   el.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+function updatePatternAssist() {
+  if (!patternAssistEl) return;
+  const query = removeSpaces(inputEl.value.trim());
+  if (!query) {
+    patternAssistEl.hidden = true;
+    patternAssistEl.textContent = '';
+    patternAssistEl.classList.remove('warn');
+    return;
+  }
+
+  const normalized = normalizeForMatch(query);
+  const starCount = (normalized.match(/\*/g) || []).length;
+  const hasStar = starCount > 0;
+  const fixedLen = [...normalized.replace(/\*/g, '')].length;
+  const digits = [...new Set(normalized.match(/[1-9]/g) || [])];
+  const notes = [];
+  let warn = false;
+
+  if (starCount > 5) {
+    notes.push('＊は最大5個まで');
+    warn = true;
+  }
+
+  if (fixedLen >= 14) {
+    notes.push('固定文字が14文字以上のため該当なし');
+    warn = true;
+  } else if (!hasStar && fixedLen < 2) {
+    notes.push('2文字以上で検索');
+    warn = true;
+  } else {
+    notes.push(hasStar ? `固定${fixedLen}文字以上の可変長` : `${fixedLen}文字固定`);
+  }
+
+  if (digits.length > 0) {
+    const fullDigits = digits.map(d => toFullWidthPattern(d)).join('・');
+    notes.push(`数字${fullDigits}: 同じ数字=同じ文字、別数字=別文字`);
+  }
+
+  if (hasStar && digits.length > 0) {
+    notes.push('広めの検索です。文字を足すと速くなります');
+  }
+
+  if (/[\u3041-\u3096ァィゥェォッャュョ]/.test(query)) {
+    notes.push('ひらがな・小さいカナは検索用に正規化');
+  }
+
+  patternAssistEl.textContent = notes.join(' / ');
+  patternAssistEl.hidden = false;
+  patternAssistEl.classList.toggle('warn', warn);
 }
 
 // Enter キーで debounce をスキップして即時検索
@@ -641,8 +696,12 @@ function renderResults(data) {
 
   if (data.count === 0) {
     viewToggleGroup.hidden = true; // 0件ならトグルは意味がないので隠す
-    resultsList.innerHTML = '<li class="message">該当する単語が見つかりませんでした。</li>';
-    suggestCandidates(currentQuery); // バックグラウンドで代替候補を取得し、見つかれば表示
+    if (data.hasMore) {
+      resultsList.innerHTML = '<li class="message">検索条件が広いため、確認できた範囲では候補が見つかりませんでした。文字を追加して絞り込んでください。</li>';
+    } else {
+      resultsList.innerHTML = '<li class="message">該当する単語が見つかりませんでした。</li>';
+      suggestCandidates(currentQuery); // バックグラウンドで代替候補を取得し、見つかれば表示
+    }
     return;
   }
 

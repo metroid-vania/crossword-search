@@ -104,7 +104,7 @@ crossword-search/
 **shadcn/ui new-york スタイルに寄せた CSS-only 実装**。React や shadcn 本体は使用していない（依存ゼロ方針を維持）。詳細は [`frontend/style.css`](frontend/style.css) の `:root` 周辺コメント参照。
 
 ### スタック
-- フォント：**Inter**（英数のみ Google Fonts 経由で読み込み）+ システム日本語フォントへフォールバック
+- フォント：**Inter**（英数のみ `frontend/fonts/inter-latin.woff2` で自前配信）+ システム日本語フォントへフォールバック
   - `font-feature-settings: "cv11", "ss01", "ss03"` で shadcn の字形に近づけている
 - カラー基調：**zinc**（new-york new york デフォルト）
 - ブランドプライマリ：indigo `#4a5ec7`（変更しないこと）

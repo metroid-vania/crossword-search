@@ -362,6 +362,7 @@ function searchWords(SQLite3 $db, string $query, int $total, int $offset, int $l
     // ─── 数字ワイルドカード + * あり ─────────────────────────────────────
     // 位置が可変なので PHP 側フィルタが必要。候補をチャンクで舐める
     $candidateChunk = 4000;
+    $maxCandidateRows = 20000;
     $dbOffset       = 0;
     $matchedIndex   = 0;
     $words          = [];
@@ -369,6 +370,11 @@ function searchWords(SQLite3 $db, string $query, int $total, int $offset, int $l
 
     while (true) {
         if (connection_aborted()) break;  // クライアント切断なら即終了
+        if ($dbOffset >= $maxCandidateRows) {
+            $hasMore = true;
+            break;
+        }
+        $chunkLimit = min($candidateChunk, $maxCandidateRows - $dbOffset);
         $stmt = $db->prepare(
             "SELECT reading, normalized, variants
                FROM words
@@ -377,7 +383,7 @@ function searchWords(SQLite3 $db, string $query, int $total, int $offset, int $l
               LIMIT :lim OFFSET :off"
         );
         $stmt->bindValue(':p',   $likePattern,    SQLITE3_TEXT);
-        $stmt->bindValue(':lim', $candidateChunk, SQLITE3_INTEGER);
+        $stmt->bindValue(':lim', $chunkLimit,     SQLITE3_INTEGER);
         $stmt->bindValue(':off', $dbOffset,       SQLITE3_INTEGER);
         $res = $stmt->execute();
         $chunkRows = 0;
@@ -405,10 +411,10 @@ function searchWords(SQLite3 $db, string $query, int $total, int $offset, int $l
             $matchedIndex++;
         }
 
-        if ($chunkRows < $candidateChunk) {
+        if ($chunkRows < $chunkLimit) {
             break;
         }
-        $dbOffset += $candidateChunk;
+        $dbOffset += $chunkLimit;
     }
 
     return [

@@ -4,7 +4,7 @@
  *   - api.php: Network Only（キャッシュしない）
  *   - クロスオリジン: 介入しない
  */
-const VERSION = '2026050101';
+const VERSION = '2026052601';
 const CACHE_NAME = `findword-cache-${VERSION}`;
 
 const PRECACHE_URLS = [
@@ -20,6 +20,7 @@ const PRECACHE_URLS = [
   '/icon-maskable-512.png',
   '/apple-touch-icon.png',
   '/manifest.webmanifest',
+  '/fonts/inter-latin.woff2',
 ];
 
 self.addEventListener('install', (event) => {
