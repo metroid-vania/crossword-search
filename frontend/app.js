@@ -294,7 +294,7 @@ if (copyAllBtn) {
     const text = `【${pattern}】\n${readings.join('\n')}`;
     try {
       await navigator.clipboard.writeText(text);
-      showToast(copyAllBtn, 'すべてコピーしました', false, true);
+      showToast(copyAllBtn, '検索結果をコピーしました', false, true);
     } catch (e) {
       showToast(copyAllBtn, 'コピーに失敗しました', true);
     }
@@ -723,7 +723,7 @@ function updateCopyAllBtn(data) {
   }
   copyAllBtn.hidden = false;
   copyAllBtn.disabled = false;
-  copyAllBtn.title = '検索結果をすべてコピー';
+  copyAllBtn.title = '検索結果をコピー';
 }
 
 /** スクリーンリーダー向け：検索結果件数を通知する */
