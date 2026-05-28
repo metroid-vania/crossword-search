@@ -412,12 +412,8 @@ main {
   display: none;
   gap: 6px;
   margin-top: 8px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none; /* Firefox */
-  padding-bottom: 2px;
+  overflow: visible;
 }
-.wc-chips::-webkit-scrollbar { display: none; } /* WebKit */
 
 /* IME 変換中はチップを無効化（iOS Safari で composition を強制確定できないため） */
 .wc-chips.disabled {
@@ -500,8 +496,8 @@ main {
 
 /* shadcn outline Button 寄せ：1px ボーダー、ホバーで accent 背景 */
 .wc-chip {
-  flex: 0 0 auto;
-  min-width: 40px;
+  width: 100%;
+  min-width: 0;
   height: 36px;
   padding: 0 12px;
   border: 1px solid var(--border);
@@ -1403,7 +1399,8 @@ main {
 
   /* スマホ時はワイルドカード挿入チップを表示（IME 切替不要で入力できる） */
   .wc-chips {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 
   /* 入力欄がフォーカスされていない（≒キーボード非表示）ときはチップを無効化
@@ -1501,6 +1498,7 @@ footer a:hover {
 
   .results-summary {
     width: 100%;
+    align-items: center;
   }
 
   .hit-count-wrap,

@@ -400,40 +400,9 @@ function restartSearchSoon() {
 
 function updatePatternAssist() {
   if (!patternAssistEl) return;
-  const query = removeSpaces(inputEl.value.trim());
-  if (!query) {
-    patternAssistEl.hidden = true;
-    patternAssistEl.textContent = '';
-    patternAssistEl.classList.remove('warn');
-    return;
-  }
-
-  const normalized = normalizeForMatch(query);
-  const starCount = (normalized.match(/\*/g) || []).length;
-  const hasStar = starCount > 0;
-  const fixedLen = [...normalized.replace(/\*/g, '')].length;
-  const notes = [];
-
-  if (starCount > 5) {
-    notes.push('＊は最大5個まで');
-  }
-
-  if (fixedLen >= 14) {
-    notes.push('固定文字が14文字以上のため該当なし');
-  } else if (!hasStar && fixedLen < 2) {
-    notes.push('2文字以上で検索');
-  }
-
-  if (notes.length === 0) {
-    patternAssistEl.hidden = true;
-    patternAssistEl.textContent = '';
-    patternAssistEl.classList.remove('warn');
-    return;
-  }
-
-  patternAssistEl.textContent = notes.join(' / ');
-  patternAssistEl.hidden = false;
-  patternAssistEl.classList.add('warn');
+  patternAssistEl.hidden = true;
+  patternAssistEl.textContent = '';
+  patternAssistEl.classList.remove('warn');
 }
 
 // Enter キーで debounce をスキップして即時検索
