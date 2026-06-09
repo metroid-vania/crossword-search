@@ -107,9 +107,10 @@ crossword-search/
 
 ### スタック
 - フォント：**Inter**（英数のみ `frontend/fonts/inter-latin.woff2` で自前配信）+ システム日本語フォントへフォールバック
+  - **Noto Sans JP** は `frontend/fonts/noto-sans-jp/` に同梱済み。必要になったら `frontend/style.css` 冒頭コメントの手順で切り替え可能
   - `font-feature-settings: "cv11", "ss01", "ss03"` で shadcn の字形に近づけている
 - カラー基調：**zinc**（new-york new york デフォルト）
-- ブランドプライマリ：indigo `#4a5ec7`（変更しないこと）
+- ブランドプライマリ：moss green `#4A7C59`
 - スピナー：**lucide Loader2** の SVG パスを使用（`<path d="M21 12a9 9 0 1 1-6.219-8.56"/>`）、回転 0.8s linear
 
 ### トークン規約

@@ -4,8 +4,20 @@
  *   - api.php: Network Only（キャッシュしない）
  *   - クロスオリジン: 介入しない
  */
-const VERSION = '2026052803';
+const VERSION = '2026061001';
 const CACHE_NAME = `findword-cache-${VERSION}`;
+
+const NOTO_SANS_JP_URLS = [
+  '/fonts/noto-sans-jp/package/wght.css',
+  ...Array.from(
+    { length: 120 },
+    (_, i) => `/fonts/noto-sans-jp/package/files/noto-sans-jp-${i}-wght-normal.woff2`
+  ),
+  '/fonts/noto-sans-jp/package/files/noto-sans-jp-cyrillic-wght-normal.woff2',
+  '/fonts/noto-sans-jp/package/files/noto-sans-jp-latin-ext-wght-normal.woff2',
+  '/fonts/noto-sans-jp/package/files/noto-sans-jp-latin-wght-normal.woff2',
+  '/fonts/noto-sans-jp/package/files/noto-sans-jp-vietnamese-wght-normal.woff2',
+];
 
 const PRECACHE_URLS = [
   '/',
@@ -21,6 +33,7 @@ const PRECACHE_URLS = [
   '/apple-touch-icon.png',
   '/manifest.webmanifest',
   '/fonts/inter-latin.woff2',
+  ...NOTO_SANS_JP_URLS,
 ];
 
 self.addEventListener('install', (event) => {

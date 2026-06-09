@@ -9,6 +9,11 @@
     U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
+/* Noto Sans JP is bundled at frontend/fonts/noto-sans-jp/.
+   To enable it again, add this as the first line:
+   @import url('fonts/noto-sans-jp/package/wght.css');
+   Then include "Noto Sans JP" after "Inter" in the body font-family. */
+
 /* ─────────────────────────────────────────
    リセット・基本
 ───────────────────────────────────────── */
@@ -34,20 +39,20 @@
   --clr-reading:    #09090b;
   --clr-divider:    #e4e4e7;
 
-  /* プライマリ（ブランド indigo 維持） */
-  --clr-primary:      #4a5ec7;
-  --clr-primary-rgb:  74, 94, 199;
-  --clr-primary-fill:    #4a5ec7;
-  --clr-primary-fill-hv: #3a4db5;
+  /* プライマリ（ブランド moss green） */
+  --clr-primary:      #4A7C59;
+  --clr-primary-rgb:  74, 124, 89;
+  --clr-primary-fill:    #4A7C59;
+  --clr-primary-fill-hv: #3F6B4C;
   --clr-primary-hv:      var(--clr-primary-fill-hv);
 
   /* ホバー / 副次色 */
   --clr-hover-bg:       #f4f4f5;   /* zinc-100：ニュートラルなホバー */
-  --clr-hover-border:   #a0aadf;
+  --clr-hover-border:   #9fbea8;
   --clr-variant-bg:     #f4f4f5;
   --clr-variant-border: #e4e4e7;
   --clr-variant-text:   #52525b;   /* zinc-600 */
-  --clr-chip-soft-bg:   #f0f2fb;
+  --clr-chip-soft-bg:   #eef6f1;
   --clr-code-bg:        #f4f4f5;
   --clr-code-accent:    #c7254e;
   --clr-clear-btn-bg:   #71717a;
@@ -112,17 +117,17 @@
     --clr-reading:    #fafafa;
     --clr-divider:    #27272a;
 
-    --clr-primary:         #8b99e5;
-    --clr-primary-rgb:     139, 153, 229;
-    --clr-primary-fill:    #4a5ec7;
-    --clr-primary-fill-hv: #5d70d2;
+    --clr-primary:         #8FBC9A;
+    --clr-primary-rgb:     143, 188, 154;
+    --clr-primary-fill:    #4A7C59;
+    --clr-primary-fill-hv: #5B8F68;
 
     --clr-hover-bg:       #27272a;   /* zinc-800：ニュートラルなホバー */
-    --clr-hover-border:   #6975b5;
+    --clr-hover-border:   #5f8b6d;
     --clr-variant-bg:     #27272a;
     --clr-variant-border: #3f3f46;   /* zinc-700 */
     --clr-variant-text:   #d4d4d8;   /* zinc-300 */
-    --clr-chip-soft-bg:   rgba(139, 153, 229, .15);
+    --clr-chip-soft-bg:   rgba(143, 188, 154, .15);
     --clr-code-bg:        #27272a;
     --clr-code-accent:    #ff8095;
     --clr-clear-btn-bg:   #3f3f46;
@@ -170,17 +175,17 @@ html[data-theme="dark"] {
   --clr-reading:    #fafafa;
   --clr-divider:    #27272a;
 
-  --clr-primary:         #8b99e5;
-  --clr-primary-rgb:     139, 153, 229;
-  --clr-primary-fill:    #4a5ec7;
-  --clr-primary-fill-hv: #5d70d2;
+  --clr-primary:         #8FBC9A;
+  --clr-primary-rgb:     143, 188, 154;
+  --clr-primary-fill:    #4A7C59;
+  --clr-primary-fill-hv: #5B8F68;
 
   --clr-hover-bg:       #27272a;
-  --clr-hover-border:   #6975b5;
+  --clr-hover-border:   #5f8b6d;
   --clr-variant-bg:     #27272a;
   --clr-variant-border: #3f3f46;
   --clr-variant-text:   #d4d4d8;
-  --clr-chip-soft-bg:   rgba(139, 153, 229, .15);
+  --clr-chip-soft-bg:   rgba(143, 188, 154, .15);
   --clr-code-bg:        #27272a;
   --clr-code-accent:    #ff8095;
   --clr-clear-btn-bg:   #3f3f46;
@@ -235,7 +240,7 @@ html {
 }
 
 body {
-  /* Inter（英数）→ システム英数 → 日本語フォントの順でフォールバック。
+  /* Inter（英数）→ システム日本語フォントの順でフォールバック。
      shadcn 標準の "feature settings" を有効化して、cv11(一階建て a) 等を活かす */
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial,
                "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;

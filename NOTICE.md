@@ -101,6 +101,8 @@ SKK-JISYO.L は **GNU General Public License version 2 or any later version**
 | `words_addition.txt` | 本アプリ独自 | **GPL v2 or later**（SKK-JISYO.L と互換） |
 | `words.txt`（配布対象外・`.gitignore`） | SKK-JISYO.L の派生物 | GPL v2 or later |
 | `words.db`（配布対象外・`.gitignore`） | SKK-JISYO.L の派生物 | GPL v2 or later |
+| `frontend/fonts/inter-latin.woff2` | Inter | SIL Open Font License |
+| `frontend/fonts/noto-sans-jp/` | Noto Sans JP | SIL Open Font License |
 
 リポジトリ全体としては GPL v3 のもとで公開しています。  
 本アプリの再配布・改変は GPL v3 の条件に、辞書データ単体の再配布は
