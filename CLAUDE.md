@@ -179,6 +179,14 @@ php backend/import.php
 ```
 （`/import-words-db` スキル経由でも同等）
 
+### API 後方互換テスト
+`backend/api.php` を変更したら必ず実行する:
+```bash
+php scripts/api-snapshot.php          # 保存済みスナップショットと比較（差分で exit 1）
+php scripts/api-snapshot.php update   # 意図した変更・辞書更新後の再生成
+```
+代表17ケース（4検索パス・exclude・shuffle・ページング・エラー系）の応答を `scripts/api_snapshots/` と diff 比較する。辞書データを更新すると応答が変わるため、その場合も `update` で再生成してコミットすること。
+
 ### デプロイ
 ConoHa WING への FTP/SSH アップロード（手順は管理者運用）。CI は未構成。
 

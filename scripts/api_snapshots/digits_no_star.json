@@ -1,0 +1,383 @@
+{
+    "params": {
+        "q": "１２１２",
+        "limit": "50"
+    },
+    "response": {
+        "count": 50,
+        "total": 153547,
+        "words": [
+            {
+                "reading": "アイアイ",
+                "variants": [
+                    "ayeaye",
+                    "藹々",
+                    "靄々",
+                    "相合",
+                    "藹藹",
+                    "靄靄"
+                ]
+            },
+            {
+                "reading": "アオアオ",
+                "variants": [
+                    "青々",
+                    "青青",
+                    "蒼蒼",
+                    "蒼々"
+                ]
+            },
+            {
+                "reading": "アカアカ",
+                "variants": [
+                    "赤々",
+                    "明々"
+                ]
+            },
+            {
+                "reading": "アキアキ",
+                "variants": [
+                    "飽き飽き",
+                    "厭き厭き"
+                ]
+            },
+            {
+                "reading": "アツアツ",
+                "variants": [
+                    "熱々"
+                ]
+            },
+            {
+                "reading": "アトアト",
+                "variants": [
+                    "後々",
+                    "後後"
+                ]
+            },
+            {
+                "reading": "アリアリ",
+                "variants": [
+                    "有り有り",
+                    "在り在り"
+                ]
+            },
+            {
+                "reading": "アワアワ",
+                "variants": [
+                    "淡淡",
+                    "淡々"
+                ]
+            },
+            {
+                "reading": "イエイエ",
+                "variants": [
+                    "yeye",
+                    "家々"
+                ]
+            },
+            {
+                "reading": "イキイキ",
+                "variants": [
+                    "生き生き",
+                    "活き活き"
+                ]
+            },
+            {
+                "reading": "イチイチ",
+                "variants": [
+                    "一々",
+                    "一一"
+                ]
+            },
+            {
+                "reading": "イツイツ",
+                "variants": [
+                    "何時何時"
+                ]
+            },
+            {
+                "reading": "イマイマ",
+                "variants": [
+                    "今今"
+                ]
+            },
+            {
+                "reading": "イヤイヤ",
+                "variants": [
+                    "嫌々",
+                    "否々",
+                    "嫌嫌",
+                    "否否"
+                ]
+            },
+            {
+                "reading": "イヨイヨ",
+                "variants": [
+                    "愈々",
+                    "愈"
+                ]
+            },
+            {
+                "reading": "イライラ",
+                "variants": [
+                    "苛々",
+                    "苛苛"
+                ]
+            },
+            {
+                "reading": "イロイロ",
+                "variants": [
+                    "色々",
+                    "色色",
+                    "色いろ"
+                ]
+            },
+            {
+                "reading": "インイン",
+                "variants": [
+                    "殷々"
+                ]
+            },
+            {
+                "reading": "ウキウキ",
+                "variants": [
+                    "浮き浮き"
+                ]
+            },
+            {
+                "reading": "ウスウス",
+                "variants": [
+                    "薄々",
+                    "薄薄"
+                ]
+            },
+            {
+                "reading": "ウソウソ",
+                "variants": [
+                    "嘘々"
+                ]
+            },
+            {
+                "reading": "ウチウチ",
+                "variants": [
+                    "内々"
+                ]
+            },
+            {
+                "reading": "ウツウツ",
+                "variants": [
+                    "鬱々",
+                    "鬱鬱"
+                ]
+            },
+            {
+                "reading": "ウマウマ",
+                "variants": [
+                    "旨々"
+                ]
+            },
+            {
+                "reading": "エイエイ",
+                "variants": [
+                    "営々",
+                    "営営",
+                    "英英",
+                    "永々"
+                ]
+            },
+            {
+                "reading": "エキエキ",
+                "variants": [
+                    "液液"
+                ]
+            },
+            {
+                "reading": "エロエロ",
+                "variants": [
+                    "eroero"
+                ]
+            },
+            {
+                "reading": "エンエン",
+                "variants": [
+                    "延々",
+                    "炎々",
+                    "奄々",
+                    "蜿蜒",
+                    "蜿々",
+                    "延延",
+                    "炎炎",
+                    "奄奄",
+                    "蜿蜿"
+                ]
+            },
+            {
+                "reading": "オイオイ",
+                "variants": [
+                    "追い追い",
+                    "追々"
+                ]
+            },
+            {
+                "reading": "オウオウ",
+                "variants": [
+                    "往々",
+                    "怏々",
+                    "汪々",
+                    "怏怏"
+                ]
+            },
+            {
+                "reading": "オセオセ",
+                "variants": [
+                    "押せ押せ"
+                ]
+            },
+            {
+                "reading": "オチオチ",
+                "variants": [
+                    "落ち落ち"
+                ]
+            },
+            {
+                "reading": "オノオノ",
+                "variants": [
+                    "各々",
+                    "各各",
+                    "各"
+                ]
+            },
+            {
+                "reading": "オモオモ",
+                "variants": [
+                    "重々",
+                    "重重"
+                ]
+            },
+            {
+                "reading": "オリオリ",
+                "variants": [
+                    "折々",
+                    "折折"
+                ]
+            },
+            {
+                "reading": "カイカイ",
+                "variants": [
+                    "開会",
+                    "恢恢"
+                ]
+            },
+            {
+                "reading": "カクカク",
+                "variants": [
+                    "各々",
+                    "赫々",
+                    "赫赫",
+                    "斯く斯く"
+                ]
+            },
+            {
+                "reading": "カズカズ",
+                "variants": [
+                    "数々",
+                    "数数"
+                ]
+            },
+            {
+                "reading": "カツカツ",
+                "variants": [
+                    "戛戛",
+                    "戛々"
+                ]
+            },
+            {
+                "reading": "カドカド",
+                "variants": [
+                    "廉々"
+                ]
+            },
+            {
+                "reading": "カナカナ",
+                "variants": [
+                    "蜩"
+                ]
+            },
+            {
+                "reading": "カンカン",
+                "variants": [
+                    "cancan",
+                    "寛々",
+                    "閑々",
+                    "感官",
+                    "汗簡",
+                    "灌灌"
+                ]
+            },
+            {
+                "reading": "ガイガイ",
+                "variants": [
+                    "皚々"
+                ]
+            },
+            {
+                "reading": "キリキリ",
+                "variants": [
+                    "吉里吉里"
+                ]
+            },
+            {
+                "reading": "キンキン",
+                "variants": [
+                    "僅々",
+                    "近々",
+                    "欣々"
+                ]
+            },
+            {
+                "reading": "クスクス",
+                "variants": [
+                    "couscous",
+                    "cuscus"
+                ]
+            },
+            {
+                "reading": "グズグズ",
+                "variants": [
+                    "愚図愚図"
+                ]
+            },
+            {
+                "reading": "ケイケイ",
+                "variants": [
+                    "軽々",
+                    "炯々",
+                    "烱々",
+                    "軽軽"
+                ]
+            },
+            {
+                "reading": "ゲジゲジ",
+                "variants": [
+                    "蚰蜒"
+                ]
+            },
+            {
+                "reading": "コウコウ",
+                "variants": [
+                    "高校",
+                    "航行",
+                    "孝行",
+                    "煌々",
+                    "後攻",
+                    "口腔",
+                    "坑口",
+                    "港口",
+                    "工高",
+                    "皓々"
+                ]
+            }
+        ],
+        "hasMore": true
+    }
+}

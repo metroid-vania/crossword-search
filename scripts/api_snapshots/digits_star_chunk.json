@@ -1,0 +1,427 @@
+{
+    "params": {
+        "q": "１＊１",
+        "limit": "50"
+    },
+    "response": {
+        "count": 50,
+        "total": 153547,
+        "words": [
+            {
+                "reading": "イイ",
+                "variants": [
+                    "飯",
+                    "謂",
+                    "猪",
+                    "井伊",
+                    "伊井",
+                    "猪井",
+                    "依依",
+                    "依違",
+                    "依倚",
+                    "唯々"
+                ]
+            },
+            {
+                "reading": "オオ",
+                "variants": [
+                    "大",
+                    "多",
+                    "夛"
+                ]
+            },
+            {
+                "reading": "カカ",
+                "variants": [
+                    "嬶",
+                    "花下",
+                    "仮果",
+                    "窩家"
+                ]
+            },
+            {
+                "reading": "ガガ",
+                "variants": [
+                    "峨々",
+                    "峨峨"
+                ]
+            },
+            {
+                "reading": "キキ",
+                "variants": [
+                    "Kiki",
+                    "kiki",
+                    "機器",
+                    "危機",
+                    "鬼気",
+                    "嬉々",
+                    "器機",
+                    "記紀",
+                    "毀棄",
+                    "忌諱"
+                ]
+            },
+            {
+                "reading": "ギギ",
+                "variants": [
+                    "疑義",
+                    "擬議",
+                    "魏魏"
+                ]
+            },
+            {
+                "reading": "クク",
+                "variants": [
+                    "coucou",
+                    "区々",
+                    "九九",
+                    "区区",
+                    "煦々"
+                ]
+            },
+            {
+                "reading": "ゲゲ",
+                "variants": [
+                    "解夏"
+                ]
+            },
+            {
+                "reading": "ココ",
+                "variants": [
+                    "coco",
+                    "個々",
+                    "此処",
+                    "個個",
+                    "爰",
+                    "呱々",
+                    "茲"
+                ]
+            },
+            {
+                "reading": "ゴゴ",
+                "variants": [
+                    "午後",
+                    "午后",
+                    "語々",
+                    "語語"
+                ]
+            },
+            {
+                "reading": "ササ",
+                "variants": [
+                    "sasa",
+                    "笹",
+                    "篠",
+                    "佐々",
+                    "些々",
+                    "酒",
+                    "小竹"
+                ]
+            },
+            {
+                "reading": "ザザ",
+                "variants": [
+                    "zaza"
+                ]
+            },
+            {
+                "reading": "シシ",
+                "variants": [
+                    "獅子",
+                    "四肢",
+                    "志士",
+                    "詩誌",
+                    "死屍",
+                    "嗣子",
+                    "師資",
+                    "師子",
+                    "詩史",
+                    "私史"
+                ]
+            },
+            {
+                "reading": "ジジ",
+                "variants": [
+                    "gigi",
+                    "zizi",
+                    "時事",
+                    "爺",
+                    "時々",
+                    "自恃"
+                ]
+            },
+            {
+                "reading": "スス",
+                "variants": [
+                    "煤"
+                ]
+            },
+            {
+                "reading": "ゼゼ",
+                "variants": [
+                    "膳所"
+                ]
+            },
+            {
+                "reading": "ソソ",
+                "variants": [
+                    "楚楚",
+                    "楚々",
+                    "素々"
+                ]
+            },
+            {
+                "reading": "タタ",
+                "variants": [
+                    "多々"
+                ]
+            },
+            {
+                "reading": "ダダ",
+                "variants": [
+                    "dada",
+                    "駄々"
+                ]
+            },
+            {
+                "reading": "チチ",
+                "variants": [
+                    "父",
+                    "乳",
+                    "遅々",
+                    "義父",
+                    "致知"
+                ]
+            },
+            {
+                "reading": "ツツ",
+                "variants": [
+                    "筒",
+                    "砲"
+                ]
+            },
+            {
+                "reading": "テテ",
+                "variants": [
+                    "父"
+                ]
+            },
+            {
+                "reading": "トト",
+                "variants": [
+                    "toto"
+                ]
+            },
+            {
+                "reading": "ナナ",
+                "variants": [
+                    "nana",
+                    "七",
+                    "奈々",
+                    "奈奈",
+                    "７"
+                ]
+            },
+            {
+                "reading": "ノノ",
+                "variants": [
+                    "野々"
+                ]
+            },
+            {
+                "reading": "ハハ",
+                "variants": [
+                    "母",
+                    "義母"
+                ]
+            },
+            {
+                "reading": "ババ",
+                "variants": [
+                    "馬場",
+                    "婆",
+                    "屎",
+                    "糞"
+                ]
+            },
+            {
+                "reading": "パパ",
+                "variants": [
+                    "papa"
+                ]
+            },
+            {
+                "reading": "ヒヒ",
+                "variants": [
+                    "狒狒",
+                    "比比",
+                    "霏霏",
+                    "霏々",
+                    "比々",
+                    "狒々"
+                ]
+            },
+            {
+                "reading": "ビビ",
+                "variants": [
+                    "微々",
+                    "靡靡"
+                ]
+            },
+            {
+                "reading": "ベベ",
+                "variants": [
+                    "bebe"
+                ]
+            },
+            {
+                "reading": "ペペ",
+                "variants": [
+                    "pepe",
+                    "pepee"
+                ]
+            },
+            {
+                "reading": "ホホ",
+                "variants": [
+                    "頬"
+                ]
+            },
+            {
+                "reading": "ママ",
+                "variants": [
+                    "mama",
+                    "儘",
+                    "侭",
+                    "随",
+                    "継",
+                    "飯",
+                    "圸",
+                    "墹",
+                    "壗",
+                    "媽媽"
+                ]
+            },
+            {
+                "reading": "ミミ",
+                "variants": [
+                    "mimi",
+                    "耳"
+                ]
+            },
+            {
+                "reading": "モモ",
+                "variants": [
+                    "momo",
+                    "桃",
+                    "股",
+                    "腿",
+                    "百"
+                ]
+            },
+            {
+                "reading": "ヤヤ",
+                "variants": [
+                    "稍",
+                    "漸",
+                    "稚"
+                ]
+            },
+            {
+                "reading": "ユユ",
+                "variants": [
+                    "結由"
+                ]
+            },
+            {
+                "reading": "ヨヨ",
+                "variants": [
+                    "夜々",
+                    "世々",
+                    "世世",
+                    "夜夜"
+                ]
+            },
+            {
+                "reading": "ララ",
+                "variants": [
+                    "lala",
+                    "lara"
+                ]
+            },
+            {
+                "reading": "リリ",
+                "variants": [
+                    "lilli"
+                ]
+            },
+            {
+                "reading": "ルル",
+                "variants": [
+                    "loulou",
+                    "lulu",
+                    "縷々",
+                    "縷縷"
+                ]
+            },
+            {
+                "reading": "ロロ",
+                "variants": [
+                    "lolo",
+                    "rollo",
+                    "roro"
+                ]
+            },
+            {
+                "reading": "アクア",
+                "variants": [
+                    "aqua"
+                ]
+            },
+            {
+                "reading": "アジア",
+                "variants": [
+                    "asia",
+                    "亜細亜",
+                    "亞細亞"
+                ]
+            },
+            {
+                "reading": "アピア",
+                "variants": [
+                    "apia"
+                ]
+            },
+            {
+                "reading": "アリア",
+                "variants": [
+                    "aria"
+                ]
+            },
+            {
+                "reading": "イアイ",
+                "variants": [
+                    "居合",
+                    "居合い",
+                    "遺愛",
+                    "畏愛"
+                ]
+            },
+            {
+                "reading": "イェイ",
+                "variants": [
+                    "yea"
+                ]
+            },
+            {
+                "reading": "イエイ",
+                "variants": [
+                    "遺影",
+                    "家居",
+                    "遺詠"
+                ]
+            }
+        ],
+        "hasMore": true
+    }
+}

@@ -1,0 +1,460 @@
+{
+    "params": {
+        "q": "？？イロ"
+    },
+    "response": {
+        "count": 73,
+        "total": 153547,
+        "words": [
+            {
+                "reading": "アイイロ",
+                "variants": [
+                    "藍色"
+                ]
+            },
+            {
+                "reading": "アオイロ",
+                "variants": [
+                    "青色"
+                ]
+            },
+            {
+                "reading": "アカイロ",
+                "variants": [
+                    "赤色"
+                ]
+            },
+            {
+                "reading": "アシイロ",
+                "variants": [
+                    "足色"
+                ]
+            },
+            {
+                "reading": "アマイロ",
+                "variants": [
+                    "亜麻色"
+                ]
+            },
+            {
+                "reading": "アメイロ",
+                "variants": [
+                    "飴色"
+                ]
+            },
+            {
+                "reading": "イロイロ",
+                "variants": [
+                    "色々",
+                    "色色",
+                    "色いろ"
+                ]
+            },
+            {
+                "reading": "ウカイロ",
+                "variants": [
+                    "迂回路"
+                ]
+            },
+            {
+                "reading": "ウスイロ",
+                "variants": [
+                    "薄色"
+                ]
+            },
+            {
+                "reading": "エビイロ",
+                "variants": [
+                    "葡萄色"
+                ]
+            },
+            {
+                "reading": "カオイロ",
+                "variants": [
+                    "顔色"
+                ]
+            },
+            {
+                "reading": "カキイロ",
+                "variants": [
+                    "柿色"
+                ]
+            },
+            {
+                "reading": "カチイロ",
+                "variants": [
+                    "褐色",
+                    "勝色",
+                    "勝ち色"
+                ]
+            },
+            {
+                "reading": "カナイロ",
+                "variants": [
+                    "金色"
+                ]
+            },
+            {
+                "reading": "カバイロ",
+                "variants": [
+                    "樺色",
+                    "蒲色"
+                ]
+            },
+            {
+                "reading": "カミイロ",
+                "variants": [
+                    "髪色"
+                ]
+            },
+            {
+                "reading": "カレイロ",
+                "variants": [
+                    "枯れ色",
+                    "枯色"
+                ]
+            },
+            {
+                "reading": "カワイロ",
+                "variants": [
+                    "革色"
+                ]
+            },
+            {
+                "reading": "キンイロ",
+                "variants": [
+                    "金色"
+                ]
+            },
+            {
+                "reading": "ギンイロ",
+                "variants": [
+                    "銀色"
+                ]
+            },
+            {
+                "reading": "クサイロ",
+                "variants": [
+                    "草色"
+                ]
+            },
+            {
+                "reading": "クリイロ",
+                "variants": [
+                    "栗色",
+                    "涅色"
+                ]
+            },
+            {
+                "reading": "クロイロ",
+                "variants": [
+                    "黒色"
+                ]
+            },
+            {
+                "reading": "クワイロ",
+                "variants": [
+                    "桑色"
+                ]
+            },
+            {
+                "reading": "コウイロ",
+                "variants": [
+                    "香色"
+                ]
+            },
+            {
+                "reading": "コキイロ",
+                "variants": [
+                    "濃色"
+                ]
+            },
+            {
+                "reading": "コケイロ",
+                "variants": [
+                    "苔色"
+                ]
+            },
+            {
+                "reading": "コワイロ",
+                "variants": [
+                    "声色",
+                    "聲色"
+                ]
+            },
+            {
+                "reading": "コンイロ",
+                "variants": [
+                    "紺色"
+                ]
+            },
+            {
+                "reading": "サビイロ",
+                "variants": [
+                    "錆色"
+                ]
+            },
+            {
+                "reading": "シュイロ",
+                "variants": [
+                    "朱色"
+                ]
+            },
+            {
+                "reading": "ジャイロ",
+                "variants": [
+                    "gyro"
+                ]
+            },
+            {
+                "reading": "ススイロ",
+                "variants": [
+                    "煤色"
+                ]
+            },
+            {
+                "reading": "スナイロ",
+                "variants": [
+                    "砂色"
+                ]
+            },
+            {
+                "reading": "スミイロ",
+                "variants": [
+                    "墨色"
+                ]
+            },
+            {
+                "reading": "スリイロ",
+                "variants": [
+                    "刷色"
+                ]
+            },
+            {
+                "reading": "ソメイロ",
+                "variants": [
+                    "染め色"
+                ]
+            },
+            {
+                "reading": "ソライロ",
+                "variants": [
+                    "空色"
+                ]
+            },
+            {
+                "reading": "チチイロ",
+                "variants": [
+                    "乳色"
+                ]
+            },
+            {
+                "reading": "チャイロ",
+                "variants": [
+                    "茶色"
+                ]
+            },
+            {
+                "reading": "ツチイロ",
+                "variants": [
+                    "土色"
+                ]
+            },
+            {
+                "reading": "テツイロ",
+                "variants": [
+                    "鉄色"
+                ]
+            },
+            {
+                "reading": "トキイロ",
+                "variants": [
+                    "鴇色"
+                ]
+            },
+            {
+                "reading": "トビイロ",
+                "variants": [
+                    "鳶色"
+                ]
+            },
+            {
+                "reading": "トモイロ",
+                "variants": [
+                    "共色"
+                ]
+            },
+            {
+                "reading": "ナエイロ",
+                "variants": [
+                    "苗色"
+                ]
+            },
+            {
+                "reading": "ナツイロ",
+                "variants": [
+                    "夏色"
+                ]
+            },
+            {
+                "reading": "ナナイロ",
+                "variants": [
+                    "七色"
+                ]
+            },
+            {
+                "reading": "ナニイロ",
+                "variants": [
+                    "何色"
+                ]
+            },
+            {
+                "reading": "ニクイロ",
+                "variants": [
+                    "肉色"
+                ]
+            },
+            {
+                "reading": "ニジイロ",
+                "variants": [
+                    "虹色"
+                ]
+            },
+            {
+                "reading": "ニビイロ",
+                "variants": [
+                    "鈍色"
+                ]
+            },
+            {
+                "reading": "ヌレイロ",
+                "variants": [
+                    "濡れ色"
+                ]
+            },
+            {
+                "reading": "ネリイロ",
+                "variants": [
+                    "練色"
+                ]
+            },
+            {
+                "reading": "ハイイロ",
+                "variants": [
+                    "灰色"
+                ]
+            },
+            {
+                "reading": "ハジイロ",
+                "variants": [
+                    "黄櫨色"
+                ]
+            },
+            {
+                "reading": "ハタイロ",
+                "variants": [
+                    "旗色"
+                ]
+            },
+            {
+                "reading": "ハダイロ",
+                "variants": [
+                    "肌色"
+                ]
+            },
+            {
+                "reading": "ハナイロ",
+                "variants": [
+                    "花色"
+                ]
+            },
+            {
+                "reading": "バライロ",
+                "variants": [
+                    "薔薇色",
+                    "バラ色"
+                ]
+            },
+            {
+                "reading": "ヒトイロ",
+                "variants": [
+                    "一色",
+                    "人色"
+                ]
+            },
+            {
+                "reading": "ヒワイロ",
+                "variants": [
+                    "鶸色"
+                ]
+            },
+            {
+                "reading": "フジイロ",
+                "variants": [
+                    "藤色"
+                ]
+            },
+            {
+                "reading": "ベニイロ",
+                "variants": [
+                    "紅色"
+                ]
+            },
+            {
+                "reading": "マケイロ",
+                "variants": [
+                    "負け色"
+                ]
+            },
+            {
+                "reading": "ミズイロ",
+                "variants": [
+                    "水色"
+                ]
+            },
+            {
+                "reading": "モモイロ",
+                "variants": [
+                    "桃色"
+                ]
+            },
+            {
+                "reading": "ヤキイロ",
+                "variants": [
+                    "焼き色"
+                ]
+            },
+            {
+                "reading": "ユウイロ",
+                "variants": [
+                    "夕色"
+                ]
+            },
+            {
+                "reading": "ユメイロ",
+                "variants": [
+                    "夢色"
+                ]
+            },
+            {
+                "reading": "ルリイロ",
+                "variants": [
+                    "瑠璃色"
+                ]
+            },
+            {
+                "reading": "ロウイロ",
+                "variants": [
+                    "蝋色"
+                ]
+            },
+            {
+                "reading": "ワカイロ",
+                "variants": [
+                    "若色"
+                ]
+            }
+        ],
+        "hasMore": false
+    }
+}

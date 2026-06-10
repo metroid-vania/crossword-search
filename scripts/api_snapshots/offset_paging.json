@@ -1,0 +1,75 @@
+{
+    "params": {
+        "q": "？？イロ",
+        "offset": "50",
+        "limit": "10"
+    },
+    "response": {
+        "count": 10,
+        "total": 153547,
+        "words": [
+            {
+                "reading": "ニジイロ",
+                "variants": [
+                    "虹色"
+                ]
+            },
+            {
+                "reading": "ニビイロ",
+                "variants": [
+                    "鈍色"
+                ]
+            },
+            {
+                "reading": "ヌレイロ",
+                "variants": [
+                    "濡れ色"
+                ]
+            },
+            {
+                "reading": "ネリイロ",
+                "variants": [
+                    "練色"
+                ]
+            },
+            {
+                "reading": "ハイイロ",
+                "variants": [
+                    "灰色"
+                ]
+            },
+            {
+                "reading": "ハジイロ",
+                "variants": [
+                    "黄櫨色"
+                ]
+            },
+            {
+                "reading": "ハタイロ",
+                "variants": [
+                    "旗色"
+                ]
+            },
+            {
+                "reading": "ハダイロ",
+                "variants": [
+                    "肌色"
+                ]
+            },
+            {
+                "reading": "ハナイロ",
+                "variants": [
+                    "花色"
+                ]
+            },
+            {
+                "reading": "バライロ",
+                "variants": [
+                    "薔薇色",
+                    "バラ色"
+                ]
+            }
+        ],
+        "hasMore": true
+    }
+}

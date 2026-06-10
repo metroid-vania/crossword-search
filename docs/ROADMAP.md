@@ -87,9 +87,9 @@
 - **概要**: Playwright で手動検証した項目をテストスクリプト化。検索・除外文字・シャッフルのページング重複なし・まとめてコピー・**フォーム暗黙送信**（実 Enter キーで submit が発火するか）。
 - **価値**: iOS 完了キーでキーボードが閉じなくなった回帰（2026-06-10 発生）のような問題を機械検知できる。デプロイ前に1コマンドで実行。
 
-### D3. API 後方互換スナップショットテスト｜規模: 小
-- **概要**: 代表クエリ十数件（完全一致 / ？のみ / ＊あり / 数字+＊ / exclude / shuffle）の [backend/search_cli.php](../backend/search_cli.php) 出力を保存し、api.php 変更時に diff 比較。
-- **価値**: 4つの検索パスすべての回帰を低コストで検知。
+### D3. API 後方互換スナップショットテスト｜✅ 実装済み（2026-06-10）
+- **概要**: 代表17ケース（完全一致 / ？のみ / ＊あり / 数字+＊ / exclude / shuffle / ページング / エラー系）の API 応答を保存し、api.php 変更時に diff 比較。
+- **実装**: [scripts/api-snapshot.php](../scripts/api-snapshot.php)（check/update）。スナップショットは scripts/api_snapshots/ に保存。パラメータは stdin 経由で渡し Windows の文字化けを回避（scripts/api-query-runner.php）。
 
 ### D4. クライアントエラーロギング｜規模: 小
 - **概要**: `window.onerror` / `unhandledrejection` → GA4 カスタムイベント送信（本番ドメインのみ）。

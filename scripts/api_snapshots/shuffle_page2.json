@@ -1,0 +1,627 @@
+{
+    "params": {
+        "q": "＊イロ",
+        "sort": "shuffle",
+        "seed": "42",
+        "offset": "100"
+    },
+    "response": {
+        "count": 100,
+        "total": 153547,
+        "words": [
+            {
+                "reading": "ハシタイロ",
+                "variants": [
+                    "端色"
+                ]
+            },
+            {
+                "reading": "シロガネイロ",
+                "variants": [
+                    "白銀色"
+                ]
+            },
+            {
+                "reading": "ホウスイロ",
+                "variants": [
+                    "放水路"
+                ]
+            },
+            {
+                "reading": "ジュシンカイロ",
+                "variants": [
+                    "受信回路"
+                ]
+            },
+            {
+                "reading": "セイジイロ",
+                "variants": [
+                    "青磁色"
+                ]
+            },
+            {
+                "reading": "ハダイロ",
+                "variants": [
+                    "肌色"
+                ]
+            },
+            {
+                "reading": "クリイロ",
+                "variants": [
+                    "栗色",
+                    "涅色"
+                ]
+            },
+            {
+                "reading": "コウニュウケイロ",
+                "variants": [
+                    "購入経路"
+                ]
+            },
+            {
+                "reading": "ウスミドリイロ",
+                "variants": [
+                    "薄緑色"
+                ]
+            },
+            {
+                "reading": "アオキイロ",
+                "variants": [
+                    "青黄色"
+                ]
+            },
+            {
+                "reading": "カワラケイロ",
+                "variants": [
+                    "土器色"
+                ]
+            },
+            {
+                "reading": "キャライロ",
+                "variants": [
+                    "伽羅色"
+                ]
+            },
+            {
+                "reading": "ジョウシャケイロ",
+                "variants": [
+                    "乗車経路"
+                ]
+            },
+            {
+                "reading": "シコンイロ",
+                "variants": [
+                    "紫根色"
+                ]
+            },
+            {
+                "reading": "コワイロ",
+                "variants": [
+                    "声色",
+                    "聲色"
+                ]
+            },
+            {
+                "reading": "ツツジイロ",
+                "variants": [
+                    "躑躅色"
+                ]
+            },
+            {
+                "reading": "ヌレイロ",
+                "variants": [
+                    "濡れ色"
+                ]
+            },
+            {
+                "reading": "イロイロ",
+                "variants": [
+                    "色々",
+                    "色色",
+                    "色いろ"
+                ]
+            },
+            {
+                "reading": "ウスムラサキイロ",
+                "variants": [
+                    "薄紫色"
+                ]
+            },
+            {
+                "reading": "ハッセイカイロ",
+                "variants": [
+                    "発生回路"
+                ]
+            },
+            {
+                "reading": "ウグイスイロ",
+                "variants": [
+                    "鶯色"
+                ]
+            },
+            {
+                "reading": "ウスズミイロ",
+                "variants": [
+                    "薄墨色"
+                ]
+            },
+            {
+                "reading": "シコウカイロ",
+                "variants": [
+                    "思考回路"
+                ]
+            },
+            {
+                "reading": "チャイロ",
+                "variants": [
+                    "茶色"
+                ]
+            },
+            {
+                "reading": "アイロ",
+                "variants": [
+                    "隘路",
+                    "文色"
+                ]
+            },
+            {
+                "reading": "ホイロ",
+                "variants": [
+                    "焙炉"
+                ]
+            },
+            {
+                "reading": "デンシカイロ",
+                "variants": [
+                    "電子回路"
+                ]
+            },
+            {
+                "reading": "コムギイロ",
+                "variants": [
+                    "小麦色"
+                ]
+            },
+            {
+                "reading": "エメラルドイロ",
+                "variants": [
+                    "エメラルド色"
+                ]
+            },
+            {
+                "reading": "カーキイロ",
+                "variants": [
+                    "カーキ色"
+                ]
+            },
+            {
+                "reading": "ゾウゲイロ",
+                "variants": [
+                    "象牙色"
+                ]
+            },
+            {
+                "reading": "コルクイロ",
+                "variants": [
+                    "コルク色"
+                ]
+            },
+            {
+                "reading": "シンケイカイロ",
+                "variants": [
+                    "神経回路"
+                ]
+            },
+            {
+                "reading": "ソライロ",
+                "variants": [
+                    "空色"
+                ]
+            },
+            {
+                "reading": "キンイロ",
+                "variants": [
+                    "金色"
+                ]
+            },
+            {
+                "reading": "タマムシイロ",
+                "variants": [
+                    "玉虫色"
+                ]
+            },
+            {
+                "reading": "ダイダイイロ",
+                "variants": [
+                    "橙色",
+                    "だいだい色"
+                ]
+            },
+            {
+                "reading": "ウスモモイロ",
+                "variants": [
+                    "薄桃色"
+                ]
+            },
+            {
+                "reading": "ドウキカイロ",
+                "variants": [
+                    "同期回路"
+                ]
+            },
+            {
+                "reading": "テンセイロ",
+                "variants": [
+                    "天せいろ"
+                ]
+            },
+            {
+                "reading": "エビチャイロ",
+                "variants": [
+                    "海老茶色"
+                ]
+            },
+            {
+                "reading": "フィロ",
+                "variants": [
+                    "philo"
+                ]
+            },
+            {
+                "reading": "アカミドリイロ",
+                "variants": [
+                    "赤緑色"
+                ]
+            },
+            {
+                "reading": "ジョザンカイロ",
+                "variants": [
+                    "除算回路"
+                ]
+            },
+            {
+                "reading": "ウスイロ",
+                "variants": [
+                    "薄色"
+                ]
+            },
+            {
+                "reading": "セイギョカイロ",
+                "variants": [
+                    "制御回路"
+                ]
+            },
+            {
+                "reading": "ユウイロ",
+                "variants": [
+                    "夕色"
+                ]
+            },
+            {
+                "reading": "ベイロ",
+                "variants": [
+                    "米ロ",
+                    "米露"
+                ]
+            },
+            {
+                "reading": "キホンカイロ",
+                "variants": [
+                    "基本回路"
+                ]
+            },
+            {
+                "reading": "スミレイロ",
+                "variants": [
+                    "菫色"
+                ]
+            },
+            {
+                "reading": "ウコンイロ",
+                "variants": [
+                    "鬱金色"
+                ]
+            },
+            {
+                "reading": "シャクドウイロ",
+                "variants": [
+                    "赤銅色"
+                ]
+            },
+            {
+                "reading": "アカギイロ",
+                "variants": [
+                    "赤黄色"
+                ]
+            },
+            {
+                "reading": "シュイロ",
+                "variants": [
+                    "朱色"
+                ]
+            },
+            {
+                "reading": "ルリイロ",
+                "variants": [
+                    "瑠璃色"
+                ]
+            },
+            {
+                "reading": "ウスチャイロ",
+                "variants": [
+                    "薄茶色"
+                ]
+            },
+            {
+                "reading": "カンセンケイロ",
+                "variants": [
+                    "感染経路"
+                ]
+            },
+            {
+                "reading": "ジョウザンカイロ",
+                "variants": [
+                    "乗算回路"
+                ]
+            },
+            {
+                "reading": "タイシャイロ",
+                "variants": [
+                    "代赭色"
+                ]
+            },
+            {
+                "reading": "クチナシイロ",
+                "variants": [
+                    "梔子色"
+                ]
+            },
+            {
+                "reading": "ツウカケイロ",
+                "variants": [
+                    "通過経路"
+                ]
+            },
+            {
+                "reading": "コウバイイロ",
+                "variants": [
+                    "紅梅色"
+                ]
+            },
+            {
+                "reading": "オイロ",
+                "variants": [
+                    "御色"
+                ]
+            },
+            {
+                "reading": "ハトバイロ",
+                "variants": [
+                    "鳩羽色"
+                ]
+            },
+            {
+                "reading": "ソメイロ",
+                "variants": [
+                    "染め色"
+                ]
+            },
+            {
+                "reading": "リキュウイロ",
+                "variants": [
+                    "利休色"
+                ]
+            },
+            {
+                "reading": "ハイロ",
+                "variants": [
+                    "葉色",
+                    "廃炉",
+                    "羽色"
+                ]
+            },
+            {
+                "reading": "アズキイロ",
+                "variants": [
+                    "小豆色"
+                ]
+            },
+            {
+                "reading": "ニッケイイロ",
+                "variants": [
+                    "肉桂色"
+                ]
+            },
+            {
+                "reading": "サビイロ",
+                "variants": [
+                    "錆色"
+                ]
+            },
+            {
+                "reading": "ナンドイロ",
+                "variants": [
+                    "納戸色"
+                ]
+            },
+            {
+                "reading": "ジイロ",
+                "variants": [
+                    "地色"
+                ]
+            },
+            {
+                "reading": "ヘイカイロ",
+                "variants": [
+                    "閉回路"
+                ]
+            },
+            {
+                "reading": "ナマカベイロ",
+                "variants": [
+                    "生壁色"
+                ]
+            },
+            {
+                "reading": "シンカイロ",
+                "variants": [
+                    "新回路"
+                ]
+            },
+            {
+                "reading": "ドドメイロ",
+                "variants": [
+                    "どどめ色"
+                ]
+            },
+            {
+                "reading": "キョウシンカイロ",
+                "variants": [
+                    "共振回路"
+                ]
+            },
+            {
+                "reading": "コムラサキイロ",
+                "variants": [
+                    "濃紫色"
+                ]
+            },
+            {
+                "reading": "ハナイロ",
+                "variants": [
+                    "花色"
+                ]
+            },
+            {
+                "reading": "エイゾウカイロ",
+                "variants": [
+                    "映像回路"
+                ]
+            },
+            {
+                "reading": "ユメイロ",
+                "variants": [
+                    "夢色"
+                ]
+            },
+            {
+                "reading": "ピンクイロ",
+                "variants": [
+                    "ピンク色"
+                ]
+            },
+            {
+                "reading": "ワインイロ",
+                "variants": [
+                    "ワイン色"
+                ]
+            },
+            {
+                "reading": "アカネイロ",
+                "variants": [
+                    "茜色"
+                ]
+            },
+            {
+                "reading": "ベツケイロ",
+                "variants": [
+                    "別経路"
+                ]
+            },
+            {
+                "reading": "カバイロ",
+                "variants": [
+                    "樺色",
+                    "蒲色"
+                ]
+            },
+            {
+                "reading": "チョウスイロ",
+                "variants": [
+                    "長水路"
+                ]
+            },
+            {
+                "reading": "ヘイカツカイロ",
+                "variants": [
+                    "平滑回路"
+                ]
+            },
+            {
+                "reading": "アメイロ",
+                "variants": [
+                    "飴色"
+                ]
+            },
+            {
+                "reading": "トクサイロ",
+                "variants": [
+                    "木賊色"
+                ]
+            },
+            {
+                "reading": "キハダイロ",
+                "variants": [
+                    "黄蘗色"
+                ]
+            },
+            {
+                "reading": "ツウキンケイロ",
+                "variants": [
+                    "通勤経路"
+                ]
+            },
+            {
+                "reading": "セピアイロ",
+                "variants": [
+                    "セピア色"
+                ]
+            },
+            {
+                "reading": "オレンジイロ",
+                "variants": [
+                    "オレンジ色"
+                ]
+            },
+            {
+                "reading": "コハクイロ",
+                "variants": [
+                    "琥珀色"
+                ]
+            },
+            {
+                "reading": "ツウシンケイロ",
+                "variants": [
+                    "通信経路"
+                ]
+            },
+            {
+                "reading": "ヒイロ",
+                "variants": [
+                    "緋色"
+                ]
+            },
+            {
+                "reading": "コキイロ",
+                "variants": [
+                    "濃色"
+                ]
+            },
+            {
+                "reading": "チチイロ",
+                "variants": [
+                    "乳色"
+                ]
+            },
+            {
+                "reading": "モエギイロ",
+                "variants": [
+                    "萌黄色",
+                    "萌葱色",
+                    "萌木色"
+                ]
+            }
+        ],
+        "hasMore": true
+    }
+}

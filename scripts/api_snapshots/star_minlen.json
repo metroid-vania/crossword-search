@@ -1,0 +1,157 @@
+{
+    "params": {
+        "q": "＊イロ",
+        "minLen": "8"
+    },
+    "response": {
+        "count": 24,
+        "total": 153547,
+        "words": [
+            {
+                "reading": "アオムラサキイロ",
+                "variants": [
+                    "青紫色"
+                ]
+            },
+            {
+                "reading": "アカムラサキイロ",
+                "variants": [
+                    "赤紫色"
+                ]
+            },
+            {
+                "reading": "ウスムラサキイロ",
+                "variants": [
+                    "薄紫色"
+                ]
+            },
+            {
+                "reading": "キョウシンカイロ",
+                "variants": [
+                    "共振回路"
+                ]
+            },
+            {
+                "reading": "クロムラサキイロ",
+                "variants": [
+                    "黒紫色"
+                ]
+            },
+            {
+                "reading": "コイムラサキイロ",
+                "variants": [
+                    "濃紫色"
+                ]
+            },
+            {
+                "reading": "コウニュウケイロ",
+                "variants": [
+                    "購入経路"
+                ]
+            },
+            {
+                "reading": "コキムラサキイロ",
+                "variants": [
+                    "濃紫色"
+                ]
+            },
+            {
+                "reading": "シュウセキカイロ",
+                "variants": [
+                    "集積回路"
+                ]
+            },
+            {
+                "reading": "シュウヘンカイロ",
+                "variants": [
+                    "周辺回路"
+                ]
+            },
+            {
+                "reading": "シンニュウケイロ",
+                "variants": [
+                    "進入経路"
+                ]
+            },
+            {
+                "reading": "ジュウニントイロ",
+                "variants": [
+                    "十人十色"
+                ]
+            },
+            {
+                "reading": "ジュンジョカイロ",
+                "variants": [
+                    "順序回路"
+                ]
+            },
+            {
+                "reading": "ジョウザンカイロ",
+                "variants": [
+                    "乗算回路"
+                ]
+            },
+            {
+                "reading": "ジョウシャケイロ",
+                "variants": [
+                    "乗車経路"
+                ]
+            },
+            {
+                "reading": "チョコレートイロ",
+                "variants": [
+                    "チョコレート色"
+                ]
+            },
+            {
+                "reading": "ドウチョウカイロ",
+                "variants": [
+                    "同調回路"
+                ]
+            },
+            {
+                "reading": "ニュウシュケイロ",
+                "variants": [
+                    "入手経路"
+                ]
+            },
+            {
+                "reading": "ヒセンケイカイロ",
+                "variants": [
+                    "非線形回路"
+                ]
+            },
+            {
+                "reading": "ベニムラサキイロ",
+                "variants": [
+                    "紅紫色"
+                ]
+            },
+            {
+                "reading": "リオデジャネイロ",
+                "variants": [
+                    "riodejaneiro"
+                ]
+            },
+            {
+                "reading": "リュウツウケイロ",
+                "variants": [
+                    "流通経路"
+                ]
+            },
+            {
+                "reading": "アラカワホウスイロ",
+                "variants": [
+                    "荒川放水路"
+                ]
+            },
+            {
+                "reading": "シンクウカンカイロ",
+                "variants": [
+                    "真空管回路"
+                ]
+            }
+        ],
+        "hasMore": false
+    }
+}

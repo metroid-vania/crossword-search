@@ -1,0 +1,18 @@
+{
+    "params": {
+        "q": "アイアン"
+    },
+    "response": {
+        "count": 1,
+        "total": 153547,
+        "words": [
+            {
+                "reading": "アイアン",
+                "variants": [
+                    "iron"
+                ]
+            }
+        ],
+        "hasMore": false
+    }
+}
