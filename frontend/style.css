@@ -814,6 +814,7 @@ main {
   align-items: flex-start;
   min-width: 0;
   max-width: 100%;
+  width: 100%; /* トグル行を中央寄せできるよう全幅にする */
 }
 
 #hit-count {
@@ -919,13 +920,14 @@ main {
   white-space: nowrap;
 }
 
-/* 並び順トグル＋表示モードトグルの横並びコンテナ（件数表示の下に配置） */
+/* 並び順トグル＋表示モードトグルの横並びコンテナ（件数表示の下・中央寄せ） */
 .toggle-row {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
   margin-top: 6px;
+  align-self: center;
 }
 
 /* shadcn ToggleGroup（outline variant）: 細ボーダー＋区切り線 */
