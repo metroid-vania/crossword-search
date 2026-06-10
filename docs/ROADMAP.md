@@ -95,9 +95,9 @@
 - **概要**: `window.onerror` / `unhandledrejection` → GA4 カスタムイベント送信（本番ドメインのみ）。
 - **価値**: 実ユーザー環境（特に iOS Safari）のエラーを可視化。外部サービス不要で依存ゼロ維持。
 
-### D5. デプロイ差分リストの自動生成｜規模: 小
-- **概要**: デプロイごとに git タグを打ち、`git diff --name-only <前回タグ>..HEAD` から FTP アップロード対象リストを出力するスクリプト。
-- **価値**: 「どのファイルを上げればいい？」を毎回考えなくて済む。アップロード漏れ防止。
+### D5. デプロイ差分リストの自動生成｜✅ 実装済み（2026-06-10）
+- **概要**: デプロイごとに git タグ（`deploy-YYYYMMDD-HHMM`）を打ち、前回タグとの diff から FTP アップロード対象リストを出力。
+- **実装**: [scripts/deploy-diff.php](../scripts/deploy-diff.php)。frontend/・backend/*.php を対象判定、words.txt 変更時は DB 再構築を注意喚起。アップロード後に `--mark` でタグ付け。
 
 ### D6. GitHub Actions CI｜規模: 中
 - **概要**: push 時に `php -l` ＋ D2/D3 のテストを実行。
