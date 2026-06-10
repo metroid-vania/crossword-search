@@ -96,7 +96,7 @@
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="style.css?v=2026061008">
+  <link rel="stylesheet" href="style.css?v=2026061009">
 </head>
 <body>
 
@@ -167,7 +167,11 @@
       <button type="button" class="wc-chip" data-insert="３" aria-label="３を挿入">３</button>
       <button type="button" class="wc-chip" data-insert="４" aria-label="４を挿入">４</button>
     </div>
-    <!-- 除外文字（折りたたみ式）。設定中は閉じていてもバッジで明示 -->
+    <!-- NOTE: このフォームにテキスト入力を追加しないこと。
+         送信ボタンのないフォームはテキスト入力が2つ以上あると暗黙送信が無効になり、
+         iOS の「完了」キーで submit が発火せずキーボードが閉じなくなる -->
+    </form>
+    <!-- 除外文字（折りたたみ式・フォーム外）。設定中は閉じていてもバッジで明示 -->
     <div class="exclude-row">
       <button type="button" id="exclude-toggle" class="exclude-toggle" aria-expanded="false" aria-controls="exclude-panel">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -195,7 +199,6 @@
       >
     </div>
     <div id="pattern-assist" class="pattern-assist" hidden></div>
-    </form>
   </section>
 </div>
 
@@ -268,7 +271,7 @@
   </svg>
   <span class="btt-label" aria-hidden="true">再検索</span>
 </button>
-<script src="app.js?v=2026061008"></script>
+<script src="app.js?v=2026061009"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
