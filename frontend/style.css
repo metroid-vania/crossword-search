@@ -811,10 +811,10 @@ main {
 .results-summary {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center; /* 件数表示・トグル行とも中央寄せ（PC/スマホ共通） */
   min-width: 0;
   max-width: 100%;
-  width: 100%; /* トグル行を中央寄せできるよう全幅にする */
+  width: 100%;
 }
 
 #hit-count {
@@ -927,7 +927,6 @@ main {
   gap: 8px;
   flex-shrink: 0;
   margin-top: 6px;
-  align-self: center;
 }
 
 /* shadcn ToggleGroup（outline variant）: 細ボーダー＋区切り線 */
@@ -1592,14 +1591,5 @@ footer a:hover {
     flex-direction: column;
     align-items: center;
     gap: 8px;
-  }
-
-  .results-summary {
-    width: 100%;
-    align-items: center;
-  }
-
-  .hit-count-wrap {
-    justify-content: center;
   }
 }
