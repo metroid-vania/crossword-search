@@ -36,6 +36,7 @@ let hasMore         = false;
 let isLoading       = false;
 let abortController = null; // 進行中の fetch をキャンセルするコントローラー
 let idlePrefetchId  = null; // バックグラウンドプリフェッチ用
+let bulkLoading     = false; // まとめてコピー用の一括取得中フラグ
 let hasNetworkError = false; // 直前の検索がネットワークエラーで失敗したか（online 復帰時の自動リトライ判定用）
 let simpleMode      = localStorage.getItem('simpleMode') === '1';
 let selectedLengthFilter = 0;
@@ -255,7 +256,8 @@ inputEl.addEventListener('input', () => {
   }
 
   clearTimeout(debounceTimer);
-  // 入力直後に旧リクエスト・プリフェッチをキャンセル
+  // 入力直後に旧リクエスト・プリフェッチ・一括取得をキャンセル
+  bulkLoading = false;
   if (abortController) { abortController.abort(); abortController = null; }
   cancelPrefetch();
   // DOM ノードが多い場合は即解放してメモリ・描画バッファを解消
@@ -281,6 +283,7 @@ clearBtn.addEventListener('click', () => {
   updateFabVisibility(); // スマホFAB：入力クリア時に非表示へ
   inputEl.focus();
   clearTimeout(debounceTimer);
+  bulkLoading = false;
   if (abortController) { abortController.abort(); abortController = null; }
   cancelPrefetch();
   resultsList.replaceChildren();
@@ -290,25 +293,80 @@ clearBtn.addEventListener('click', () => {
 });
 
 // ─── すべてコピー ──────────────────────────────────────────────────────────
+// 未ロードのページ（hasMore）が残っていても押せる。その場合は残りを自動取得
+// してからコピーする。上限到達時は部分コピーせず絞り込みを促す。
+const COPY_FETCH_LIMIT = 5000;
+
 if (copyAllBtn) {
-  copyAllBtn.addEventListener('click', async () => {
-    if (!currentData || currentData.count === 0 || currentData.hasMore) return;
-    const pattern = currentPatternLabel();
-    // 読みを拗音・促音展開してから重複排除（変換後に同じになるケースもあるため）
-    const seen = new Set();
-    const readings = [];
-    for (const w of currentData.words) {
-      const r = expandSmallKana(w.reading);
-      if (!seen.has(r)) { seen.add(r); readings.push(r); }
+  copyAllBtn.addEventListener('click', () => {
+    if (bulkLoading) {
+      // 取得中の再クリック＝中断
+      bulkLoading = false;
+      if (abortController) { abortController.abort(); abortController = null; }
+      return;
     }
-    const text = `【${pattern}】\n${readings.join('\n')}`;
-    try {
-      await navigator.clipboard.writeText(text);
-      showToast(copyAllBtn, '検索結果をコピーしました', false, true);
-    } catch (e) {
-      showToast(copyAllBtn, 'コピーに失敗しました', true);
+    if (!currentData || currentData.count === 0) return;
+    if (currentData.hasMore) {
+      fetchAllThenCopy();
+    } else {
+      copyAllResults();
     }
   });
+}
+
+async function copyAllResults() {
+  const pattern = currentPatternLabel();
+  // 読みを拗音・促音展開してから重複排除（変換後に同じになるケースもあるため）
+  const seen = new Set();
+  const readings = [];
+  for (const w of currentData.words) {
+    const r = expandSmallKana(w.reading);
+    if (!seen.has(r)) { seen.add(r); readings.push(r); }
+  }
+  const text = `【${pattern}】\n${readings.join('\n')}`;
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast(copyAllBtn, `${readings.length}件をコピーしました`, false, true);
+  } catch (e) {
+    showToast(copyAllBtn, 'コピーに失敗しました', true);
+  }
+}
+
+/** 残りページをすべて取得してからコピーする（取得中はボタンが進捗＋中断を兼ねる） */
+async function fetchAllThenCopy() {
+  const query = currentQuery;
+  const lengthFilter = selectedLengthFilter;
+  bulkLoading = true;
+  cancelPrefetch();
+  copyAllBtn.classList.add('loading');
+  copyAllBtn.title = '取得を中断';
+  copyAllBtn.setAttribute('aria-label', '取得を中断');
+  const progressEl = copyAllBtn.querySelector('.copy-progress');
+  const setProgress = () => {
+    if (progressEl) progressEl.textContent = `${currentData ? currentData.count : 0}件…`;
+  };
+  setProgress();
+  try {
+    while (hasMore && bulkLoading &&
+           query === currentQuery && lengthFilter === selectedLengthFilter) {
+      if (currentData && currentData.count >= COPY_FETCH_LIMIT) {
+        showToast(copyAllBtn, `${COPY_FETCH_LIMIT}件を超えるためコピーできません。文字数などで絞り込んでください`, true);
+        return;
+      }
+      await doSearch(false);
+      if (!currentData) return; // 取得エラー（doSearch 側で表示済み）
+      setProgress();
+    }
+    if (!bulkLoading) return;                 // ユーザーが中断した
+    if (query !== currentQuery || lengthFilter !== selectedLengthFilter) return;
+    if (!currentData || currentData.count === 0 || currentData.hasMore) return;
+    await copyAllResults();
+  } finally {
+    bulkLoading = false;
+    copyAllBtn.classList.remove('loading');
+    if (progressEl) progressEl.textContent = '';
+    updateCopyAllBtn(currentData);
+  }
 }
 
 // ─── スマホ用ワイルドカード挿入チップ ───────────────────────────────────────
@@ -402,6 +460,7 @@ function updateLengthFilter() {
 }
 
 function restartSearchSoon() {
+  bulkLoading = false;
   if (abortController) { abortController.abort(); abortController = null; }
   cancelPrefetch();
   clearTimeout(debounceTimer);
@@ -791,15 +850,18 @@ function updateCountDisplay(data) {
 /** すべてコピーボタンの表示/有効状態を更新 */
 function updateCopyAllBtn(data) {
   if (!copyAllBtn) return;
-  // データなし／0件／全件未ロード（hasMore）は非表示
-  if (!data || data.count === 0 || data.hasMore) {
+  if (bulkLoading) return; // 一括取得中の表示は fetchAllThenCopy が管理
+  // データなし／0件は非表示（hasMore は自動取得してコピーできるので表示する）
+  if (!data || data.count === 0) {
     copyAllBtn.hidden = true;
     copyAllBtn.disabled = true;
     return;
   }
   copyAllBtn.hidden = false;
   copyAllBtn.disabled = false;
-  copyAllBtn.title = '検索結果をコピー';
+  const label = data.hasMore ? 'すべて取得してコピー' : '検索結果をコピー';
+  copyAllBtn.title = label;
+  copyAllBtn.setAttribute('aria-label', label);
 }
 
 /** スクリーンリーダー向け：検索結果件数を通知する */
@@ -1115,7 +1177,8 @@ function tryOptimisticFilter(newQuery, lengthFilter = 0) {
 const PREFETCH_LIMIT = 500;
 
 function schedulePrefetch() {
-  if (idlePrefetchId !== null || !hasMore || isLoading || !currentQuery) return;
+  // 一括取得中はループ側が連続取得するためプリフェッチ不要（二重取得防止）
+  if (idlePrefetchId !== null || !hasMore || isLoading || !currentQuery || bulkLoading) return;
   if (currentOffset >= PREFETCH_LIMIT) return; // 上限到達で停止
 
   let fired = false;

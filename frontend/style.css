@@ -837,6 +837,35 @@ main {
   cursor: not-allowed;
 }
 
+/* 一括取得中：コピーアイコンをスピナー＋進捗件数に差し替え（再クリックで中断） */
+.copy-all-btn .copy-spinner,
+.copy-all-btn .copy-progress {
+  display: none;
+}
+
+.copy-all-btn.loading {
+  width: auto;
+  padding: 0 8px;
+  gap: 6px;
+}
+
+.copy-all-btn.loading .copy-icon {
+  display: none;
+}
+
+.copy-all-btn.loading .copy-spinner {
+  display: block;
+  animation: search-spinner-rotate .8s linear infinite;
+}
+
+.copy-all-btn.loading .copy-progress {
+  display: inline;
+  font-size: .78rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+
 /* shadcn ToggleGroup（outline variant）: 細ボーダー＋区切り線 */
 .view-toggle-group {
   display: flex;
