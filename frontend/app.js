@@ -1491,6 +1491,41 @@ backToTopBtn.addEventListener('click', () => {
 });
 
 
+// ─── PWA インストール促進 ─────────────────────────────────────────────────────
+// Chrome/Edge/Android の beforeinstallprompt を捕捉し、ヘッダーに控えめな
+// インストールボタンを表示する。一度拒否されたら以後は自動表示しない。
+// iOS Safari はこのイベント非対応（共有メニュー→ホーム画面に追加で代替）。
+const installBtn = document.getElementById('install-btn');
+let deferredInstallPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault(); // ブラウザ既定のインストールバナーを抑止してボタンに集約
+  if (window.matchMedia('(display-mode: standalone)').matches) return; // インストール済み
+  let dismissed = false;
+  try { dismissed = localStorage.getItem('pwaInstallDismissed') === '1'; } catch (_) {}
+  if (dismissed) return;
+  deferredInstallPrompt = e;
+  if (installBtn) installBtn.hidden = false;
+});
+
+if (installBtn) {
+  installBtn.addEventListener('click', async () => {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    const { outcome } = await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    installBtn.hidden = true;
+    if (outcome === 'dismissed') {
+      try { localStorage.setItem('pwaInstallDismissed', '1'); } catch (_) {}
+    }
+  });
+}
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  if (installBtn) installBtn.hidden = true;
+});
+
 // ─── 初期状態（クエリなし）：ヘッダー非表示 ──────────────────────────────────────
 resultsHeaderEl.hidden = true;
 

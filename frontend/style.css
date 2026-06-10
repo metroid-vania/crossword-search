@@ -347,6 +347,38 @@ header p {
   transform: rotate(-20deg);
 }
 
+/* PWA インストールボタン（beforeinstallprompt 発火時のみ表示） */
+.header-install-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  opacity: .8;
+  transition: opacity .15s, background .15s, box-shadow .15s;
+}
+
+.header-install-btn[hidden] {
+  display: none;
+}
+
+.header-install-btn:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, .15);
+}
+
+.header-install-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, .35);
+}
+
 /* アイコン表示切替：ライト表示時は月、ダーク表示時は太陽 */
 .theme-icon-sun { display: none; }
 .theme-icon-moon { display: block; }
