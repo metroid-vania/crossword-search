@@ -980,6 +980,14 @@ main {
   white-space: nowrap;
 }
 
+/* 並び順トグル＋表示モードトグルの横並びコンテナ */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
 /* shadcn ToggleGroup（outline variant）: 細ボーダー＋区切り線 */
 .view-toggle-group {
   display: flex;

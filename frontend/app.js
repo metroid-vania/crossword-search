@@ -13,6 +13,9 @@ const resultsList   = document.getElementById('results-list');
 const viewToggleGroup = document.getElementById('view-toggle-group');
 const btnDetail       = document.getElementById('btn-detail');
 const btnSimple       = document.getElementById('btn-simple');
+const sortToggleGroup = document.getElementById('sort-toggle-group');
+const btnSortDefault  = document.getElementById('btn-sort-default');
+const btnSortShuffle  = document.getElementById('btn-sort-shuffle');
 const loadingEl     = document.getElementById('search-spinner');
 const backToTopBtn  = document.getElementById('back-to-top');
 const clearBtn      = document.getElementById('clear-btn');
@@ -45,6 +48,8 @@ let hasNetworkError = false; // 直前の検索がネットワークエラーで
 let simpleMode      = localStorage.getItem('simpleMode') === '1';
 let selectedLengthFilter = 0;
 let excludeChars    = ''; // 除外文字（正規化済みカタカナ・重複なし・最大10文字）
+let sortMode        = 'default'; // 'default'（五十音順） | 'shuffle'
+let shuffleSeed     = 0; // シャッフル用シード（API に渡し、同シードで全ページ同一順序）
 let isComposing       = false; // IME 変換中フラグ
 let isExcludeComposing = false; // 除外文字入力欄の IME 変換中フラグ
 let viewportResizing  = false; // キーボード開閉中フラグ（infinite scroll 誤発火防止）
@@ -192,6 +197,31 @@ btnSimple.addEventListener('click', () => {
   btnSimple.blur();
 });
 
+// ─── 並び順切替（五十音 / シャッフル） ────────────────────────────────────────
+// シャッフルはセッション内のみ有効（永続化しない）。選択中の再タップで引き直し。
+
+function applySortMode() {
+  btnSortDefault.classList.toggle('active', sortMode === 'default');
+  btnSortShuffle.classList.toggle('active', sortMode === 'shuffle');
+}
+
+btnSortDefault.addEventListener('click', () => {
+  btnSortDefault.blur();
+  if (sortMode === 'default') return;
+  sortMode = 'default';
+  applySortMode();
+  restartSearchSoon();
+});
+
+btnSortShuffle.addEventListener('click', () => {
+  btnSortShuffle.blur();
+  // シャッフル選択中の再タップは新しいシードで引き直し
+  sortMode = 'shuffle';
+  shuffleSeed = (Math.random() * 0x7fffffff) | 0;
+  applySortMode();
+  restartSearchSoon();
+});
+
 
 // ─── 検索 ─────────────────────────────────────────────────────────────────────
 
@@ -243,6 +273,7 @@ inputEl.addEventListener('input', () => {
   updateFabVisibility();     // スマホFAB：入力状態に応じて表示/非表示を更新
   if (isEmpty) {
     viewToggleGroup.hidden = true;
+    sortToggleGroup.hidden = true;
     resultsHeaderEl.hidden = true;
     mainEl.classList.remove('has-results');
     countEl.textContent = '';
@@ -736,6 +767,8 @@ async function doSearch(reset) {
   const query = removeSpaces(inputEl.value.trim());
   const lengthFilter = selectedLengthFilter;
   const exclude = excludeChars;
+  const sort = sortMode;
+  const seed = shuffleSeed;
   const exactLengthFilter = lengthFilterExact(lengthFilter);
   const minLengthFilter = lengthFilterMin(lengthFilter);
 
@@ -830,6 +863,10 @@ async function doSearch(reset) {
     if (exactLengthFilter > 0) params.set('len', String(exactLengthFilter));
     if (minLengthFilter > 0) params.set('minLen', String(minLengthFilter));
     if (exclude !== '') params.set('exclude', exclude);
+    if (sort === 'shuffle') {
+      params.set('sort', 'shuffle');
+      params.set('seed', String(seed));
+    }
     const res = await fetch(
       `${API_URL}?${params.toString()}`,
       { signal: abortController.signal }
@@ -846,7 +883,7 @@ async function doSearch(reset) {
     const data = await res.json();
     // レスポンス到着時点でクエリ・検索条件が変わっていたら破棄
     if (query !== currentQuery || lengthFilter !== selectedLengthFilter ||
-        exclude !== excludeChars) return;
+        exclude !== excludeChars || sort !== sortMode || seed !== shuffleSeed) return;
     hasNetworkError = false; // 成功したのでフラグ解除
     hasMore = !!data.hasMore;
     const newWords = data.words;
@@ -870,7 +907,7 @@ async function doSearch(reset) {
   } catch (e) {
     if (e.name === 'AbortError') return; // キャンセルされたリクエストは無視
     if (query !== currentQuery || lengthFilter !== selectedLengthFilter ||
-        exclude !== excludeChars) return;  // 既にユーザーが別条件に移っていれば無視
+        exclude !== excludeChars || sort !== sortMode || seed !== shuffleSeed) return;  // 既にユーザーが別条件に移っていれば無視
     console.error(e);
     renderError(classifyError(e));
   } finally {
@@ -969,6 +1006,7 @@ function renderResults(data) {
     countEl.className   = '';
     resultsList.innerHTML = '';
     viewToggleGroup.hidden = true;
+    sortToggleGroup.hidden = true;
     resultsHeaderEl.hidden = true;
     mainEl.classList.remove('has-results');
     guideEl.hidden = false;
@@ -986,6 +1024,7 @@ function renderResults(data) {
 
   if (data.count === 0) {
     viewToggleGroup.hidden = true; // 0件ならトグルは意味がないので隠す
+    sortToggleGroup.hidden = true;
     if (data.hasMore) {
       resultsList.innerHTML = '<li class="message">検索条件が広いため、確認できた範囲では候補が見つかりませんでした。文字を追加して絞り込んでください。</li>';
     } else {
@@ -996,6 +1035,7 @@ function renderResults(data) {
   }
 
   viewToggleGroup.hidden = false;
+  sortToggleGroup.hidden = false;
 
   const fragment = document.createDocumentFragment();
   for (const word of data.words) {
@@ -1158,6 +1198,7 @@ function renderError(info) {
   mainEl.classList.add('has-results');
   guideEl.hidden         = true;
   viewToggleGroup.hidden = true;
+  sortToggleGroup.hidden = true;
   updateCopyAllBtn(null);
   clearAnnouncement();
 
@@ -1333,6 +1374,7 @@ function cacheQueryKey(query, lengthFilter = selectedLengthFilter) {
   if (lengthFilter > 0) key += `|len=${lengthFilter}`;
   else if (lengthFilter < 0) key += `|minLen=${Math.abs(lengthFilter)}`;
   if (excludeChars !== '') key += `|ex=${excludeChars}`;
+  if (sortMode === 'shuffle') key += `|sh=${shuffleSeed}`;
   return key;
 }
 
@@ -1364,6 +1406,8 @@ function memCacheSet(query, offset, data, lengthFilter = selectedLengthFilter) {
 }
 
 function cacheWrite(query, data, lengthFilter = selectedLengthFilter) {
+  // シャッフル中は保存しない（リロード後は新しいシードで引き直すのが自然）
+  if (sortMode === 'shuffle') return;
   // 1 ページ目のみ sessionStorage にも保存（リロード復元用）
   try {
     sessionStorage.setItem(

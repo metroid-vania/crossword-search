@@ -1,9 +1,11 @@
 <?php
 /**
  * 単語検索 API
- * GET /api.php?q=<検索クエリ>&offset=<開始位置>&limit=<件数>&len=<文字数>&minLen=<最小文字数>&exclude=<除外文字>
- * offset / limit / len / minLen / exclude は任意。Response: {"count":N, "total":N, "words":[{"reading":"...","variants":["..."]}], "hasMore":bool}
+ * GET /api.php?q=<検索クエリ>&offset=<開始位置>&limit=<件数>&len=<文字数>&minLen=<最小文字数>&exclude=<除外文字>&sort=shuffle&seed=<数値>
+ * offset / limit / len / minLen / exclude / sort / seed は任意。Response: {"count":N, "total":N, "words":[{"reading":"...","variants":["..."]}], "hasMore":bool}
  * exclude: 結果に含めたくないカタカナ文字の列（最大10文字、ひらがな可・正規化される）
+ * sort=shuffle: シード付き決定的シャッフル。同じ seed なら全ページで同一順序になり、
+ *               LIMIT/OFFSET ページングと両立する（seed: 0〜2147483647）
  */
 
 mb_internal_encoding('UTF-8');
@@ -64,6 +66,11 @@ if ($excludeRaw !== '') {
     }
 }
 
+// 並び順（任意）：sort=shuffle でシード付き決定的シャッフル
+$sortMode = ($_GET['sort'] ?? '') === 'shuffle' ? 'shuffle' : 'default';
+$seed = (int)($_GET['seed'] ?? 0);
+if ($seed < 0 || $seed > 2147483647) $seed = 0;
+
 $dbPath = __DIR__ . '/words.db';
 if (!file_exists($dbPath)) {
     http_response_code(500);
@@ -80,7 +87,7 @@ if ($query === '') {
     exit;
 }
 
-$result = searchWords($db, $query, $total, $offset, $limit, $lengthFilter, $minLengthFilter, $excludeChars);
+$result = searchWords($db, $query, $total, $offset, $limit, $lengthFilter, $minLengthFilter, $excludeChars, $sortMode, $seed);
 // 成功応答：辞書はほぼ不変なので中期ブラウザキャッシュを許可
 //   10分間は新鮮扱い、以降 1時間は古い応答を即時返しつつ裏で再検証
 header('Cache-Control: public, max-age=600, stale-while-revalidate=3600');
@@ -275,8 +282,19 @@ function searchWords(
     int $limit,
     int $lengthFilter = 0,
     int $minLengthFilter = 0,
-    array $excludeChars = []
+    array $excludeChars = [],
+    string $sortMode = 'default',
+    int $seed = 0
 ): array {
+    // シャッフルはシード付き線形合同式で順序を決める。同じ seed なら全ページで
+    // 同一の全順序になるため LIMIT/OFFSET ページング・hasMore 判定がそのまま使える。
+    // seed は乗算の内側に置く（外側に足すだけだと全行が同じだけずれて順序が変わらない）。
+    // 2147483647 = 2^31-1 は素数なので (id+seed)*c mod M は id に対して単射＝順列になる。
+    // （SQLite は 64bit 整数演算: (16万 + 2^31) × 1.1e9 ≈ 2.4e18 でオーバーフローしない）
+    $orderBy = $sortMode === 'shuffle'
+        ? "ORDER BY (((id + $seed) * 1103515245) % 2147483647)"
+        : 'ORDER BY len, normalized';
+
     $normalized = normalizeQuery($query);
 
     $hasNumeric  = (bool) preg_match('/[1-9]/', $normalized);
@@ -310,11 +328,11 @@ function searchWords(
             return emptyResult($total);
         }
         $stmt = $db->prepare(
-            'SELECT reading, variants
+            "SELECT reading, variants
                FROM words
               WHERE normalized = :n
-              ORDER BY len, normalized
-              LIMIT :lim OFFSET :off'
+              $orderBy
+              LIMIT :lim OFFSET :off"
         );
         $stmt->bindValue(':n',   $normalized, SQLITE3_TEXT);
         $stmt->bindValue(':lim', $limit + 1,  SQLITE3_INTEGER);
@@ -352,7 +370,7 @@ function searchWords(
                 "SELECT reading, variants
                    FROM words
                   WHERE " . implode(' AND ', $conds) . "
-                  ORDER BY len, normalized
+                  $orderBy
                   LIMIT :lim OFFSET :off"
             );
             $stmt->bindValue(':l',   $fixedLen,    SQLITE3_INTEGER);
@@ -373,7 +391,7 @@ function searchWords(
                 "SELECT reading, variants
                    FROM words
                   WHERE " . implode(' AND ', $conds) . "
-                  ORDER BY len, normalized
+                  $orderBy
                   LIMIT :lim OFFSET :off"
             );
             $stmt->bindValue(':p',   $likePattern, SQLITE3_TEXT);
@@ -434,7 +452,7 @@ function searchWords(
         $sql = "SELECT reading, variants
                   FROM words
                  WHERE " . implode(' AND ', $conds) . "
-                 ORDER BY len, normalized
+                 $orderBy
                  LIMIT :lim OFFSET :off";
         $stmt = $db->prepare($sql);
         $stmt->bindValue(':l',   $fixedLen,    SQLITE3_INTEGER);
@@ -489,7 +507,7 @@ function searchWords(
             "SELECT reading, normalized, variants
                FROM words
               WHERE " . implode(' AND ', $conds) . "
-              ORDER BY len, normalized
+              $orderBy
               LIMIT :lim OFFSET :off"
         );
         $stmt->bindValue(':p',   $likePattern,    SQLITE3_TEXT);

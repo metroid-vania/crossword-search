@@ -96,7 +96,7 @@
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="style.css?v=2026061004">
+  <link rel="stylesheet" href="style.css?v=2026061005">
 </head>
 <body>
 
@@ -219,9 +219,15 @@
       </div>
       <div id="length-filter" class="length-filter" aria-label="文字数で絞り込み" hidden></div>
     </div>
-    <div class="view-toggle-group" id="view-toggle-group" hidden>
-      <button id="btn-detail" type="button">詳細表示</button>
-      <button id="btn-simple" type="button">簡易表示</button>
+    <div class="toggle-row">
+      <div class="view-toggle-group" id="sort-toggle-group" hidden>
+        <button id="btn-sort-default" type="button" class="active">五十音</button>
+        <button id="btn-sort-shuffle" type="button" title="タップするたびに並びを引き直します">シャッフル</button>
+      </div>
+      <div class="view-toggle-group" id="view-toggle-group" hidden>
+        <button id="btn-detail" type="button">詳細表示</button>
+        <button id="btn-simple" type="button">簡易表示</button>
+      </div>
     </div>
   </div>
 </div>
@@ -263,7 +269,7 @@
   </svg>
   <span class="btt-label" aria-hidden="true">再検索</span>
 </button>
-<script src="app.js?v=2026061004"></script>
+<script src="app.js?v=2026061005"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
