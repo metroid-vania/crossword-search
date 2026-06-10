@@ -96,7 +96,7 @@
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="style.css?v=2026061003">
+  <link rel="stylesheet" href="style.css?v=2026061004">
 </head>
 <body>
 
@@ -167,6 +167,33 @@
       <button type="button" class="wc-chip" data-insert="３" aria-label="３を挿入">３</button>
       <button type="button" class="wc-chip" data-insert="４" aria-label="４を挿入">４</button>
     </div>
+    <!-- 除外文字（折りたたみ式）。設定中は閉じていてもバッジで明示 -->
+    <div class="exclude-row">
+      <button type="button" id="exclude-toggle" class="exclude-toggle" aria-expanded="false" aria-controls="exclude-panel">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>
+        </svg>
+        除外文字
+        <svg class="exclude-chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 9 6 6 6-6"/>
+        </svg>
+      </button>
+      <button type="button" id="exclude-badge" class="exclude-badge" hidden aria-label="除外文字を編集"></button>
+    </div>
+    <div id="exclude-panel" class="exclude-panel" hidden>
+      <input
+        type="text"
+        id="exclude-input"
+        lang="ja"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        enterkeyhint="done"
+        placeholder="使えない文字（例: しん）"
+        aria-label="除外する文字"
+      >
+    </div>
     <div id="pattern-assist" class="pattern-assist" hidden></div>
     </form>
   </section>
@@ -236,7 +263,7 @@
   </svg>
   <span class="btt-label" aria-hidden="true">再検索</span>
 </button>
-<script src="app.js?v=2026061003"></script>
+<script src="app.js?v=2026061004"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

@@ -426,6 +426,120 @@ main {
   pointer-events: none;
 }
 
+/* 除外文字（折りたたみ式） */
+.exclude-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.exclude-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 8px;
+  margin-left: -8px; /* テキスト開始位置を入力欄と揃える */
+  border: none;
+  background: transparent;
+  color: var(--muted-foreground);
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: .8rem;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .15s, color .15s, box-shadow .15s;
+}
+
+.exclude-toggle:hover {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.exclude-toggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+.exclude-toggle.active {
+  color: var(--clr-primary);
+}
+
+.exclude-toggle .exclude-chevron {
+  transition: transform .15s;
+}
+
+.exclude-toggle[aria-expanded="true"] .exclude-chevron {
+  transform: rotate(180deg);
+}
+
+/* 折りたたみ中の設定内容バッジ（クリックで編集パネルを開く） */
+.exclude-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 10px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+  font-family: inherit;
+  font-size: .78rem;
+  font-weight: 500;
+  line-height: 1.45;
+  cursor: pointer;
+  transition: background-color .12s ease, border-color .12s ease, color .12s ease;
+}
+
+.exclude-badge:hover {
+  background: var(--accent);
+  border-color: var(--clr-primary);
+}
+
+.exclude-badge:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+.exclude-badge[hidden] {
+  display: none;
+}
+
+.exclude-panel {
+  margin-top: 4px;
+}
+
+.exclude-panel[hidden] {
+  display: none;
+}
+
+#exclude-input {
+  width: 100%;
+  max-width: 280px;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-md);
+  background: var(--clr-surface);
+  color: var(--clr-text);
+  font-family: inherit;
+  font-size: .95rem;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+#exclude-input:focus {
+  outline: none;
+  border-color: var(--clr-primary);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+#exclude-input::placeholder {
+  color: var(--clr-disabled);
+  font-size: .85rem;
+}
+
 .pattern-assist {
   margin-top: .5rem;
   min-height: 1.35rem;

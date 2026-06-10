@@ -1,7 +1,7 @@
 <?php
 /**
  * CLI 検索ラッパー（api.php を CLI から呼び出す）
- * 使い方: php search_cli.php <検索パターン> [上限件数]
+ * 使い方: php search_cli.php <検索パターン> [上限件数] [--exclude=<除外文字>] [--sort=shuffle] [--seed=<数値>]
  */
 
 // CLI 専用（HTTP 経由の実行を禁止）
@@ -45,9 +45,19 @@ register_shutdown_function(function () {
     displayResults($json);
 });
 
-$_GET['q']      = $argv[1] ?? '';
+// 位置引数（パターン・上限件数）と --key=value オプションを分離
+$positional = [];
+foreach (array_slice($argv, 1) as $arg) {
+    if (preg_match('/^--(exclude|sort|seed)=(.*)$/u', $arg, $m)) {
+        $_GET[$m[1]] = $m[2];
+    } else {
+        $positional[] = $arg;
+    }
+}
+
+$_GET['q']      = $positional[0] ?? '';
 $_GET['offset'] = 0;
-$_GET['limit']  = (int)($argv[2] ?? 200);
+$_GET['limit']  = (int)($positional[1] ?? 200);
 
 chdir(__DIR__);
 include __DIR__ . '/api.php';

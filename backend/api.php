@@ -1,8 +1,9 @@
 <?php
 /**
  * 単語検索 API
- * GET /api.php?q=<検索クエリ>&offset=<開始位置>&limit=<件数>&len=<文字数>&minLen=<最小文字数>
- * offset / limit / len / minLen は任意。Response: {"count":N, "total":N, "words":[{"reading":"...","variants":["..."]}], "hasMore":bool}
+ * GET /api.php?q=<検索クエリ>&offset=<開始位置>&limit=<件数>&len=<文字数>&minLen=<最小文字数>&exclude=<除外文字>
+ * offset / limit / len / minLen / exclude は任意。Response: {"count":N, "total":N, "words":[{"reading":"...","variants":["..."]}], "hasMore":bool}
+ * exclude: 結果に含めたくないカタカナ文字の列（最大10文字、ひらがな可・正規化される）
  */
 
 mb_internal_encoding('UTF-8');
@@ -47,6 +48,22 @@ if ($lengthFilter < 2 || $lengthFilter > 13) $lengthFilter = 0;
 $minLengthFilter = (int)($_GET['minLen'] ?? 0);
 if ($minLengthFilter < 2 || $minLengthFilter > 13 || $lengthFilter > 0) $minLengthFilter = 0;
 
+// 除外文字（任意）：クエリと同じ正規化後、カタカナのみ抽出・重複除去
+$excludeChars = [];
+$excludeRaw = trim($_GET['exclude'] ?? '');
+if ($excludeRaw !== '') {
+    preg_match_all('/[ァ-ヶヷ-ヺー]/u', normalizeQuery($excludeRaw), $m);
+    $excludeChars = array_values(array_unique($m[0]));
+    if (count($excludeChars) > 10) {
+        http_response_code(400);
+        echo json_encode(
+            ['error' => '除外文字が多すぎます（最大10文字）。'],
+            JSON_UNESCAPED_UNICODE
+        );
+        exit;
+    }
+}
+
 $dbPath = __DIR__ . '/words.db';
 if (!file_exists($dbPath)) {
     http_response_code(500);
@@ -63,7 +80,7 @@ if ($query === '') {
     exit;
 }
 
-$result = searchWords($db, $query, $total, $offset, $limit, $lengthFilter, $minLengthFilter);
+$result = searchWords($db, $query, $total, $offset, $limit, $lengthFilter, $minLengthFilter, $excludeChars);
 // 成功応答：辞書はほぼ不変なので中期ブラウザキャッシュを許可
 //   10分間は新鮮扱い、以降 1時間は古い応答を即時返しつつ裏で再検証
 header('Cache-Control: public, max-age=600, stale-while-revalidate=3600');
@@ -237,6 +254,19 @@ function emptyResult(int $total): array {
     return ['count' => 0, 'total' => $total, 'words' => [], 'hasMore' => false];
 }
 
+/** 除外文字の NOT LIKE 条件を $conds に追加（バインドは bindExcludeChars で） */
+function addExcludeConds(array $excludeChars, array &$conds): void {
+    foreach ($excludeChars as $i => $_) {
+        $conds[] = "normalized NOT LIKE :ex$i";
+    }
+}
+
+function bindExcludeChars(array $excludeChars, SQLite3Stmt $stmt): void {
+    foreach ($excludeChars as $i => $ch) {
+        $stmt->bindValue(":ex$i", "%$ch%", SQLITE3_TEXT);
+    }
+}
+
 function searchWords(
     SQLite3 $db,
     string $query,
@@ -244,7 +274,8 @@ function searchWords(
     int $offset,
     int $limit,
     int $lengthFilter = 0,
-    int $minLengthFilter = 0
+    int $minLengthFilter = 0,
+    array $excludeChars = []
 ): array {
     $normalized = normalizeQuery($query);
 
@@ -257,6 +288,17 @@ function searchWords(
 
     if ($lengthFilter > 0 && $minLen > $lengthFilter) {
         return emptyResult($total);
+    }
+
+    // パターンのリテラル文字が除外文字と衝突 → どの単語にもマッチしない
+    // （完全一致パスは全文字リテラルなのでこのチェックだけで除外が完結する）
+    if ($excludeChars) {
+        foreach (preg_split('//u', $normalized, -1, PREG_SPLIT_NO_EMPTY) as $ch) {
+            if ($ch === '?' || $ch === '*' || preg_match('/[1-9]/', $ch)) continue;
+            if (in_array($ch, $excludeChars, true)) {
+                return emptyResult($total);
+            }
+        }
     }
 
     // ─── 完全一致 ──────────────────────────────────────────────────────────
@@ -304,15 +346,18 @@ function searchWords(
             }
             // * がなければ文字数固定 → len でも絞り込む
             $fixedLen = $normalizedLen;
+            $conds = ["len = :l", "normalized LIKE :p ESCAPE '\\'"];
+            addExcludeConds($excludeChars, $conds);
             $stmt = $db->prepare(
                 "SELECT reading, variants
                    FROM words
-                  WHERE len = :l AND normalized LIKE :p ESCAPE '\\'
+                  WHERE " . implode(' AND ', $conds) . "
                   ORDER BY len, normalized
                   LIMIT :lim OFFSET :off"
             );
             $stmt->bindValue(':l',   $fixedLen,    SQLITE3_INTEGER);
             $stmt->bindValue(':p',   $likePattern, SQLITE3_TEXT);
+            bindExcludeChars($excludeChars, $stmt);
             $stmt->bindValue(':lim', $limit + 1,   SQLITE3_INTEGER);
             $stmt->bindValue(':off', $offset,      SQLITE3_INTEGER);
         } else {
@@ -323,6 +368,7 @@ function searchWords(
             if ($minLengthFilter > 0) {
                 $conds[] = "len >= :ml";
             }
+            addExcludeConds($excludeChars, $conds);
             $stmt = $db->prepare(
                 "SELECT reading, variants
                    FROM words
@@ -337,6 +383,7 @@ function searchWords(
             if ($minLengthFilter > 0) {
                 $stmt->bindValue(':ml', $minLengthFilter, SQLITE3_INTEGER);
             }
+            bindExcludeChars($excludeChars, $stmt);
             $stmt->bindValue(':lim', $limit + 1,   SQLITE3_INTEGER);
             $stmt->bindValue(':off', $offset,      SQLITE3_INTEGER);
         }
@@ -383,6 +430,7 @@ function searchWords(
         foreach ($constraints['neq'] as [$a, $b]) {
             $conds[] = "substr(normalized, $a, 1) != substr(normalized, $b, 1)";
         }
+        addExcludeConds($excludeChars, $conds);
         $sql = "SELECT reading, variants
                   FROM words
                  WHERE " . implode(' AND ', $conds) . "
@@ -391,6 +439,7 @@ function searchWords(
         $stmt = $db->prepare($sql);
         $stmt->bindValue(':l',   $fixedLen,    SQLITE3_INTEGER);
         $stmt->bindValue(':p',   $likePattern, SQLITE3_TEXT);
+        bindExcludeChars($excludeChars, $stmt);
         $stmt->bindValue(':lim', $limit + 1,   SQLITE3_INTEGER);
         $stmt->bindValue(':off', $offset,      SQLITE3_INTEGER);
 
@@ -435,6 +484,7 @@ function searchWords(
         if ($minLengthFilter > 0) {
             $conds[] = "len >= :ml";
         }
+        addExcludeConds($excludeChars, $conds);
         $stmt = $db->prepare(
             "SELECT reading, normalized, variants
                FROM words
@@ -449,6 +499,7 @@ function searchWords(
         if ($minLengthFilter > 0) {
             $stmt->bindValue(':ml', $minLengthFilter, SQLITE3_INTEGER);
         }
+        bindExcludeChars($excludeChars, $stmt);
         $stmt->bindValue(':lim', $chunkLimit,     SQLITE3_INTEGER);
         $stmt->bindValue(':off', $dbOffset,       SQLITE3_INTEGER);
         $res = $stmt->execute();
