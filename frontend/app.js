@@ -70,18 +70,28 @@ function expandSmallKana(str) {
   return str.replace(/[ァィゥェォッャュョ]/g, c => map[c] ?? c);
 }
 
+/** 全角ワイルドカード/数字 → 半角の対応表 */
+const WC_HALF_MAP = {
+  '？':'?','＊':'*',
+  '１':'1','２':'2','３':'3','４':'4','５':'5',
+  '６':'6','７':'7','８':'8','９':'9',
+};
+
 /**
  * マッチング用の正規化：全角ワイルドカード/数字 → 半角、ひら→カタ、小→大
  * バックエンドの normalizeQuery / normalized 列と一致させる
  */
 function normalizeForMatch(str) {
-  const wcMap = {
-    '？':'?','＊':'*',
-    '１':'1','２':'2','３':'3','４':'4','５':'5',
-    '６':'6','７':'7','８':'8','９':'9',
-  };
-  const half = str.replace(/[？＊１-９]/g, c => wcMap[c] ?? c);
+  const half = str.replace(/[？＊１-９]/g, c => WC_HALF_MAP[c] ?? c);
   return expandSmallKana(toKatakana(half));
+}
+
+/**
+ * パターン解釈表示用の正規化：ワイルドカードのみ半角化し、ひら→カタ。
+ * 小書き文字は展開しない（解釈文に元の表記のまま出すため）
+ */
+function normalizeForAssist(str) {
+  return toKatakana(str.replace(/[？＊１-９]/g, c => WC_HALF_MAP[c] ?? c));
 }
 
 /**
@@ -398,11 +408,108 @@ function restartSearchSoon() {
   debounceTimer = setTimeout(() => doSearch(true), 0);
 }
 
+/** 解釈文表示用：半角ワイルドカード/数字を全角に戻す（小書き展開はしない） */
+function toFullWidthAssist(str) {
+  const full = {
+    '?': '？', '*': '＊',
+    '1': '１', '2': '２', '3': '３', '4': '４', '5': '５',
+    '6': '６', '7': '７', '8': '８', '9': '９',
+  };
+  return str.replace(/[?*1-9]/g, c => full[c] ?? c);
+}
+
+// 入力中のパターンを「4文字・2文字目は「カ」」のような日本語で解説する。
+// 完全一致（ワイルドカードなし）は冗長になるだけなので表示しない。
 function updatePatternAssist() {
   if (!patternAssistEl) return;
-  patternAssistEl.hidden = true;
-  patternAssistEl.textContent = '';
-  patternAssistEl.classList.remove('warn');
+  const hide = () => {
+    patternAssistEl.hidden = true;
+    patternAssistEl.textContent = '';
+    patternAssistEl.classList.remove('warn');
+  };
+  const show = (text, warn = false) => {
+    patternAssistEl.textContent = text;
+    patternAssistEl.classList.toggle('warn', warn);
+    patternAssistEl.hidden = false;
+  };
+
+  const p = normalizeForAssist(removeSpaces(inputEl.value.trim()));
+  if (p === '' || !/[?*1-9]/.test(p)) return hide();
+
+  const chars = [...p];
+
+  // API がエラーを返す入力は送信前に警告（api.php のバリデーションと同値）
+  if (chars.length > 50) return show('検索パターンが長すぎます（最大50文字）', true);
+  if (chars.filter(c => c === '*').length > 5) return show('＊が多すぎます（最大5個）', true);
+
+  const hasStar = chars.includes('*');
+  const digits = chars.filter(c => c >= '1' && c <= '9');
+  const distinctDigits = new Set(digits).size;
+  const parts = [];
+
+  if (!hasStar) {
+    parts.push(`${chars.length}文字`);
+
+    // 確定文字を連続区間ごとに「2文字目は「カ」」「2〜3文字目は「カキ」」と説明
+    const isWild = c => c === '?' || (c >= '1' && c <= '9');
+    for (let i = 0; i < chars.length;) {
+      if (isWild(chars[i])) { i++; continue; }
+      let j = i;
+      while (j < chars.length && !isWild(chars[j])) j++;
+      const text = chars.slice(i, j).join('');
+      parts.push(j - i === 1
+        ? `${i + 1}文字目は「${text}」`
+        : `${i + 1}〜${j}文字目は「${text}」`);
+      i = j;
+    }
+
+    // 数字ワイルドカード：同じ数字の位置を列挙
+    const posByDigit = new Map();
+    chars.forEach((c, idx) => {
+      if (c >= '1' && c <= '9') {
+        if (!posByDigit.has(c)) posByDigit.set(c, []);
+        posByDigit.get(c).push(idx + 1);
+      }
+    });
+    for (const positions of posByDigit.values()) {
+      if (positions.length >= 2) parts.push(`${positions.join('・')}文字目は同じ文字`);
+    }
+    if (distinctDigits >= 2) parts.push('違う数字は違う文字');
+  } else {
+    if (chars.every(c => c === '*')) {
+      parts.push('すべての単語');
+    } else {
+      // * で区切った各部分を「で始まり／を含み／で終わる」で説明
+      const segs = p.split('*');
+      const elems = [];
+      if (segs[0] !== '') elems.push({ kind: 'start', text: segs[0] });
+      for (const m of segs.slice(1, -1)) {
+        if (m !== '') elems.push({ kind: 'contain', text: m });
+      }
+      if (segs[segs.length - 1] !== '') elems.push({ kind: 'end', text: segs[segs.length - 1] });
+
+      let phrase = '';
+      elems.forEach((el, i) => {
+        const last = i === elems.length - 1;
+        const quoted = `「${toFullWidthAssist(el.text)}」`;
+        if (el.kind === 'start')   phrase += quoted + (last ? 'で始まる' : 'で始まり');
+        if (el.kind === 'contain') phrase += quoted + (last ? 'を含む' : 'を含み');
+        if (el.kind === 'end')     phrase += quoted + 'で終わる';
+      });
+      parts.push(phrase);
+
+      // 最低文字数。辞書は2文字以上の語のみなので3文字以上のときだけ意味がある
+      // （文字数フィルタ指定中はそちらが優先されるので省略）
+      const minLen = chars.filter(c => c !== '*').length;
+      if (minLen >= 3 && selectedLengthFilter === 0) parts.push(`${minLen}文字以上`);
+    }
+    if (digits.length >= 2) {
+      parts.push('同じ数字は同じ文字');
+      if (distinctDigits >= 2) parts.push('違う数字は違う文字');
+    }
+  }
+
+  show(parts.join('・'));
 }
 
 // Enter キーで debounce をスキップして即時検索
