@@ -96,7 +96,7 @@
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="style.css?v=2026061009">
+  <link rel="stylesheet" href="style.css?v=2026061010">
 </head>
 <body>
 
@@ -171,32 +171,51 @@
          送信ボタンのないフォームはテキスト入力が2つ以上あると暗黙送信が無効になり、
          iOS の「完了」キーで submit が発火せずキーボードが閉じなくなる -->
     </form>
-    <!-- 除外文字（折りたたみ式・フォーム外）。設定中は閉じていてもバッジで明示 -->
+    <!-- 除外文字・必須文字（折りたたみ式・フォーム外）。設定中は閉じていてもバッジで明示 -->
     <div class="exclude-row">
       <button type="button" id="exclude-toggle" class="exclude-toggle" aria-expanded="false" aria-controls="exclude-panel">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>
         </svg>
-        除外文字
+        除外・必須文字
         <svg class="exclude-chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="m6 9 6 6 6-6"/>
         </svg>
       </button>
       <button type="button" id="exclude-badge" class="exclude-badge" hidden aria-label="除外文字を編集"></button>
+      <button type="button" id="include-badge" class="exclude-badge" hidden aria-label="必須文字を編集"></button>
     </div>
     <div id="exclude-panel" class="exclude-panel" hidden>
-      <input
-        type="text"
-        id="exclude-input"
-        lang="ja"
-        autocomplete="off"
-        autocorrect="off"
-        autocapitalize="off"
-        spellcheck="false"
-        enterkeyhint="done"
-        placeholder="使えない文字（例: しん）"
-        aria-label="除外する文字"
-      >
+      <div class="char-cond-row">
+        <label class="char-cond-label" for="exclude-input">除外</label>
+        <input
+          type="text"
+          id="exclude-input"
+          lang="ja"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          enterkeyhint="done"
+          placeholder="使えない文字（例: しん）"
+          aria-label="除外する文字"
+        >
+      </div>
+      <div class="char-cond-row">
+        <label class="char-cond-label" for="include-input">必須</label>
+        <input
+          type="text"
+          id="include-input"
+          lang="ja"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          enterkeyhint="done"
+          placeholder="必ず含む文字（例: か）"
+          aria-label="必ず含む文字"
+        >
+      </div>
     </div>
     <div id="pattern-assist" class="pattern-assist" hidden></div>
   </section>
@@ -271,7 +290,7 @@
   </svg>
   <span class="btt-label" aria-hidden="true">再検索</span>
 </button>
-<script src="app.js?v=2026061009"></script>
+<script src="app.js?v=2026061010"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

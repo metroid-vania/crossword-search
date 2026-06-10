@@ -46,6 +46,10 @@ $cases = [
     // 除外文字（ひらがな正規化込み）
     'exclude_question'    => ['q' => '？？イロ', 'exclude' => 'し'],
     'exclude_chunk'       => ['q' => '１＊１', 'exclude' => 'ん', 'limit' => '50'],
+    // 必須文字
+    'include_question'    => ['q' => '？？イロ', 'include' => 'か'],
+    'include_chunk'       => ['q' => '１＊１', 'include' => 'ん', 'limit' => '50'],
+    'include_exclude_conflict' => ['q' => '？？イロ', 'include' => 'カ', 'exclude' => 'カ'],
     // シャッフル（シード固定で決定的・2ページ目でページング整合も固定化）
     'shuffle_page1'       => ['q' => '＊イロ', 'sort' => 'shuffle', 'seed' => '42'],
     'shuffle_page2'       => ['q' => '＊イロ', 'sort' => 'shuffle', 'seed' => '42', 'offset' => '100'],
@@ -57,6 +61,7 @@ $cases = [
     'err_query_too_long'  => ['q' => str_repeat('ア', 51)],
     'err_too_many_stars'  => ['q' => '＊ア＊イ＊ウ＊エ＊オ＊カ＊'],
     'err_exclude_too_long' => ['q' => '？？', 'exclude' => 'アイウエオカキクケコサ'],
+    'err_include_too_long' => ['q' => '？？', 'include' => 'アイウエオカキクケコサ'],
 ];
 
 /** ランナーを子プロセスで実行し、API 応答（JSON 文字列）を返す */

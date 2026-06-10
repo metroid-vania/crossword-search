@@ -1,0 +1,83 @@
+{
+    "params": {
+        "q": "？？イロ",
+        "include": "か"
+    },
+    "response": {
+        "count": 11,
+        "total": 153547,
+        "words": [
+            {
+                "reading": "アカイロ",
+                "variants": [
+                    "赤色"
+                ]
+            },
+            {
+                "reading": "ウカイロ",
+                "variants": [
+                    "迂回路"
+                ]
+            },
+            {
+                "reading": "カオイロ",
+                "variants": [
+                    "顔色"
+                ]
+            },
+            {
+                "reading": "カキイロ",
+                "variants": [
+                    "柿色"
+                ]
+            },
+            {
+                "reading": "カチイロ",
+                "variants": [
+                    "褐色",
+                    "勝色",
+                    "勝ち色"
+                ]
+            },
+            {
+                "reading": "カナイロ",
+                "variants": [
+                    "金色"
+                ]
+            },
+            {
+                "reading": "カバイロ",
+                "variants": [
+                    "樺色",
+                    "蒲色"
+                ]
+            },
+            {
+                "reading": "カミイロ",
+                "variants": [
+                    "髪色"
+                ]
+            },
+            {
+                "reading": "カレイロ",
+                "variants": [
+                    "枯れ色",
+                    "枯色"
+                ]
+            },
+            {
+                "reading": "カワイロ",
+                "variants": [
+                    "革色"
+                ]
+            },
+            {
+                "reading": "ワカイロ",
+                "variants": [
+                    "若色"
+                ]
+            }
+        ],
+        "hasMore": false
+    }
+}

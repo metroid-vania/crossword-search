@@ -1,0 +1,13 @@
+{
+    "params": {
+        "q": "？？イロ",
+        "include": "カ",
+        "exclude": "カ"
+    },
+    "response": {
+        "count": 0,
+        "total": 153547,
+        "words": [],
+        "hasMore": false
+    }
+}

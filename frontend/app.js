@@ -26,6 +26,8 @@ const excludeToggleEl = document.getElementById('exclude-toggle');
 const excludePanelEl  = document.getElementById('exclude-panel');
 const excludeInputEl  = document.getElementById('exclude-input');
 const excludeBadgeEl  = document.getElementById('exclude-badge');
+const includeInputEl  = document.getElementById('include-input');
+const includeBadgeEl  = document.getElementById('include-badge');
 const footerEl      = document.querySelector('footer');
 const searchAreaEl    = document.querySelector('.search-sticky-wrap');
 const resultsHeaderEl = document.querySelector('.results-header');
@@ -46,10 +48,11 @@ let bulkLoading     = false; // まとめてコピー用の一括取得中フラ
 let hasNetworkError = false; // 直前の検索がネットワークエラーで失敗したか（online 復帰時の自動リトライ判定用）
 let simpleMode      = localStorage.getItem('simpleMode') === '1';
 let excludeChars    = ''; // 除外文字（正規化済みカタカナ・重複なし・最大10文字）
+let includeChars    = ''; // 必須文字（同上。位置を問わず必ず含む）
 let sortMode        = 'default'; // 'default'（五十音順） | 'shuffle'
 let shuffleSeed     = 0; // シャッフル用シード（API に渡し、同シードで全ページ同一順序）
 let isComposing       = false; // IME 変換中フラグ
-let isExcludeComposing = false; // 除外文字入力欄の IME 変換中フラグ
+let isCharCondComposing = false; // 除外/必須文字入力欄の IME 変換中フラグ（同時に1欄しかフォーカスされないため共有）
 let viewportResizing  = false; // キーボード開閉中フラグ（infinite scroll 誤発火防止）
 let viewportResizeTimer = null;
 let prevVH = window.visualViewport ? window.visualViewport.height : window.innerHeight;
@@ -159,6 +162,7 @@ function toFullWidthPattern(str) {
 function currentPatternLabel() {
   let label = toFullWidthPattern(removeSpaces(inputEl.value.trim()));
   if (excludeChars !== '') label += `／${[...excludeChars].join('・')}除外`;
+  if (includeChars !== '') label += `／${[...includeChars].join('・')}必須`;
   return label;
 }
 
@@ -415,11 +419,12 @@ if (wcChipsEl) {
   });
 }
 
-// ─── 除外文字（折りたたみ式） ─────────────────────────────────────────────────
-// 盤面で使えない文字を結果から除外する。検索ごとの一時条件なので永続化しない。
+// ─── 除外文字・必須文字（折りたたみ式） ──────────────────────────────────────
+// 盤面で使えない文字の除外と、必ず使いたい文字での絞り込み。
+// 検索ごとの一時条件なので永続化しない。
 
-/** 除外文字入力を正規化：ひら→カタ・小→大、カタカナのみ・重複なし・最大10文字 */
-function normalizeExcludeChars(raw) {
+/** 文字条件入力を正規化：ひら→カタ・小→大、カタカナのみ・重複なし・最大10文字 */
+function normalizeKanaChars(raw) {
   const out = [];
   for (const ch of expandSmallKana(toKatakana(raw))) {
     if (/[ァ-ヶヷ-ヺー]/.test(ch) && !out.includes(ch)) out.push(ch);
@@ -432,20 +437,26 @@ function updateExcludeUI() {
   if (!excludeToggleEl) return;
   const open = !excludePanelEl.hidden;
   excludeToggleEl.setAttribute('aria-expanded', open ? 'true' : 'false');
-  excludeToggleEl.classList.toggle('active', excludeChars !== '');
-  // 折りたたみ中に除外が効いていることを見落とさないよう、閉じている間はバッジ表示
-  if (excludeChars !== '' && !open) {
-    excludeBadgeEl.textContent = `除外: ${[...excludeChars].join('・')}`;
-    excludeBadgeEl.hidden = false;
-  } else {
-    excludeBadgeEl.hidden = true;
-  }
+  excludeToggleEl.classList.toggle('active', excludeChars !== '' || includeChars !== '');
+  // 折りたたみ中も条件が効いていることを見落とさないよう、閉じている間はバッジ表示
+  const showBadge = (el, label, chars) => {
+    if (chars !== '' && !open) {
+      el.textContent = `${label}: ${[...chars].join('・')}`;
+      el.hidden = false;
+    } else {
+      el.hidden = true;
+    }
+  };
+  showBadge(excludeBadgeEl, '除外', excludeChars);
+  showBadge(includeBadgeEl, '必須', includeChars);
 }
 
-function applyExcludeInput() {
-  const next = normalizeExcludeChars(excludeInputEl.value);
-  if (next === excludeChars) return;
-  excludeChars = next;
+function applyCharCondInputs() {
+  const nextExclude = normalizeKanaChars(excludeInputEl.value);
+  const nextInclude = normalizeKanaChars(includeInputEl.value);
+  if (nextExclude === excludeChars && nextInclude === includeChars) return;
+  excludeChars = nextExclude;
+  includeChars = nextInclude;
   updateExcludeUI();
   if (removeSpaces(inputEl.value.trim()) !== '') restartSearchSoon();
 }
@@ -457,26 +468,31 @@ if (excludeToggleEl) {
     updateExcludeUI();
     if (opening) excludeInputEl.focus();
   });
-  excludeBadgeEl.addEventListener('click', () => {
-    excludePanelEl.hidden = false;
-    updateExcludeUI();
-    excludeInputEl.focus();
-  });
-  excludeInputEl.addEventListener('compositionstart', () => { isExcludeComposing = true; });
-  excludeInputEl.addEventListener('compositionend', () => {
-    isExcludeComposing = false;
-    applyExcludeInput();
-  });
-  excludeInputEl.addEventListener('input', () => {
-    if (!isExcludeComposing) applyExcludeInput();
-  });
-  // Enter でキーボードを閉じる（スマホ）
-  excludeInputEl.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !isExcludeComposing) {
-      e.preventDefault();
-      excludeInputEl.blur();
-    }
-  });
+  // バッジクリックでパネルを開き、対応する入力欄へフォーカス
+  for (const [badgeEl, targetInput] of [[excludeBadgeEl, excludeInputEl], [includeBadgeEl, includeInputEl]]) {
+    badgeEl.addEventListener('click', () => {
+      excludePanelEl.hidden = false;
+      updateExcludeUI();
+      targetInput.focus();
+    });
+  }
+  for (const condInput of [excludeInputEl, includeInputEl]) {
+    condInput.addEventListener('compositionstart', () => { isCharCondComposing = true; });
+    condInput.addEventListener('compositionend', () => {
+      isCharCondComposing = false;
+      applyCharCondInputs();
+    });
+    condInput.addEventListener('input', () => {
+      if (!isCharCondComposing) applyCharCondInputs();
+    });
+    // Enter でキーボードを閉じる（スマホ）
+    condInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !isCharCondComposing) {
+        e.preventDefault();
+        condInput.blur();
+      }
+    });
+  }
 }
 
 /**
@@ -699,6 +715,7 @@ window.addEventListener('scroll', () => {
 async function doSearch(reset) {
   const query = removeSpaces(inputEl.value.trim());
   const exclude = excludeChars;
+  const include = includeChars;
   const sort = sortMode;
   const seed = shuffleSeed;
 
@@ -728,7 +745,10 @@ async function doSearch(reset) {
     const hasStar    = nonStarLen < query.length;
     const literals   = normalizeForMatch(query).replace(/[?*1-9]/g, '');
     const excludeConflict = exclude !== '' && [...exclude].some(c => literals.includes(c));
-    if (nonStarLen >= 14 || (!hasStar && nonStarLen < 2) || excludeConflict) {
+    // 除外と必須に同じ文字 → 矛盾（API 不要で 0 件確定）
+    const condConflict = exclude !== '' && include !== '' &&
+                         [...include].some(c => exclude.includes(c));
+    if (nonStarLen >= 14 || (!hasStar && nonStarLen < 2) || excludeConflict || condConflict) {
       renderResults({ count: 0, total: 0, words: [], hasMore: false });
       return;
     }
@@ -790,6 +810,7 @@ async function doSearch(reset) {
       limit: String(PAGE_SIZE),
     });
     if (exclude !== '') params.set('exclude', exclude);
+    if (include !== '') params.set('include', include);
     if (sort === 'shuffle') {
       params.set('sort', 'shuffle');
       params.set('seed', String(seed));
@@ -809,8 +830,8 @@ async function doSearch(reset) {
     }
     const data = await res.json();
     // レスポンス到着時点でクエリ・検索条件が変わっていたら破棄
-    if (query !== currentQuery ||
-        exclude !== excludeChars || sort !== sortMode || seed !== shuffleSeed) return;
+    if (query !== currentQuery || exclude !== excludeChars ||
+        include !== includeChars || sort !== sortMode || seed !== shuffleSeed) return;
     hasNetworkError = false; // 成功したのでフラグ解除
     hasMore = !!data.hasMore;
     const newWords = data.words;
@@ -833,8 +854,8 @@ async function doSearch(reset) {
 
   } catch (e) {
     if (e.name === 'AbortError') return; // キャンセルされたリクエストは無視
-    if (query !== currentQuery ||
-        exclude !== excludeChars || sort !== sortMode || seed !== shuffleSeed) return;  // 既にユーザーが別条件に移っていれば無視
+    if (query !== currentQuery || exclude !== excludeChars ||
+        include !== includeChars || sort !== sortMode || seed !== shuffleSeed) return;  // 既にユーザーが別条件に移っていれば無視
     console.error(e);
     renderError(classifyError(e));
   } finally {
@@ -1010,12 +1031,14 @@ async function suggestCandidates(originalQuery) {
   const candidates = buildCandidates(originalQuery);
   if (candidates.length === 0) return;
   const originalExclude = excludeChars;
+  const originalInclude = includeChars;
 
   const results = await Promise.all(
     candidates.map(async (c) => {
       try {
         const params = new URLSearchParams({ q: c.query, limit: '1' });
         if (originalExclude !== '') params.set('exclude', originalExclude);
+        if (originalInclude !== '') params.set('include', originalInclude);
         const res = await fetch(`${API_URL}?${params.toString()}`);
         if (!res.ok) return null;
         const data = await res.json();
@@ -1029,6 +1052,7 @@ async function suggestCandidates(originalQuery) {
   // ユーザーが入力を変えていた・検索結果が変わっていたら表示しない
   if (removeSpaces(inputEl.value.trim()) !== originalQuery) return;
   if (excludeChars !== originalExclude) return;
+  if (includeChars !== originalInclude) return;
   if (currentData && currentData.count !== 0) return;
 
   const hits = results.filter(Boolean).slice(0, 3);
@@ -1193,6 +1217,7 @@ function tryOptimisticFilter(newQuery) {
   for (const w of currentData.words) {
     const normReading = expandSmallKana(toKatakana(w.reading));
     if (excludeChars !== '' && [...excludeChars].some(c => normReading.includes(c))) continue;
+    if (includeChars !== '' && [...includeChars].some(c => !normReading.includes(c))) continue;
     if (matchReading(w.reading, norm)) matched.push(w);
   }
   if (matched.length === 0) return null; // 0 件なら仮表示せず既存 stale に任せる
@@ -1283,6 +1308,7 @@ const memCache = new Map();          // Map は挿入順を保つので LRU の�
 function cacheQueryKey(query) {
   let key = query;
   if (excludeChars !== '') key += `|ex=${excludeChars}`;
+  if (includeChars !== '') key += `|in=${includeChars}`;
   if (sortMode === 'shuffle') key += `|sh=${shuffleSeed}`;
   return key;
 }

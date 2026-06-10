@@ -1,0 +1,369 @@
+{
+    "params": {
+        "q": "１＊１",
+        "include": "ん",
+        "limit": "50"
+    },
+    "response": {
+        "count": 50,
+        "total": 153547,
+        "words": [
+            {
+                "reading": "インイ",
+                "variants": [
+                    "陰萎",
+                    "因依"
+                ]
+            },
+            {
+                "reading": "ウンウ",
+                "variants": [
+                    "雲雨"
+                ]
+            },
+            {
+                "reading": "カンカ",
+                "variants": [
+                    "感化",
+                    "看過",
+                    "管下",
+                    "換価",
+                    "閑暇",
+                    "干戈",
+                    "乾果",
+                    "坩堝",
+                    "鰥寡",
+                    "轗軻"
+                ]
+            },
+            {
+                "reading": "キンキ",
+                "variants": [
+                    "近畿",
+                    "禁忌",
+                    "金気",
+                    "錦旗",
+                    "欣喜",
+                    "金器",
+                    "琴棋",
+                    "近幾"
+                ]
+            },
+            {
+                "reading": "ゴンゴ",
+                "variants": [
+                    "言語"
+                ]
+            },
+            {
+                "reading": "サンサ",
+                "variants": [
+                    "三叉"
+                ]
+            },
+            {
+                "reading": "シンシ",
+                "variants": [
+                    "紳士",
+                    "真摯",
+                    "浸漬",
+                    "進士",
+                    "振子",
+                    "神士",
+                    "新市",
+                    "新史",
+                    "神祠",
+                    "参差"
+                ]
+            },
+            {
+                "reading": "ジンジ",
+                "variants": [
+                    "人事",
+                    "神事",
+                    "仁慈"
+                ]
+            },
+            {
+                "reading": "ダンダ",
+                "variants": [
+                    "段田"
+                ]
+            },
+            {
+                "reading": "ノンノ",
+                "variants": [
+                    "nonno"
+                ]
+            },
+            {
+                "reading": "バンバ",
+                "variants": [
+                    "輓馬",
+                    "馬場",
+                    "番場"
+                ]
+            },
+            {
+                "reading": "パンパ",
+                "variants": [
+                    "pampa"
+                ]
+            },
+            {
+                "reading": "ブンブ",
+                "variants": [
+                    "文武"
+                ]
+            },
+            {
+                "reading": "ヘンヘ",
+                "variants": [
+                    "変ヘ"
+                ]
+            },
+            {
+                "reading": "マンマ",
+                "variants": [
+                    "mamma",
+                    "儘",
+                    "飯"
+                ]
+            },
+            {
+                "reading": "リンリ",
+                "variants": [
+                    "倫理",
+                    "淋漓"
+                ]
+            },
+            {
+                "reading": "アンペア",
+                "variants": [
+                    "A",
+                    "ampere"
+                ]
+            },
+            {
+                "reading": "インエイ",
+                "variants": [
+                    "陰影",
+                    "印影",
+                    "陰翳"
+                ]
+            },
+            {
+                "reading": "インガイ",
+                "variants": [
+                    "院外",
+                    "員外"
+                ]
+            },
+            {
+                "reading": "インケイ",
+                "variants": [
+                    "陰茎"
+                ]
+            },
+            {
+                "reading": "インザイ",
+                "variants": [
+                    "印材",
+                    "印西"
+                ]
+            },
+            {
+                "reading": "インスイ",
+                "variants": [
+                    "引水",
+                    "飲水",
+                    "淫水"
+                ]
+            },
+            {
+                "reading": "インセイ",
+                "variants": [
+                    "院生",
+                    "陰性",
+                    "院政",
+                    "隠棲",
+                    "隠栖",
+                    "隕星"
+                ]
+            },
+            {
+                "reading": "インゼイ",
+                "variants": [
+                    "印税"
+                ]
+            },
+            {
+                "reading": "インタイ",
+                "variants": [
+                    "引退",
+                    "隠退",
+                    "院体"
+                ]
+            },
+            {
+                "reading": "インテイ",
+                "variants": [
+                    "陰梃"
+                ]
+            },
+            {
+                "reading": "インディ",
+                "variants": [
+                    "indi",
+                    "indy"
+                ]
+            },
+            {
+                "reading": "インナイ",
+                "variants": [
+                    "院内",
+                    "印内"
+                ]
+            },
+            {
+                "reading": "インハイ",
+                "variants": [
+                    "inhigh"
+                ]
+            },
+            {
+                "reading": "インバイ",
+                "variants": [
+                    "淫売"
+                ]
+            },
+            {
+                "reading": "インペイ",
+                "variants": [
+                    "隠蔽"
+                ]
+            },
+            {
+                "reading": "インメイ",
+                "variants": [
+                    "因明"
+                ]
+            },
+            {
+                "reading": "インレイ",
+                "variants": [
+                    "引例"
+                ]
+            },
+            {
+                "reading": "インワイ",
+                "variants": [
+                    "淫猥"
+                ]
+            },
+            {
+                "reading": "ウンコウ",
+                "variants": [
+                    "運行",
+                    "運航",
+                    "暈光"
+                ]
+            },
+            {
+                "reading": "ウンソウ",
+                "variants": [
+                    "運送"
+                ]
+            },
+            {
+                "reading": "ウンドウ",
+                "variants": [
+                    "運動"
+                ]
+            },
+            {
+                "reading": "ウンノウ",
+                "variants": [
+                    "蘊奥",
+                    "雲衲",
+                    "暈ノウ"
+                ]
+            },
+            {
+                "reading": "ウンプウ",
+                "variants": [
+                    "雲風"
+                ]
+            },
+            {
+                "reading": "ウンヨウ",
+                "variants": [
+                    "運用"
+                ]
+            },
+            {
+                "reading": "カサンカ",
+                "variants": [
+                    "過酸化"
+                ]
+            },
+            {
+                "reading": "カセンカ",
+                "variants": [
+                    "寡占化"
+                ]
+            },
+            {
+                "reading": "カンイカ",
+                "variants": [
+                    "簡易化"
+                ]
+            },
+            {
+                "reading": "カンジカ",
+                "variants": [
+                    "漢字化"
+                ]
+            },
+            {
+                "reading": "カンソカ",
+                "variants": [
+                    "簡素化"
+                ]
+            },
+            {
+                "reading": "カンダカ",
+                "variants": [
+                    "甲高"
+                ]
+            },
+            {
+                "reading": "カンビカ",
+                "variants": [
+                    "完備化"
+                ]
+            },
+            {
+                "reading": "カンリカ",
+                "variants": [
+                    "管理課",
+                    "管理下",
+                    "管理化"
+                ]
+            },
+            {
+                "reading": "キカンキ",
+                "variants": [
+                    "利かん気"
+                ]
+            },
+            {
+                "reading": "キンイキ",
+                "variants": [
+                    "禁域"
+                ]
+            }
+        ],
+        "hasMore": true
+    }
+}
