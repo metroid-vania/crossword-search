@@ -186,7 +186,14 @@ php backend/import.php
 php scripts/api-snapshot.php          # 保存済みスナップショットと比較（差分で exit 1）
 php scripts/api-snapshot.php update   # 意図した変更・辞書更新後の再生成
 ```
-代表17ケース（4検索パス・exclude・shuffle・ページング・エラー系）の応答を `scripts/api_snapshots/` と diff 比較する。辞書データを更新すると応答が変わるため、その場合も `update` で再生成してコミットすること。
+代表21ケース（4検索パス・exclude・include・shuffle・ページング・エラー系）の応答を `scripts/api_snapshots/` と diff 比較する。辞書データを更新すると応答が変わるため、その場合も `update` で再生成してコミットすること。
+
+### E2E スモークテスト
+フロントエンド（app.js / index.html）を変更したらデプロイ前に実行する:
+```bash
+python scripts/e2e_smoke.py
+```
+PHP サーバーを自動起動し、Chromium ヘッドレスで主要機能（検索・解釈表示・**フォーム暗黙送信**・除外/必須文字・シャッフルの重複なし・まとめてコピー・もしかして候補）を検証する。初回のみ `pip install playwright && python -m playwright install chromium` が必要。
 
 ### デプロイ
 ConoHa WING への FTP/SSH アップロード（手順は管理者運用）。CI は未構成。
