@@ -154,7 +154,12 @@ crossword-search/
 ## キャッシュ戦略
 - 静的アセット（`*.js`, `*.css`, `*.png`）は `.htaccess` で 1 年（`max-age=31536000, immutable`）キャッシュ
 - `index.html` には `?v=YYYYMMDDXX` 形式のクエリでキャッシュバスティング
-- **CSS や JS を変更したらこのバスター文字列を必ず更新する**（[index.html](frontend/index.html) 内の `app.js?v=...` / `style.css?v=...`）
+- **CSS や JS を変更したらバスター文字列を必ず更新する**。手作業ではなく一括更新スクリプトを使うこと:
+  ```bash
+  php scripts/bump-version.php            # 今日の日付で自動採番（index/help/privacy の ?v= と sw.js の VERSION を一括更新）
+  php scripts/bump-version.php --dry-run  # 確認のみ
+  php scripts/bump-version.php --set 2026061001  # 明示指定（巻き戻し用）
+  ```
 
 ## 開発フロー
 

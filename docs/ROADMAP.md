@@ -79,9 +79,9 @@
 
 ## D. 運用・品質の自動化
 
-### D1. バージョン更新の自動化｜規模: 小・最優先
-- **概要**: `?v=YYYYMMDDXX`（index/help/privacy の3ファイル）と sw.js の `VERSION` を一括更新するスクリプト（例: scripts/bump-version.php）。
-- **価値**: 2026-06-10 のセッションだけで**8回手動更新**した痛点。更新漏れ＝キャッシュ事故の予防。
+### D1. バージョン更新の自動化｜✅ 実装済み（2026-06-10）
+- **概要**: `?v=YYYYMMDDXX`（index/help/privacy の3ファイル）と sw.js の `VERSION` を一括更新するスクリプト。
+- **実装**: [scripts/bump-version.php](../scripts/bump-version.php)。自動採番 / `--dry-run` / `--set`（巻き戻し）対応。
 
 ### D2. E2E スモークテストの資産化｜規模: 中
 - **概要**: Playwright で手動検証した項目をテストスクリプト化。検索・除外文字・シャッフルのページング重複なし・まとめてコピー・**フォーム暗黙送信**（実 Enter キーで submit が発火するか）。
