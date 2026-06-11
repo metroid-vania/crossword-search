@@ -96,7 +96,7 @@
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="style.css?v=2026061011">
+  <link rel="stylesheet" href="style.css?v=2026061101">
 </head>
 <body>
 
@@ -263,15 +263,33 @@
 <div id="sr-status" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
 <main>
-  <!-- 入力前ガイド（凡例＋ヘルプリンク） -->
+  <!-- 入力前ガイド（タップでそのまま試せる検索例） -->
   <div id="search-guide">
-    <h2 class="guide-title">ワイルドカード一覧</h2>
-    <dl class="legend">
-      <div class="legend-item"><dt><code>？</code></dt><dd>任意の1文字</dd></div>
-      <div class="legend-item"><dt><code>＊</code></dt><dd>任意の0文字以上</dd></div>
-      <div class="legend-item"><dt><code>1〜9</code></dt><dd>同じ数字＝同じ文字</dd></div>
-    </dl>
-    <p class="guide-note"><a href="help.html">使い方ガイドを見る →</a></p>
+    <h2 class="guide-title">検索パターンの書き方（例）</h2>
+    <div class="guide-examples">
+      <button type="button" class="guide-example" data-pattern="？？いろ">
+        <code>？？いろ</code>
+        <span class="guide-example-desc">
+          <span class="guide-example-meaning">「？」はどれか1文字</span>
+          <span class="guide-example-hits">→ アイイロ、アオイロ …</span>
+        </span>
+      </button>
+      <button type="button" class="guide-example" data-pattern="＊ライン">
+        <code>＊ライン</code>
+        <span class="guide-example-desc">
+          <span class="guide-example-meaning">「＊」は0文字以上なんでも</span>
+          <span class="guide-example-hits">→ ライン、エアライン …</span>
+        </span>
+      </button>
+      <button type="button" class="guide-example" data-pattern="１２１２">
+        <code>１２１２</code>
+        <span class="guide-example-desc">
+          <span class="guide-example-meaning">同じ数字には同じ文字</span>
+          <span class="guide-example-hits">→ アイアイ、アオアオ …</span>
+        </span>
+      </button>
+    </div>
+    <p class="guide-note">タップするとそのまま検索できます ・ <a href="help.html">使い方ガイド →</a></p>
   </div>
   <!-- 結果リスト -->
   <ul id="results-list"></ul>
@@ -296,7 +314,7 @@
   </svg>
   <span class="btt-label" aria-hidden="true">再検索</span>
 </button>
-<script src="app.js?v=2026061011"></script>
+<script src="app.js?v=2026061101"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

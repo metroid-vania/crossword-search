@@ -1319,50 +1319,72 @@ main {
   color: var(--clr-muted);
 }
 
-.legend {
-  margin: 0;
-  padding: 12px 14px;
+/* タップでそのまま試せる検索例（shadcn Card + outline button 寄せ） */
+.guide-examples {
   width: 100%;
   max-width: 360px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-xs);
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.legend-item {
+.guide-example {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-xs);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .12s, border-color .12s, box-shadow .12s;
 }
 
-.legend-item dt {
+.guide-example:hover {
+  background: var(--accent);
+  border-color: var(--clr-primary);
+}
+
+.guide-example:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+.guide-example code {
   flex: 0 0 auto;
-}
-
-.legend-item dt code {
-  display: inline-block;
-  min-width: 52px;
-  box-sizing: border-box;
-  text-align: center;
   background: var(--clr-code-bg);
   color: var(--clr-code-accent);
-  font-size: .8rem;
+  font-size: .95rem;
   font-weight: 700;
-  padding: 2px 8px;
+  padding: 3px 8px;
   border-radius: var(--radius-sm);
   font-family: inherit;
   letter-spacing: .02em;
 }
 
-.legend-item dd {
-  margin: 0;
-  font-size: .88rem;
+.guide-example-desc {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.guide-example-meaning {
+  font-size: .85rem;
+  color: var(--clr-text);
+  line-height: 1.4;
+}
+
+.guide-example-hits {
+  font-size: .78rem;
   color: var(--clr-muted);
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .guide-note {

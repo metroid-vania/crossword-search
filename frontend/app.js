@@ -419,6 +419,17 @@ if (wcChipsEl) {
   });
 }
 
+// ─── 入力前ガイドの検索例（タップでそのまま試せる） ──────────────────────────
+guideEl.addEventListener('click', (e) => {
+  const btn = e.target.closest('.guide-example');
+  if (!btn || !btn.dataset.pattern) return;
+  inputEl.value = btn.dataset.pattern;
+  inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+  restartSearchSoon();
+  // スマホはキーボードが開くと結果が隠れるのでフォーカスしない
+  if (!isMobile()) inputEl.focus();
+});
+
 // ─── 除外文字・必須文字（折りたたみ式） ──────────────────────────────────────
 // 盤面で使えない文字の除外と、必ず使いたい文字での絞り込み。
 // 検索ごとの一時条件なので永続化しない。
