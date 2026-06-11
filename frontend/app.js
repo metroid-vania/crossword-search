@@ -375,7 +375,7 @@ async function fetchAllThenCopy() {
   try {
     while (hasMore && bulkLoading && query === currentQuery) {
       if (currentData && currentData.count >= COPY_FETCH_LIMIT) {
-        showToast(copyAllBtn, `${COPY_FETCH_LIMIT}件を超えるためコピーできません。文字を追加して絞り込んでください`, true);
+        showToast(copyAllBtn, `${COPY_FETCH_LIMIT}件を超えるためコピーできません。`, true);
         return;
       }
       await doSearch(false);
