@@ -1,5 +1,6 @@
-# SQLite データベースへの直接アクセスを禁止
-<FilesMatch "\.db$">
+# SQLite データベース（本体・WAL・SHM・journal）への直接アクセスを禁止
+# ※ \.db$ だけだと words.db-wal / words.db-shm が末尾不一致で素通りするため拡張子を網羅
+<FilesMatch "\.(db|db-wal|db-shm|db-journal|sqlite|sqlite3)$">
     Require all denied
 </FilesMatch>
 
